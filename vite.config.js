@@ -1,5 +1,7 @@
 import { defineConfig } from 'vite';
 
+const repoName = process.env.GITHUB_REPOSITORY?.split('/')[1] || 'lol_lol';
+
 export default defineConfig({
-  base: '/Astrology-Horoscope_Generator/',
+  base: process.env.GITHUB_ACTIONS ? `/${repoName}/` : '/',
 });
