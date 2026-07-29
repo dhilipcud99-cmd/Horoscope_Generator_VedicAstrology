@@ -534,7 +534,7 @@ function renderResultsView(t) {
             >
                 <td>
                     <div style="display: flex; align-items: center; gap: 10px;">
-                        <span class="dasa-toggle-icon" style="font-size: 10px; width: 12px; display: inline-block; color: var(--text-secondary); transition: transform 0.2s;">&#9656;</span>
+                        <span class="dasa-toggle-icon">&#9656;</span>
                         <span class="dasa-bullet" style="background-color: ${bulletColor};"></span>
                         <span style="font-weight: 600;">${lordDisplay}<span style="font-size: 12px; color: var(--text-secondary); font-weight: normal;"> - ${t.dasa.mahadasa}</span></span>
                     </div>
@@ -1593,7 +1593,7 @@ function bindEvents() {
                         }
                         
                         const bulletColor = lordColors[sp.lord] || '#8b5cf6';
-                        const toggleChevron = nextLevel < 4 ? `<span class="dasa-toggle-icon" style="font-size: 10px; width: 12px; display: inline-block; color: var(--text-secondary); transition: transform 0.2s;">&#9656;</span>` : '<span style="width: 12px; display: inline-block;"></span>';
+                        const toggleChevron = nextLevel < 4 ? '<span class="dasa-toggle-icon">&#9656;</span>' : '<span class="dasa-toggle-spacer"></span>';
                         
                         const levelClass = `dasa-row-l${nextLevel}`;
                         

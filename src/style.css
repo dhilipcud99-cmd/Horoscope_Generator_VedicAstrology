@@ -940,6 +940,40 @@ footer {
 }
 
 /* Dasa Timeline Styles */
+.dasa-toggle-icon {
+    display: inline-block;
+    width: 18px;
+    text-align: center;
+    transition: transform 0.2s ease, color 0.2s ease;
+    cursor: pointer;
+    user-select: none;
+    vertical-align: middle;
+}
+
+/* Make arrows visually prominent and distinct across hierarchy levels */
+/* Level 1: Mahadasa (Largest, prominent accent color) */
+.dasa-row[data-level="1"] .dasa-toggle-icon {
+    font-size: 15px;
+    color: var(--accent);
+}
+
+/* Level 2: Bhukti (Medium size, primary color) */
+.dasa-row[data-level="2"] .dasa-toggle-icon {
+    font-size: 12px;
+    color: var(--primary);
+}
+
+/* Level 3: Antara (Smallest size, muted secondary text color) */
+.dasa-row[data-level="3"] .dasa-toggle-icon {
+    font-size: 10px;
+    color: var(--text-secondary);
+}
+
+.dasa-toggle-spacer {
+    display: inline-block;
+    width: 18px;
+}
+
 .dasa-bullet {
     width: 10px;
     height: 10px;
