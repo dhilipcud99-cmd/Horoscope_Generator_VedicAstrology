@@ -379,12 +379,6 @@
                 <!-- Footer with QR and capsule -->
                 <div class="print-footer">
                     <div class="print-footer-left">
-                        <div class="print-capsule">
-                            To Check Marriage Match, Horoscope - Sriranga Jothida Nilayam - Whatsapp / Call : +91 9442054021
-                        </div>
-                        <div class="print-attribution">
-                            This Jadhagam computed from SrirangamInfo.com Free online Jadhagam WEB-APP/ Software @ https://srirangaminfo.com/jathagam-tamil.php
-                        </div>
                     </div>
                     <div class="print-footer-right">
                         <div class="print-qr-wrapper">
