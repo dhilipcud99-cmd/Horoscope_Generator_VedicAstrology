@@ -376,17 +376,7 @@
                     <div style="margin-top: 5px;"><strong>${Q.lang===`ta`?`நடப்பு தசா புத்தி`:`Current Dasa Bhukti`}:-</strong> ${Ie}</div>
                 </div>
                 
-                <!-- Footer with QR and capsule -->
-                <div class="print-footer">
-                    <div class="print-footer-left">
-                    </div>
-                    <div class="print-footer-right">
-                        <div class="print-qr-wrapper">
-                            <img class="print-qr-code" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(window.location.href)}" alt="QR Code">
-                            <div class="print-qr-label">Jathgam More Details - Scan</div>
-                        </div>
-                    </div>
-                </div>
+
             </div>
         </div>
     `}function on(e,t,n){let r=e.find(e=>e.name===`Lagna`),i=r?t?r.navamsamIdx:r.rasiIdx:0,a=[{houseNum:1,rx:200,ry:75,px:200,py:120},{houseNum:2,rx:130,ry:45,px:85,py:30},{houseNum:3,rx:45,ry:130,px:30,py:85},{houseNum:4,rx:125,ry:200,px:75,py:200},{houseNum:5,rx:45,ry:270,px:30,py:315},{houseNum:6,rx:130,ry:355,px:85,py:370},{houseNum:7,rx:200,ry:325,px:200,py:280},{houseNum:8,rx:270,ry:355,px:315,py:370},{houseNum:9,rx:355,ry:270,px:370,py:315},{houseNum:10,rx:275,ry:200,px:325,py:200},{houseNum:11,rx:355,ry:130,px:370,py:85},{houseNum:12,rx:270,ry:45,px:315,py:30}],o=``;return a.forEach(r=>{let a=(i+r.houseNum-1)%12,s=a+1,c=e.filter(e=>(t?e.navamsamIdx:e.rasiIdx)===a).map(e=>n.planetsShort[e.name]).join(` `);o+=`

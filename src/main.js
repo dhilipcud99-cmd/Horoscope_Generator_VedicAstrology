@@ -1003,17 +1003,7 @@ function renderResultsView(t) {
                     <div style="margin-top: 5px;"><strong>${state.lang === 'ta' ? 'நடப்பு தசா புத்தி' : 'Current Dasa Bhukti'}:-</strong> ${currentDasaBhuktiStr}</div>
                 </div>
                 
-                <!-- Footer with QR and capsule -->
-                <div class="print-footer">
-                    <div class="print-footer-left">
-                    </div>
-                    <div class="print-footer-right">
-                        <div class="print-qr-wrapper">
-                            <img class="print-qr-code" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(window.location.href)}" alt="QR Code">
-                            <div class="print-qr-label">Jathgam More Details - Scan</div>
-                        </div>
-                    </div>
-                </div>
+
             </div>
         </div>
     `;
