@@ -165,6 +165,33 @@ const formatAgeYMD = (ageObj, t) => {
     return `${ageObj.years}${t.dasa.y} ${ageObj.months}${t.dasa.m} ${ageObj.days}${t.dasa.d}`;
 };
 
+// Helper function to format duration between two dates in clean, human-readable format
+const formatDuration = (startDate, endDate, t) => {
+    const diff = getAgeYMD(startDate, endDate);
+    const parts = [];
+    
+    if (diff.years > 0) {
+        const label = diff.years === 1 ? t.dasa.yearSingular : t.dasa.yearPlural;
+        parts.push(`${diff.years} ${label}`);
+    }
+    
+    if (diff.months > 0) {
+        const label = diff.months === 1 ? t.dasa.monthSingular : t.dasa.monthPlural;
+        parts.push(`${diff.months} ${label}`);
+    }
+    
+    if (diff.days > 0) {
+        const label = diff.days === 1 ? t.dasa.daySingular : t.dasa.dayPlural;
+        parts.push(`${diff.days} ${label}`);
+    }
+    
+    if (parts.length === 0) {
+        return `0 ${t.dasa.dayPlural}`;
+    }
+    
+    return parts.join(' ');
+};
+
 // Application State Loader
 const savedState = localStorage.getItem('horoscope_app_state');
 let state = {
@@ -501,10 +528,7 @@ function renderResultsView(t) {
         const startStr = formatDate(new Date(period.start));
         const endStr = formatDate(new Date(period.end));
         
-        const birthDate = new Date(data.birthDetails.dateStr + 'T' + data.birthDetails.timeStr);
-        const startAgeObj = getAgeYMD(birthDate, period.start);
-        const endAgeObj = getAgeYMD(birthDate, period.end);
-        const ageRange = `${formatAgeYMD(startAgeObj, t)} - ${formatAgeYMD(endAgeObj, t)}`;
+        const durationStr = formatDuration(period.start, period.end, t);
         
         let badgeClass = 'badge-future';
         let statusText = t.dasa.future;
@@ -541,7 +565,7 @@ function renderResultsView(t) {
                 </td>
                 <td>${startStr}</td>
                 <td>${endStr}</td>
-                <td>${ageRange}</td>
+                <td style="text-align: center;">${durationStr}</td>
                 <td>
                     <span class="dasa-badge ${badgeClass}">${statusText}</span>
                 </td>
@@ -864,7 +888,7 @@ function renderResultsView(t) {
                                 <th>${t.dasa.lord}</th>
                                 <th>${t.dasa.start}</th>
                                 <th>${t.dasa.end}</th>
-                                <th>${t.dasa.age}</th>
+                                <th style="text-align: center;">${t.dasa.duration}</th>
                                 <th>${t.dasa.status}</th>
                             </tr>
                         </thead>
@@ -1577,10 +1601,7 @@ function bindEvents() {
                         const startStr = formatDate(new Date(sp.start));
                         const endStr = formatDate(new Date(sp.end));
                         
-                        const birthDate = new Date(state.horoscope.birthDetails.dateStr + 'T' + state.horoscope.birthDetails.timeStr);
-                        const startAgeObj = getAgeYMD(birthDate, sp.start);
-                        const endAgeObj = getAgeYMD(birthDate, sp.end);
-                        const ageRange = `${formatAgeYMD(startAgeObj, t)} - ${formatAgeYMD(endAgeObj, t)}`;
+                        const durationStr = formatDuration(sp.start, sp.end, t);
                         
                         let badgeClass = 'badge-future';
                         let statusText = t.dasa.future;
@@ -1620,7 +1641,7 @@ function bindEvents() {
                                 </td>
                                 <td>${startStr}</td>
                                 <td>${endStr}</td>
-                                <td>${ageRange}</td>
+                                <td style="text-align: center;">${durationStr}</td>
                                 <td>
                                     <span class="dasa-badge ${badgeClass}">${statusText}</span>
                                 </td>

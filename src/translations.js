@@ -126,7 +126,14 @@ export const translations = {
             mahadasa: "தசா",
             y: "வ",
             m: "மா",
-            d: "நா"
+            d: "நா",
+            duration: "கால அளவு",
+            yearSingular: "வருடம்",
+            yearPlural: "வருடங்கள்",
+            monthSingular: "மாதம்",
+            monthPlural: "மாதங்கள்",
+            daySingular: "நாள்",
+            dayPlural: "நாட்கள்"
         }
     },
     en: {
@@ -256,7 +263,14 @@ export const translations = {
             mahadasa: "Maha Dasa",
             y: "y",
             m: "m",
-            d: "d"
+            d: "d",
+            duration: "Duration",
+            yearSingular: "Year",
+            yearPlural: "Years",
+            monthSingular: "Month",
+            monthPlural: "Months",
+            daySingular: "Day",
+            dayPlural: "Days"
         }
     },
     hi: {
@@ -386,7 +400,14 @@ export const translations = {
             mahadasa: "महादश",
             y: "वर्ष",
             m: "माह",
-            d: "दिन"
+            d: "दिन",
+            duration: "अवधि",
+            yearSingular: "वर्ष",
+            yearPlural: "वर्ष",
+            monthSingular: "महीना",
+            monthPlural: "महीने",
+            daySingular: "दिन",
+            dayPlural: "दिन"
         }
     },
     te: {
@@ -516,7 +537,14 @@ export const translations = {
             mahadasa: "మహాదశ",
             y: "సం",
             m: "నె",
-            d: "రో"
+            d: "రో",
+            duration: "వ్యవధి",
+            yearSingular: "సంవత్సరం",
+            yearPlural: "సంవత్సరాలు",
+            monthSingular: "నెల",
+            monthPlural: "నెలలు",
+            daySingular: "రోజు",
+            dayPlural: "రోజులు"
         }
     },
     kn: {
@@ -646,7 +674,14 @@ export const translations = {
             mahadasa: "ಮಹಾದಶ",
             y: "ವರ್ಷ",
             m: "ತಿಂ",
-            d: "ದಿನ"
+            d: "ದಿನ",
+            duration: "ಅವಧಿ",
+            yearSingular: "ವರ್ಷ",
+            yearPlural: "ವರ್ಷಗಳು",
+            monthSingular: "ತಿಂಗಳು",
+            monthPlural: "ತಿಂಗಳುಗಳು",
+            daySingular: "ದಿನ",
+            dayPlural: "ದಿನಗಳು"
         }
     },
     ml: {
@@ -776,7 +811,14 @@ export const translations = {
             mahadasa: "മഹാദശ",
             y: "വർ",
             m: "മാ",
-            d: "ദി"
+            d: "ദി",
+            duration: "കാലയളവ്",
+            yearSingular: "വർഷം",
+            yearPlural: "വർഷങ്ങൾ",
+            monthSingular: "മാസം",
+            monthPlural: "മാസങ്ങൾ",
+            daySingular: "ദിവസം",
+            dayPlural: "ദിവസങ്ങൾ"
         }
     }
 };
