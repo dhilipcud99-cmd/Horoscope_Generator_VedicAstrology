@@ -1,5 +1,5 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-  base: '/Horoscope_Generator_VedicAstrology/',
-});
+  base: process.env.GITHUB_ACTIONS ? '/Horoscope_Generator_VedicAstrology/' : '/',
+});
