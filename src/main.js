@@ -384,26 +384,6 @@ function render() {
         `;
     });
 
-    const chartPresets = [
-        { name: 'Amber', primary: '#d97706' },
-        { name: 'Green', primary: '#059669' },
-        { name: 'Blue', primary: '#2563eb' },
-        { name: 'Red', primary: '#dc2626' },
-        { name: 'Purple', primary: '#7c3aed' }
-    ];
-
-    let chartPresetsHtml = '';
-    chartPresets.forEach(p => {
-        const isActive = currentChartAccent.toLowerCase() === p.primary.toLowerCase();
-        chartPresetsHtml += `
-            <button class="chart-preset-color-dot${isActive ? ' active' : ''}" 
-                    data-primary="${p.primary}" 
-                    style="background: ${p.primary}; width: 28px; height: 28px; border-radius: 50%; border: 2px solid ${isActive ? 'var(--text-primary)' : 'transparent'}; cursor: pointer; transition: transform 0.2s, border-color 0.2s; padding: 0; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"
-                    title="${p.name}">
-            </button>
-        `;
-    });
-
     root.innerHTML = `
         <header>
             <div class="logo-container" id="header-logo" style="cursor: pointer;">
@@ -436,29 +416,6 @@ function render() {
                             <div style="display: flex; align-items: center; gap: 10px;">
                                 <input type="color" id="custom-accent-picker" style="border: 1px solid var(--card-border); background: none; width: 34px; height: 34px; padding: 0; cursor: pointer;" value="${currentAccent.primary}">
                                 <span style="font-size: 13px; font-family: monospace; color: var(--text-primary); font-weight: 600;" id="custom-color-value">${currentAccent.primary.toUpperCase()}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Chart Accent Color Picker -->
-                <div style="position: relative; display: inline-block;">
-                    <button class="lang-btn" id="chart-accent-menu-btn" style="width: 38px; height: 38px; border-radius: 0; padding: 0; display: inline-flex; align-items: center; justify-content: center; color: var(--chart-accent);" title="${(t.chartAccentMenu && t.chartAccentMenu.title) || 'Chart Accent Color'}">
-                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <rect x="3" y="3" width="18" height="18" rx="0"></rect>
-                            <path d="M3 12h18M12 3v18M3 3l18 18M21 3L3 21" opacity="0.6" stroke-width="1"></path>
-                        </svg>
-                    </button>
-                    <div id="chart-accent-dropdown" class="accent-dropdown-menu" style="display: none; position: absolute; top: 44px; right: 0; background: var(--card-bg); border: 1px solid var(--card-border); padding: 12px; width: 220px; box-shadow: var(--shadow); z-index: 1000; flex-direction: column; gap: 10px;">
-                        <div style="font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">${(t.chartAccentMenu && t.chartAccentMenu.presets) || 'Chart Presets'}</div>
-                        <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px;" id="chart-preset-colors-container">
-                            ${chartPresetsHtml}
-                        </div>
-                        <div style="border-top: 1px solid var(--card-border); margin-top: 6px; padding-top: 8px;">
-                            <div style="font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">${(t.chartAccentMenu && t.chartAccentMenu.custom) || 'Chart Custom Color'}</div>
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <input type="color" id="custom-chart-accent-picker" style="border: 1px solid var(--card-border); background: none; width: 34px; height: 34px; padding: 0; cursor: pointer;" value="${currentChartAccent}">
-                                <span style="font-size: 13px; font-family: monospace; color: var(--text-primary); font-weight: 600;" id="custom-chart-color-value">${currentChartAccent.toUpperCase()}</span>
                             </div>
                         </div>
                     </div>
@@ -967,6 +924,25 @@ function renderResultsView(t) {
             ? `${mdLord} திசையில் ${bhLord} புத்தி ${formatDate(new Date(activeBhukti.start))} முதல் ${formatDate(new Date(activeBhukti.end))} வரை${nextBhuktiStr}`
             : `${mdLord} Dasa - ${bhLord} Bhukti from ${formatDate(new Date(activeBhukti.start))} to ${formatDate(new Date(activeBhukti.end))}${nextBhuktiStr}`;
     }
+    const chartPresets = [
+        { name: 'Amber', primary: '#d97706' },
+        { name: 'Green', primary: '#059669' },
+        { name: 'Blue', primary: '#2563eb' },
+        { name: 'Red', primary: '#dc2626' },
+        { name: 'Purple', primary: '#7c3aed' }
+    ];
+
+    let chartPresetsHtml = '';
+    chartPresets.forEach(p => {
+        const isActive = currentChartAccent.toLowerCase() === p.primary.toLowerCase();
+        chartPresetsHtml += `
+            <button class="chart-preset-color-dot${isActive ? ' active' : ''}" 
+                    data-primary="${p.primary}" 
+                    style="background: ${p.primary}; width: 28px; height: 28px; border-radius: 50%; border: 2px solid ${isActive ? 'var(--text-primary)' : 'transparent'}; cursor: pointer; transition: transform 0.2s, border-color 0.2s; padding: 0; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"
+                    title="${p.name}">
+            </button>
+        `;
+    });
     
     return `
         <!-- SCREEN VIEW -->
@@ -981,8 +957,31 @@ function renderResultsView(t) {
             </div>
             <!-- Charts Grid (Rasi & Navamsam side-by-side) -->
             <div class="card">
-                <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
-                    <button class="lang-btn" id="toggle-chart-style-btn" style="padding: 6px 12px; font-size: 13px;">
+                <div style="display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin-bottom: 20px;">
+                    <!-- Chart Accent Color Picker -->
+                    <div style="position: relative; display: inline-block;">
+                        <button class="lang-btn" id="chart-accent-menu-btn" style="width: 34px; height: 34px; border-radius: 0; padding: 0; display: inline-flex; align-items: center; justify-content: center; color: var(--chart-accent);" title="${(t.chartAccentMenu && t.chartAccentMenu.title) || 'Chart Accent Color'}">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="3" y="3" width="18" height="18" rx="0"></rect>
+                                <path d="M3 12h18M12 3v18M3 3l18 18M21 3L3 21" opacity="0.6" stroke-width="1"></path>
+                            </svg>
+                        </button>
+                        <div id="chart-accent-dropdown" class="accent-dropdown-menu" style="display: none; position: absolute; top: 40px; right: 0; background: var(--card-bg); border: 1px solid var(--card-border); padding: 12px; width: 220px; box-shadow: var(--shadow); z-index: 1000; flex-direction: column; gap: 10px;">
+                            <div style="font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">${(t.chartAccentMenu && t.chartAccentMenu.presets) || 'Chart Presets'}</div>
+                            <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px;" id="chart-preset-colors-container">
+                                ${chartPresetsHtml}
+                            </div>
+                            <div style="border-top: 1px solid var(--card-border); margin-top: 6px; padding-top: 8px;">
+                                <div style="font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">${(t.chartAccentMenu && t.chartAccentMenu.custom) || 'Chart Custom Color'}</div>
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <input type="color" id="custom-chart-accent-picker" style="border: 1px solid var(--card-border); background: none; width: 34px; height: 34px; padding: 0; cursor: pointer;" value="${currentChartAccent}">
+                                    <span style="font-size: 13px; font-family: monospace; color: var(--text-primary); font-weight: 600;" id="custom-chart-color-value">${currentChartAccent.toUpperCase()}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="lang-btn" id="toggle-chart-style-btn" style="padding: 0 12px; font-size: 13px; height: 34px; display: inline-flex; align-items: center; justify-content: center;">
                         ${state.chartStyle === 'north' ? t.actions.toggleSouthStyle : t.actions.toggleNorthStyle}
                     </button>
                 </div>
