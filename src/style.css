@@ -516,13 +516,13 @@ select:focus {
 
 body.light-mode .rasi-theme {
     --border-color: var(--chart-accent);
-    --chart-bg: var(--chart-rasi-bg);
+    --chart-bg: transparent;
     --text-color: hsl(var(--chart-accent-h), var(--chart-accent-s), calc(var(--chart-accent-l) - 15%));
 }
 
 body.light-mode .nav-theme {
     --border-color: var(--chart-accent);
-    --chart-bg: var(--chart-nav-bg);
+    --chart-bg: transparent;
     --text-color: hsl(var(--chart-accent-h), var(--chart-accent-s), calc(var(--chart-accent-l) - 15%));
 }
 
