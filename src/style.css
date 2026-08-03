@@ -45,7 +45,7 @@
     --chart-rasi-text: #78350f;
     --chart-nav-bg: rgba(255, 247, 237, 0.95);
     /* Peach/Sand bg */
-    --chart-nav-border: var(--accent);
+    --chart-nav-border: var(--chart-accent);
     /* Terracotta border */
     --chart-nav-text: #7c2d12;
     /* Deep terracotta text */
@@ -1374,7 +1374,7 @@ body.light-mode .north-rashi-num {
     height: 0;
     border-style: solid;
     border-width: 14px 14px 0 0;
-    border-color: var(--accent) transparent transparent transparent;
+    border-color: var(--chart-accent) transparent transparent transparent;
     z-index: 5;
 }
 
@@ -1387,7 +1387,7 @@ body.light-mode .north-rashi-num {
     height: 0;
     border-style: solid;
     border-width: 0 14px 14px 0;
-    border-color: transparent var(--accent) transparent transparent;
+    border-color: transparent var(--chart-accent) transparent transparent;
     z-index: 5;
 }
 
@@ -1400,7 +1400,7 @@ body.light-mode .north-rashi-num {
     height: 0;
     border-style: solid;
     border-width: 14px 0 0 14px;
-    border-color: transparent transparent transparent var(--accent);
+    border-color: transparent transparent transparent var(--chart-accent);
     z-index: 5;
 }
 
@@ -1413,7 +1413,7 @@ body.light-mode .north-rashi-num {
     height: 0;
     border-style: solid;
     border-width: 0 0 14px 14px;
-    border-color: transparent transparent var(--accent) transparent;
+    border-color: transparent transparent var(--chart-accent) transparent;
     z-index: 5;
 }
 
