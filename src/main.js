@@ -192,6 +192,78 @@ const formatDuration = (startDate, endDate, t) => {
     return parts.join(' ');
 };
 
+// Color utilities for Accent Color Customization
+function hexToHsl(hex) {
+    const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+    hex = hex.replace(shorthandRegex, (m, r, g, b) => r + r + g + g + b + b);
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    if (!result) return null;
+    let r = parseInt(result[1], 16) / 255;
+    let g = parseInt(result[2], 16) / 255;
+    let b = parseInt(result[3], 16) / 255;
+    const max = Math.max(r, g, b), min = Math.min(r, g, b);
+    let h, s, l = (max + min) / 2;
+    if (max === min) {
+        h = s = 0;
+    } else {
+        const d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        switch (max) {
+            case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+            case g: h = (b - r) / d + 2; break;
+            case b: h = (r - g) / d + 4; break;
+        }
+        h /= 6;
+    }
+    return {
+        h: Math.round(h * 360),
+        s: Math.round(s * 100),
+        l: Math.round(l * 100)
+    };
+}
+
+function hslToHex(h, s, l) {
+    l /= 100;
+    const a = s * Math.min(l, 1 - l) / 100;
+    const f = n => {
+        const k = (n + h / 30) % 12;
+        const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+        return Math.round(255 * color).toString(16).padStart(2, '0');
+    };
+    return `#${f(0)}${f(8)}${f(4)}`.toUpperCase();
+}
+
+function computeAccentForCustom(primaryColor) {
+    const hsl = hexToHsl(primaryColor);
+    if (!hsl) return primaryColor;
+    // Shift hue by -22 degrees for complimentary gradient
+    const accentH = (hsl.h - 22 + 360) % 360;
+    return hslToHex(accentH, hsl.s, hsl.l);
+}
+
+function applyAccentColor(primaryColor, accentColor) {
+    const primaryHsl = hexToHsl(primaryColor);
+    const accentHsl = hexToHsl(accentColor);
+    if (primaryHsl && accentHsl) {
+        document.documentElement.style.setProperty('--primary-h', primaryHsl.h);
+        document.documentElement.style.setProperty('--primary-s', primaryHsl.s + '%');
+        document.documentElement.style.setProperty('--primary-l', primaryHsl.l + '%');
+        document.documentElement.style.setProperty('--accent-h', accentHsl.h);
+        document.documentElement.style.setProperty('--accent-s', accentHsl.s + '%');
+        document.documentElement.style.setProperty('--accent-l', accentHsl.l + '%');
+    }
+}
+
+function applyChartAccentColor(color) {
+    const hsl = hexToHsl(color);
+    if (hsl) {
+        document.documentElement.style.setProperty('--chart-accent-h', hsl.h);
+        document.documentElement.style.setProperty('--chart-accent-s', hsl.s + '%');
+        document.documentElement.style.setProperty('--chart-accent-l', hsl.l + '%');
+        document.documentElement.style.setProperty('--chart-accent', color);
+    }
+}
+
 // Application State Loader
 const savedState = localStorage.getItem('horoscope_app_state');
 let state = {
@@ -221,6 +293,29 @@ if (savedTheme === 'dark') {
 } else if (savedTheme === 'light') {
     document.body.classList.add('light-mode');
 }
+
+// Load saved Accent Color or set default Bronze Gold
+const savedAccent = localStorage.getItem('horoscope_app_accent');
+let currentAccent = { primary: '#ca8a04', accent: '#ea580c' };
+if (savedAccent) {
+    try {
+        const parsed = JSON.parse(savedAccent);
+        if (parsed && parsed.primary && parsed.accent) {
+            currentAccent = parsed;
+        }
+    } catch (e) {
+        console.error("Failed to parse saved accent color", e);
+    }
+}
+applyAccentColor(currentAccent.primary, currentAccent.accent);
+
+// Load saved Chart Accent Color or set default Amber Orange
+const savedChartAccent = localStorage.getItem('horoscope_app_chart_accent');
+let currentChartAccent = '#d97706';
+if (savedChartAccent) {
+    currentChartAccent = savedChartAccent;
+}
+applyChartAccentColor(currentChartAccent);
 
 // Main DOM mounting element
 const root = document.querySelector('#app');
@@ -268,6 +363,47 @@ function render() {
         ml: 'വേദ ജ്യോതിഷ കണക്കുകൂട്ടലുകൾ. എല്ലാ അവകാശങ്ങളും നിക്ഷിപ്തം.'
     };
 
+    const presets = [
+        { name: 'Gold', primary: '#ca8a04', accent: '#ea580c' },
+        { name: 'Green', primary: '#059669', accent: '#0d9488' },
+        { name: 'Blue', primary: '#2563eb', accent: '#0284c7' },
+        { name: 'Red', primary: '#dc2626', accent: '#e11d48' },
+        { name: 'Purple', primary: '#7c3aed', accent: '#c084fc' }
+    ];
+
+    let presetsHtml = '';
+    presets.forEach(p => {
+        const isActive = currentAccent.primary.toLowerCase() === p.primary.toLowerCase();
+        presetsHtml += `
+            <button class="preset-color-dot${isActive ? ' active' : ''}" 
+                    data-primary="${p.primary}" 
+                    data-accent="${p.accent}" 
+                    style="background: ${p.primary}; width: 28px; height: 28px; border-radius: 50%; border: 2px solid ${isActive ? 'var(--text-primary)' : 'transparent'}; cursor: pointer; transition: transform 0.2s, border-color 0.2s; padding: 0; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"
+                    title="${p.name}">
+            </button>
+        `;
+    });
+
+    const chartPresets = [
+        { name: 'Amber', primary: '#d97706' },
+        { name: 'Green', primary: '#059669' },
+        { name: 'Blue', primary: '#2563eb' },
+        { name: 'Red', primary: '#dc2626' },
+        { name: 'Purple', primary: '#7c3aed' }
+    ];
+
+    let chartPresetsHtml = '';
+    chartPresets.forEach(p => {
+        const isActive = currentChartAccent.toLowerCase() === p.primary.toLowerCase();
+        chartPresetsHtml += `
+            <button class="chart-preset-color-dot${isActive ? ' active' : ''}" 
+                    data-primary="${p.primary}" 
+                    style="background: ${p.primary}; width: 28px; height: 28px; border-radius: 50%; border: 2px solid ${isActive ? 'var(--text-primary)' : 'transparent'}; cursor: pointer; transition: transform 0.2s, border-color 0.2s; padding: 0; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"
+                    title="${p.name}">
+            </button>
+        `;
+    });
+
     root.innerHTML = `
         <header>
             <div class="logo-container" id="header-logo" style="cursor: pointer;">
@@ -281,6 +417,53 @@ function render() {
                         `<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" stroke-linecap="round" stroke-linejoin="round"></path></svg>`
                     }
                 </button>
+                
+                <!-- Accent Color Picker -->
+                <div style="position: relative; display: inline-block;">
+                    <button class="lang-btn" id="accent-menu-btn" style="width: 38px; height: 38px; border-radius: 0; padding: 0; display: inline-flex; align-items: center; justify-content: center; color: var(--primary);" title="${(t.accentMenu && t.accentMenu.title) || 'Accent Color'}">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 21a9 9 0 100-18 9 9 0 000 18z" stroke-linecap="round" stroke-linejoin="round"></path>
+                            <path d="M7.5 10.5a1.5 1.5 0 110-3 1.5 1.5 0 010 3zM11.5 7.5a1.5 1.5 0 110-3 1.5 1.5 0 010 3zM16.5 9.5a1.5 1.5 0 110-3 1.5 1.5 0 010 3zM15.5 14.5a1.5 1.5 0 110-3 1.5 1.5 0 010 3z" fill="currentColor"></path>
+                        </svg>
+                    </button>
+                    <div id="accent-dropdown" class="accent-dropdown-menu" style="display: none; position: absolute; top: 44px; right: 0; background: var(--card-bg); border: 1px solid var(--card-border); padding: 12px; width: 220px; box-shadow: var(--shadow); z-index: 1000; flex-direction: column; gap: 10px;">
+                        <div style="font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">${(t.accentMenu && t.accentMenu.presets) || 'Preset Colors'}</div>
+                        <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px;" id="preset-colors-container">
+                            ${presetsHtml}
+                        </div>
+                        <div style="border-top: 1px solid var(--card-border); margin-top: 6px; padding-top: 8px;">
+                            <div style="font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">${(t.accentMenu && t.accentMenu.custom) || 'Custom Color'}</div>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <input type="color" id="custom-accent-picker" style="border: 1px solid var(--card-border); background: none; width: 34px; height: 34px; padding: 0; cursor: pointer;" value="${currentAccent.primary}">
+                                <span style="font-size: 13px; font-family: monospace; color: var(--text-primary); font-weight: 600;" id="custom-color-value">${currentAccent.primary.toUpperCase()}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chart Accent Color Picker -->
+                <div style="position: relative; display: inline-block;">
+                    <button class="lang-btn" id="chart-accent-menu-btn" style="width: 38px; height: 38px; border-radius: 0; padding: 0; display: inline-flex; align-items: center; justify-content: center; color: var(--chart-accent);" title="${(t.chartAccentMenu && t.chartAccentMenu.title) || 'Chart Accent Color'}">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="3" y="3" width="18" height="18" rx="0"></rect>
+                            <path d="M3 12h18M12 3v18M3 3l18 18M21 3L3 21" opacity="0.6" stroke-width="1"></path>
+                        </svg>
+                    </button>
+                    <div id="chart-accent-dropdown" class="accent-dropdown-menu" style="display: none; position: absolute; top: 44px; right: 0; background: var(--card-bg); border: 1px solid var(--card-border); padding: 12px; width: 220px; box-shadow: var(--shadow); z-index: 1000; flex-direction: column; gap: 10px;">
+                        <div style="font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">${(t.chartAccentMenu && t.chartAccentMenu.presets) || 'Chart Presets'}</div>
+                        <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px;" id="chart-preset-colors-container">
+                            ${chartPresetsHtml}
+                        </div>
+                        <div style="border-top: 1px solid var(--card-border); margin-top: 6px; padding-top: 8px;">
+                            <div style="font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">${(t.chartAccentMenu && t.chartAccentMenu.custom) || 'Chart Custom Color'}</div>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <input type="color" id="custom-chart-accent-picker" style="border: 1px solid var(--card-border); background: none; width: 34px; height: 34px; padding: 0; cursor: pointer;" value="${currentChartAccent}">
+                                <span style="font-size: 13px; font-family: monospace; color: var(--text-primary); font-weight: 600;" id="custom-chart-color-value">${currentChartAccent.toUpperCase()}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <select class="lang-btn" id="lang-select" style="cursor: pointer; padding: 0 10px; height: 38px;">
                     <option value="en" ${state.lang === 'en' ? 'selected' : ''}>English</option>
                     <option value="ta" ${state.lang === 'ta' ? 'selected' : ''}>தமிழ்</option>
@@ -1262,6 +1445,147 @@ function bindEvents() {
             render();
         });
     }
+
+    // Accent Color Selection
+    const accentMenuBtn = document.querySelector('#accent-menu-btn');
+    const accentDropdown = document.querySelector('#accent-dropdown');
+    if (accentMenuBtn && accentDropdown) {
+        accentMenuBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isHidden = accentDropdown.style.display === 'none' || accentDropdown.style.display === '';
+            accentDropdown.style.display = isHidden ? 'flex' : 'none';
+        });
+
+        accentDropdown.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+    }
+
+    const chartAccentMenuBtn = document.querySelector('#chart-accent-menu-btn');
+    const chartAccentDropdown = document.querySelector('#chart-accent-dropdown');
+    if (chartAccentMenuBtn && chartAccentDropdown) {
+        chartAccentMenuBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isHidden = chartAccentDropdown.style.display === 'none' || chartAccentDropdown.style.display === '';
+            chartAccentDropdown.style.display = isHidden ? 'flex' : 'none';
+        });
+
+        chartAccentDropdown.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+    }
+
+    // Close accent dropdowns when clicking outside
+    document.addEventListener('click', (e) => {
+        const dropdown = document.querySelector('#accent-dropdown');
+        const menuBtn = document.querySelector('#accent-menu-btn');
+        if (dropdown && menuBtn && !menuBtn.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.style.display = 'none';
+        }
+
+        const chartDropdown = document.querySelector('#chart-accent-dropdown');
+        const chartMenuBtn = document.querySelector('#chart-accent-menu-btn');
+        if (chartDropdown && chartMenuBtn && !chartMenuBtn.contains(e.target) && !chartDropdown.contains(e.target)) {
+            chartDropdown.style.display = 'none';
+        }
+    });
+
+    // Preset color dots event listeners
+    const presetDots = document.querySelectorAll('.preset-color-dot');
+    presetDots.forEach(dot => {
+        dot.addEventListener('click', () => {
+            const primary = dot.getAttribute('data-primary');
+            const accent = dot.getAttribute('data-accent');
+            currentAccent = { primary, accent };
+            applyAccentColor(primary, accent);
+            localStorage.setItem('horoscope_app_accent', JSON.stringify(currentAccent));
+
+            // Update custom picker input value and hex text
+            const customPicker = document.querySelector('#custom-accent-picker');
+            if (customPicker) customPicker.value = primary;
+            const hexVal = document.querySelector('#custom-color-value');
+            if (hexVal) hexVal.textContent = primary.toUpperCase();
+
+            // Manage active classes
+            presetDots.forEach(d => {
+                if (d.getAttribute('data-primary').toLowerCase() === primary.toLowerCase()) {
+                    d.classList.add('active');
+                } else {
+                    d.classList.remove('active');
+                }
+            });
+        });
+    });
+
+    // Custom color picker input events
+    const customPicker = document.querySelector('#custom-accent-picker');
+    if (customPicker) {
+        customPicker.addEventListener('input', (e) => {
+            const primary = e.target.value;
+            const accent = computeAccentForCustom(primary);
+            currentAccent = { primary, accent };
+            applyAccentColor(primary, accent);
+
+            const hexVal = document.querySelector('#custom-color-value');
+            if (hexVal) hexVal.textContent = primary.toUpperCase();
+
+            presetDots.forEach(d => d.classList.remove('active'));
+        });
+
+        customPicker.addEventListener('change', (e) => {
+            const primary = e.target.value;
+            const accent = computeAccentForCustom(primary);
+            currentAccent = { primary, accent };
+            localStorage.setItem('horoscope_app_accent', JSON.stringify(currentAccent));
+        });
+    }
+
+    // Chart Preset color dots event listeners
+    const chartPresetDots = document.querySelectorAll('.chart-preset-color-dot');
+    chartPresetDots.forEach(dot => {
+        dot.addEventListener('click', () => {
+            const primary = dot.getAttribute('data-primary');
+            currentChartAccent = primary;
+            applyChartAccentColor(primary);
+            localStorage.setItem('horoscope_app_chart_accent', currentChartAccent);
+
+            // Update custom chart picker input value and hex text
+            const customChartPicker = document.querySelector('#custom-chart-accent-picker');
+            if (customChartPicker) customChartPicker.value = primary;
+            const hexVal = document.querySelector('#custom-chart-color-value');
+            if (hexVal) hexVal.textContent = primary.toUpperCase();
+
+            // Manage active classes
+            chartPresetDots.forEach(d => {
+                if (d.getAttribute('data-primary').toLowerCase() === primary.toLowerCase()) {
+                    d.classList.add('active');
+                } else {
+                    d.classList.remove('active');
+                }
+            });
+        });
+    });
+
+    // Chart Custom color picker input events
+    const customChartPicker = document.querySelector('#custom-chart-accent-picker');
+    if (customChartPicker) {
+        customChartPicker.addEventListener('input', (e) => {
+            const primary = e.target.value;
+            currentChartAccent = primary;
+            applyChartAccentColor(primary);
+
+            const hexVal = document.querySelector('#custom-chart-color-value');
+            if (hexVal) hexVal.textContent = primary.toUpperCase();
+
+            chartPresetDots.forEach(d => d.classList.remove('active'));
+        });
+
+        customChartPicker.addEventListener('change', (e) => {
+            const primary = e.target.value;
+            currentChartAccent = primary;
+            localStorage.setItem('horoscope_app_chart_accent', currentChartAccent);
+        });
+    }
     
     // Form view events
     if (state.view === 'form') {
@@ -1689,7 +2013,7 @@ function bindEvents() {
                 pathHtml += `<div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 15px;">`;
                 
                 const levelNames = [t.dasa.mahadasa, t.dasa.bhukti, t.dasa.antara, t.dasa.sookshma];
-                const colors = ['#ca8a04', '#ea580c', '#3b82f6', '#10b981'];
+                const colors = ['var(--primary)', 'var(--accent)', '#3b82f6', '#10b981'];
                 
                 path.forEach((period, idx) => {
                     const lordTamilName = t.planets[period.lord] || period.lord;

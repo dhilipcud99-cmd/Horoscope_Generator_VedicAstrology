@@ -134,6 +134,16 @@ export const translations = {
             monthPlural: "மாதங்கள்",
             daySingular: "நாள்",
             dayPlural: "நாட்கள்"
+        },
+        accentMenu: {
+            title: "முக்கிய நிறம்",
+            presets: "முன்னமைக்கப்பட்டவை",
+            custom: "தனிப்பயன் நிறம்"
+        },
+        chartAccentMenu: {
+            title: "ஜாதகக் கட்ட நிறம்",
+            presets: "முன்னமைக்கப்பட்ட கட்ட நிறங்கள்",
+            custom: "தனிப்பயன் கட்ட நிறம்"
         }
     },
     en: {
@@ -271,6 +281,16 @@ export const translations = {
             monthPlural: "Months",
             daySingular: "Day",
             dayPlural: "Days"
+        },
+        accentMenu: {
+            title: "Accent Color",
+            presets: "Preset Colors",
+            custom: "Custom Color"
+        },
+        chartAccentMenu: {
+            title: "Chart Accent Color",
+            presets: "Chart Presets",
+            custom: "Chart Custom Color"
         }
     },
     hi: {
@@ -408,6 +428,16 @@ export const translations = {
             monthPlural: "महीने",
             daySingular: "दिन",
             dayPlural: "दिन"
+        },
+        accentMenu: {
+            title: "मुख्य रंग",
+            presets: "पूर्व निर्धारित रंग",
+            custom: "कस्टम रंग"
+        },
+        chartAccentMenu: {
+            title: "कुंडली का मुख्य रंग",
+            presets: "पूर्व निर्धारित कुंडली रंग",
+            custom: "कस्टम कुंडली रंग"
         }
     },
     te: {
@@ -545,6 +575,16 @@ export const translations = {
             monthPlural: "నెలలు",
             daySingular: "రోజు",
             dayPlural: "రోజులు"
+        },
+        accentMenu: {
+            title: "లక్ష్య రంగు",
+            presets: "ప్రీసెట్ రంగులు",
+            custom: "కస్టమ్ రంగు"
+        },
+        chartAccentMenu: {
+            title: "చార్ట్ లక్ష్య రంగు",
+            presets: "చార్ట్ ప్రీసెట్ రంగులు",
+            custom: "చార్ట్ కస్టమ్ రంగు"
         }
     },
     kn: {
@@ -682,6 +722,16 @@ export const translations = {
             monthPlural: "ತಿಂಗಳುಗಳು",
             daySingular: "ದಿನ",
             dayPlural: "ದಿನಗಳು"
+        },
+        accentMenu: {
+            title: "ಮುಖ್ಯ ಬಣ್ಣ",
+            presets: "ಪೂರ್ವಸಿದ್ಧ ಬಣ್ಣಗಳು",
+            custom: "ಕಸ್ಟಮ್ ಬಣ್ಣ"
+        },
+        chartAccentMenu: {
+            title: "ಜಾತಕ ಕೋಷ್ಟಕದ ಬಣ್ಣ",
+            presets: "ಕೋಷ್ಟಕದ ಪೂರ್ವಸಿದ್ಧ ಬಣ್ಣಗಳು",
+            custom: "ಕೋಷ್ಟಕದ ಕಸ್ಟಮ್ ಬಣ್ಣ"
         }
     },
     ml: {
@@ -819,6 +869,16 @@ export const translations = {
             monthPlural: "മാസങ്ങൾ",
             daySingular: "ദിവസം",
             dayPlural: "ദിവസങ്ങൾ"
+        },
+        accentMenu: {
+            title: "പ്രധാന നിറം",
+            presets: "പ്രിസെറ്റ് നിറങ്ങൾ",
+            custom: "കസ്റ്റം നിറം"
+        },
+        chartAccentMenu: {
+            title: "ചാർട്ട് പ്രധാന നിറം",
+            presets: "ചാർട്ട് പ്രിസെറ്റ് നിറങ്ങൾ",
+            custom: "ചാർട്ട് കസ്റ്റം നിറം"
         }
     }
 };
