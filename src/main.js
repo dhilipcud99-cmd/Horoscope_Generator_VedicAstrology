@@ -51,11 +51,27 @@ const dasaSearchTranslations = {
 
 // Helper function to find active Dasa, Bhukti, Antara, and Sookshma at a specific date
 function findActiveDasaPathAtDate(targetDate, dasaTimeline, birthDateStr) {
+    const birthDate = new Date(birthDateStr);
+    let searchDate = new Date(targetDate);
+    
+    // Clamp search date to birth date-time if it falls on the same calendar day but before birth time
+    if (searchDate.toDateString() === birthDate.toDateString() && searchDate < birthDate) {
+        searchDate = new Date(birthDate);
+    }
+    
+    // Clamp search date to just before timeline end if it falls on the same calendar day but after end time
+    if (dasaTimeline && dasaTimeline.length > 0) {
+        const timelineEnd = new Date(dasaTimeline[dasaTimeline.length - 1].end);
+        if (searchDate.toDateString() === timelineEnd.toDateString() && searchDate > timelineEnd) {
+            searchDate = new Date(timelineEnd.getTime() - 1000);
+        }
+    }
+
     // 1. Find Mahadasa (level 1)
     const mahadasa = dasaTimeline.find(p => {
         const start = new Date(p.start);
         const end = new Date(p.end);
-        return targetDate >= start && targetDate < end;
+        return searchDate >= start && searchDate < end;
     });
     if (!mahadasa) return null;
     
@@ -76,7 +92,7 @@ function findActiveDasaPathAtDate(targetDate, dasaTimeline, birthDateStr) {
     const bhukti = bhuktis.find(p => {
         const start = new Date(p.start);
         const end = new Date(p.end);
-        return targetDate >= start && targetDate < end;
+        return searchDate >= start && searchDate < end;
     });
     if (!bhukti) return [mdObj];
     
@@ -85,7 +101,7 @@ function findActiveDasaPathAtDate(targetDate, dasaTimeline, birthDateStr) {
     const antara = antaras.find(p => {
         const start = new Date(p.start);
         const end = new Date(p.end);
-        return targetDate >= start && targetDate < end;
+        return searchDate >= start && searchDate < end;
     });
     if (!antara) return [mdObj, bhukti];
     
@@ -94,7 +110,7 @@ function findActiveDasaPathAtDate(targetDate, dasaTimeline, birthDateStr) {
     const sookshma = sookshmas.find(p => {
         const start = new Date(p.start);
         const end = new Date(p.end);
-        return targetDate >= start && targetDate < end;
+        return searchDate >= start && searchDate < end;
     });
     if (!sookshma) return [mdObj, bhukti, antara];
     
