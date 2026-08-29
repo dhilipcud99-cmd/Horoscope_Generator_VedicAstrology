@@ -1199,66 +1199,67 @@ function renderResultsView(t) {
     
     const resultsAspectMapHtml = renderAspectMatrixHtml(data.planets, t, state.lang);
     
-    // Generate horizontal placements table
-    const targetPlanets = ['Lagna', 'Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu'];
-    let resultsHeaderColsHtml = `<th>${state.lang === 'ta' ? 'தேதி' : 'Date'}</th>`;
-    let resultsRowColsHtml = `
-        <td style="white-space: nowrap; text-align: center; padding: 12px; font-weight: bold; border: 1px solid var(--card-border);">
-            <div>${formattedDate}</div>
-            <div style="font-size: 11px; color: var(--text-secondary); font-weight: normal; margin-top: 2px;">${birthTimeDisplay}</div>
-        </td>
-    `;
+    // Generate vertical placements table
+    const allPlanetNames = ["Lagna", "Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu", "Mandi"];
+    let verticalTableRowsHtml = '';
     
-    targetPlanets.forEach(pName => {
+    allPlanetNames.forEach(pName => {
         const p = data.planets.find(pl => pl.name === pName);
-        if (!p) {
-            resultsHeaderColsHtml += `<th>${state.lang === 'ta' ? t.planets[pName] : translations['en'].planets[pName]}</th>`;
-            resultsRowColsHtml += `<td>-</td>`;
-            return;
-        }
+        if (!p) return;
         
-        const pTamilName = t.planets[pName];
-        const pEnglishName = translations['en'].planets[pName];
-        const planetDisplayName = state.lang === 'ta' ? pTamilName : pEnglishName;
+        const pTamilName = t.planets[pName] || pName;
+        const pEnglishName = translations['en'].planets[pName] || pName;
+        
+        const isRetro = p.isRetro && p.name !== 'Lagna' && p.name !== 'Mandi';
+        const planetDisplayName = state.lang === 'ta' 
+            ? pTamilName + (isRetro ? ' (வ)' : '') 
+            : pEnglishName + (isRetro ? ' (R)' : '');
+            
+        const relativeLon = p.longitude % 30;
+        const deg = Math.floor(relativeLon);
+        const minTotal = (relativeLon - deg) * 60;
+        const min = Math.floor(minTotal);
+        const signLonStr = `${deg}° ${min.toString().padStart(2, '0')}'`;
+        const totalLonStr = `${p.longitude.toFixed(2)}°`;
         
         const rasiTamilName = t.signs[signKeys[p.rasiIdx]];
         const rasiEnglishName = translations['en'].signs[signKeys[p.rasiIdx]];
+        const rasiDisplayName = state.lang === 'ta' ? rasiTamilName : rasiEnglishName;
         
-        const starTamil = t.stars[p.starIdx];
-        const starEnglish = translations['en'].stars[p.starIdx];
+        const starTamil = t.stars[p.starIdx] || '-';
+        const starEnglish = translations['en'].stars[p.starIdx] || '-';
+        const starDisplayName = state.lang === 'ta' ? starTamil : starEnglish;
+        const padaDisplay = p.starIdx !== undefined ? `(${p.pada})` : '';
         
         const starLords = ['Ketu', 'Venus', 'Sun', 'Moon', 'Mars', 'Rahu', 'Jupiter', 'Saturn', 'Mercury'];
-        const starLordKey = starLords[p.starIdx % 9];
-        const starLordName = state.lang === 'ta' 
-            ? t.planets[starLordKey] 
-            : (translations[state.lang]?.planets[starLordKey] || translations['en'].planets[starLordKey]);
-        
-        const isRetro = p.isRetro && p.name !== 'Lagna' && p.name !== 'Mandi';
-        const pDisplayTamil = pTamilName + (isRetro ? ' (வ)' : '');
-        const pDisplayEnglish = pEnglishName + (isRetro ? ' (R)' : '');
-        
-        const relativeLon = p.longitude % 30;
-        
-        resultsHeaderColsHtml += `
-            <th style="text-align: center; white-space: nowrap; padding: 12px;">
-                <div>${state.lang === 'ta' ? pDisplayTamil : pDisplayEnglish}</div>
-                <div style="font-size: 11px; font-weight: normal; opacity: 0.85; margin-top: 2px;">${pEnglishName}${isRetro ? ' (R)' : ''}</div>
-            </th>
-        `;
+        const starLordKey = p.starIdx !== undefined ? starLords[p.starIdx % 9] : null;
+        let starLordDisplayName = '-';
+        if (starLordKey) {
+            starLordDisplayName = state.lang === 'ta' 
+                ? t.planets[starLordKey] 
+                : (translations[state.lang]?.planets[starLordKey] || translations['en'].planets[starLordKey]);
+        }
         
         const strengthVal = getPlanetaryStrength(pName, p.rasiIdx, state.lang);
-        const strengthPrefix = state.lang === 'ta' ? 'நிலை' : 'Str';
-
-        resultsRowColsHtml += `
-            <td style="white-space: nowrap; text-align: center; padding: 12px; border: 1px solid var(--card-border);">
-                <div style="font-weight: 600; font-size: 14px;">${relativeLon.toFixed(2)}°</div>
-                <div style="font-size: 11px; color: var(--text-secondary); margin-top: 1px;">(Tot: ${p.longitude.toFixed(2)}°)</div>
-                <div style="font-size: 13px; margin-top: 4px; font-weight: 500;">${state.lang === 'ta' ? rasiTamilName : rasiEnglishName}</div>
-                <div style="font-size: 12px; color: var(--accent); margin-top: 2px;">${state.lang === 'ta' ? starTamil : starEnglish} (${p.pada})</div>
-                <div style="font-size: 11px; color: var(--text-secondary); margin-top: 2px;">L: ${starLordName}</div>
-                <div style="font-size: 11px; color: var(--text-secondary); margin-top: 2px;">${strengthPrefix}: ${strengthVal}</div>
-                <div style="font-size: 11px; color: var(--text-secondary); margin-top: 1px;">${state.lang === 'ta' ? 'பாவகம்' : 'House'}: ${p.house}</div>
-            </td>
+        
+        verticalTableRowsHtml += `
+            <tr style="border-bottom: 1px solid var(--card-border);">
+                <td style="padding: 12px; font-weight: 600; color: var(--accent);">
+                    <div>${planetDisplayName}</div>
+                    <div style="font-size: 11px; font-weight: normal; color: var(--text-secondary); margin-top: 1px;">${pEnglishName}${isRetro ? ' (R)' : ''}</div>
+                </td>
+                <td style="padding: 12px; font-weight: 600;">
+                    <div>${signLonStr}</div>
+                    <div style="font-size: 11px; font-weight: normal; color: var(--text-secondary); margin-top: 1px;">(Tot: ${totalLonStr})</div>
+                </td>
+                <td style="padding: 12px;">${rasiDisplayName}</td>
+                <td style="padding: 12px; font-weight: 500;">
+                    <div>${starDisplayName} ${padaDisplay}</div>
+                </td>
+                <td style="padding: 12px; color: var(--text-secondary);">${starLordDisplayName}</td>
+                <td style="padding: 12px; font-weight: 600; text-align: center;">${p.house}</td>
+                <td style="padding: 12px;">${strengthVal}</td>
+            </tr>
         `;
     });
     
@@ -1659,16 +1660,20 @@ function renderResultsView(t) {
             <div class="card" style="margin-bottom: 30px;">
                 <h2 class="card-title" style="text-align: left; margin-bottom: 20px;">${state.lang === 'ta' ? 'கிரக நிலைகள்' : 'Planetary Placements'}</h2>
                 <div class="table-container">
-                    <table>
+                    <table style="width: 100%; border-collapse: collapse; text-align: left;">
                         <thead>
-                            <tr>
-                                ${resultsHeaderColsHtml}
+                            <tr style="background: rgba(0,0,0,0.02); border-bottom: 2px solid var(--card-border);">
+                                <th style="padding: 12px; text-align: left;">${state.lang === 'ta' ? 'கிரகம்' : 'Planet'}</th>
+                                <th style="padding: 12px; text-align: left;">${state.lang === 'ta' ? 'பாகை (நிமிடம்)' : 'Degree (Min)'}</th>
+                                <th style="padding: 12px; text-align: left;">${state.lang === 'ta' ? 'இராசி' : 'Zodiac Sign'}</th>
+                                <th style="padding: 12px; text-align: left;">${state.lang === 'ta' ? 'நட்சத்திரம் (பாதம்)' : 'Star (Nakshatra)'}</th>
+                                <th style="padding: 12px; text-align: left;">${state.lang === 'ta' ? 'சாரநாதன் / அதிபதி' : 'Star Lord'}</th>
+                                <th style="padding: 12px; text-align: center;">${state.lang === 'ta' ? 'பாவகம்' : 'House'}</th>
+                                <th style="padding: 12px; text-align: left;">${state.lang === 'ta' ? 'பலம் / நிலை' : 'Strength'}</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                ${resultsRowColsHtml}
-                            </tr>
+                            ${verticalTableRowsHtml}
                         </tbody>
                     </table>
                 </div>
