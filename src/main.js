@@ -192,6 +192,356 @@ const formatDuration = (startDate, endDate, t) => {
     return parts.join(' ');
 };
 
+window.highlightAspects = function(rasiIdx) {
+    document.querySelectorAll('.aspect-path').forEach(p => {
+        if (p.classList.contains('from-' + rasiIdx)) {
+            p.style.opacity = '1';
+            p.style.strokeWidth = '2.5px';
+        } else {
+            p.style.opacity = '0.08';
+            p.style.strokeWidth = '1.2px';
+        }
+    });
+};
+
+window.resetAspects = function() {
+    document.querySelectorAll('.aspect-path').forEach(p => {
+        p.style.opacity = '0.85';
+        p.style.strokeWidth = '1.5px';
+    });
+};
+
+function getCurrentLocation(successCallback, errorCallback) {
+    if (!navigator.geolocation) {
+        errorCallback(new Error("Geolocation not supported"));
+        return;
+    }
+    navigator.geolocation.getCurrentPosition(
+        (position) => {
+            successCallback(position.coords.latitude, position.coords.longitude);
+        },
+        (error) => {
+            errorCallback(error);
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    );
+}
+
+function getPlanetaryStrength(pName, rasiIdx, lang) {
+    if (pName === 'Lagna' || pName === 'Mandi') return '-';
+    
+    const exaltationMap = { Sun: 0, Moon: 1, Mars: 9, Mercury: 5, Jupiter: 3, Venus: 11, Saturn: 6, Rahu: 1, Ketu: 7 };
+    const debilitationMap = { Sun: 6, Moon: 7, Mars: 3, Mercury: 11, Jupiter: 9, Venus: 5, Saturn: 0, Rahu: 7, Ketu: 1 };
+    const ownSignsMap = {
+        Sun: [4], Moon: [3], Mars: [0, 7], Mercury: [2, 5],
+        Jupiter: [8, 11], Venus: [1, 6], Saturn: [9, 10], Rahu: [5, 10], Ketu: [11, 7]
+    };
+    const rasiLords = ['Mars', 'Venus', 'Mercury', 'Moon', 'Sun', 'Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn', 'Saturn', 'Jupiter'];
+    
+    const naturalRelationships = {
+        Sun: { friends: ['Moon', 'Mars', 'Jupiter'], enemies: ['Venus', 'Saturn'], neutrals: ['Mercury'] },
+        Moon: { friends: ['Sun', 'Mercury'], enemies: [], neutrals: ['Mars', 'Jupiter', 'Venus', 'Saturn'] },
+        Mars: { friends: ['Sun', 'Moon', 'Jupiter'], enemies: ['Mercury'], neutrals: ['Venus', 'Saturn'] },
+        Mercury: { friends: ['Sun', 'Venus'], enemies: ['Moon'], neutrals: ['Mars', 'Jupiter', 'Saturn'] },
+        Jupiter: { friends: ['Sun', 'Moon', 'Mars'], enemies: ['Mercury', 'Venus'], neutrals: ['Saturn'] },
+        Venus: { friends: ['Mercury', 'Saturn'], enemies: ['Sun', 'Moon'], neutrals: ['Mars', 'Jupiter'] },
+        Saturn: { friends: ['Mercury', 'Venus'], enemies: ['Sun', 'Moon', 'Mars'], neutrals: ['Jupiter'] },
+        Rahu: { friends: ['Mercury', 'Venus', 'Saturn'], enemies: ['Sun', 'Moon', 'Mars'], neutrals: ['Jupiter'] },
+        Ketu: { friends: ['Sun', 'Moon', 'Mars', 'Jupiter'], enemies: ['Mercury', 'Venus'], neutrals: ['Saturn'] }
+    };
+
+    const strengthTranslations = {
+        exalted: { ta: 'உச்சம்', en: 'Exalted', hi: 'उच्च', te: 'ఉచ్ఛ', kn: 'ಉಚ್ಚ', ml: 'ഉച്ചം' },
+        debilitated: { ta: 'நீசம்', en: 'Debilitated', hi: 'नीच', te: 'నీచ', kn: 'ನೀಚ', ml: 'നീചം' },
+        ownSign: { ta: 'ஆட்சி', en: 'Own Sign', hi: 'स्वराशि', te: 'స్వరాశి', kn: 'ಸ್ವರಾಶಿ', ml: 'സ്വക്ഷേത്രം' },
+        friendly: { ta: 'நட்பு', en: 'Friendly', hi: 'मित्र', te: 'మిత్ర', kn: 'ಮಿತ್ರ', ml: 'മിത്രം' },
+        enemy: { ta: 'பகை', en: 'Enemy', hi: 'शत्रु', te: 'शत्रु', kn: 'ಶತ್ರು', ml: 'ശത്രു' },
+        neutral: { ta: 'சமம்', en: 'Neutral', hi: 'सम', te: 'सम', kn: 'ಸಮ', ml: 'സമം' }
+    };
+
+    let key = 'neutral';
+    if (exaltationMap[pName] === rasiIdx) {
+        key = 'exalted';
+    } else if (debilitationMap[pName] === rasiIdx) {
+        key = 'debilitated';
+    } else if (ownSignsMap[pName] && ownSignsMap[pName].includes(rasiIdx)) {
+        key = 'ownSign';
+    } else {
+        const lord = rasiLords[rasiIdx];
+        const rels = naturalRelationships[pName];
+        if (rels) {
+            if (rels.friends.includes(lord)) {
+                key = 'friendly';
+            } else if (rels.enemies.includes(lord)) {
+                key = 'enemy';
+            }
+        }
+    }
+
+    return strengthTranslations[key][lang] || strengthTranslations[key]['en'];
+}
+
+function calculateAspectMatrix(planets) {
+    const targetPlanets = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu'];
+    
+    const aspectMap = {};
+    targetPlanets.forEach(p1 => {
+        aspectMap[p1] = {};
+        targetPlanets.forEach(p2 => {
+            aspectMap[p1][p2] = null;
+        });
+    });
+
+    planets.forEach(pSource => {
+        const pName = pSource.name;
+        if (!targetPlanets.includes(pName) || pName === 'Rahu' || pName === 'Ketu') return;
+        
+        const srcRasi = pSource.rasiIdx;
+        
+        const aspectOffsets = [7];
+        if (pName === 'Mars') {
+            aspectOffsets.push(4, 8);
+        } else if (pName === 'Jupiter' || pName === 'Rahu' || pName === 'Ketu') {
+            aspectOffsets.push(5, 9);
+        } else if (pName === 'Saturn') {
+            aspectOffsets.push(3, 10);
+        }
+        
+        planets.forEach(pTarget => {
+            const tName = pTarget.name;
+            if (!targetPlanets.includes(tName) || tName === pName) return;
+            
+            const tgtRasi = pTarget.rasiIdx;
+            const diff = (tgtRasi - srcRasi + 12) % 12 + 1;
+            
+            if (aspectOffsets.includes(diff)) {
+                aspectMap[pName][tName] = diff;
+            }
+        });
+    });
+    
+    return aspectMap;
+}
+
+function formatAspectValue(offset, lang) {
+    if (!offset) return '';
+    return lang === 'ta' ? `${offset}-ம்` : `${offset}th`;
+}
+
+function renderAspectMatrixHtml(planets, t, lang) {
+    const signKeys = ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'];
+    
+    const elementColors = [
+        'rgba(239, 68, 68, 0.08)',   // 0: Aries (Fire)
+        'rgba(16, 185, 129, 0.08)',  // 1: Taurus (Earth)
+        'rgba(59, 130, 246, 0.08)',   // 2: Gemini (Air)
+        'rgba(168, 85, 247, 0.08)',  // 3: Cancer (Water)
+        'rgba(239, 68, 68, 0.08)',   // 4: Leo (Fire)
+        'rgba(16, 185, 129, 0.08)',  // 5: Virgo (Earth)
+        'rgba(59, 130, 246, 0.08)',   // 6: Libra (Air)
+        'rgba(168, 85, 247, 0.08)',  // 7: Scorpio (Water)
+        'rgba(239, 68, 68, 0.08)',   // 8: Sagittarius (Fire)
+        'rgba(16, 185, 129, 0.08)',  // 9: Capricorn (Earth)
+        'rgba(59, 130, 246, 0.08)',   // 10: Aquarius (Air)
+        'rgba(168, 85, 247, 0.08)'   // 11: Pisces (Water)
+    ];
+
+    let dividersHtml = '';
+    let signsHtml = '';
+    let sectorsHtml = '';
+    
+    for (let i = 0; i < 12; i++) {
+        const dividerAngle = (i - 0.5) * 2 * Math.PI / 12 - Math.PI / 2;
+        const x1 = 200 + 110 * Math.cos(dividerAngle);
+        const y1 = 200 + 110 * Math.sin(dividerAngle);
+        const x2 = 200 + 170 * Math.cos(dividerAngle);
+        const y2 = 200 + 170 * Math.sin(dividerAngle);
+        dividersHtml += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="var(--card-border)" stroke-width="1.2" stroke-dasharray="2 3" opacity="0.7" />`;
+        
+        const startAngle = (i - 0.5) * 2 * Math.PI / 12 - Math.PI / 2;
+        const endAngle = (i + 0.5) * 2 * Math.PI / 12 - Math.PI / 2;
+        const R1 = 110;
+        const R2 = 170;
+        
+        const x21 = 200 + R2 * Math.cos(startAngle);
+        const y21 = 200 + R2 * Math.sin(startAngle);
+        const x22 = 200 + R2 * Math.cos(endAngle);
+        const y22 = 200 + R2 * Math.sin(endAngle);
+        const x11 = 200 + R1 * Math.cos(startAngle);
+        const y11 = 200 + R1 * Math.sin(startAngle);
+        const x12 = 200 + R1 * Math.cos(endAngle);
+        const y12 = 200 + R1 * Math.sin(endAngle);
+        
+        const pathD = `
+            M ${x21} ${y21} 
+            A ${R2} ${R2} 0 0 1 ${x22} ${y22} 
+            L ${x12} ${y12} 
+            A ${R1} ${R1} 0 0 0 ${x11} ${y11} 
+            Z
+        `;
+        
+        sectorsHtml += `<path class="rasi-sector" d="${pathD}" fill="${elementColors[i]}" fill-opacity="0.8" stroke="none" onmouseenter="highlightAspects(${i})" onmouseleave="resetAspects()" style="cursor: pointer;" />`;
+        
+        const centerAngle = i * 2 * Math.PI / 12 - Math.PI / 2;
+        const cx = 200 + 138 * Math.cos(centerAngle);
+        const cy = 200 + 138 * Math.sin(centerAngle);
+        const sx = cx;
+        const sy = cy - 7;
+        
+        const rasiTamilName = t.signs[signKeys[i]];
+        const rasiEnglishName = translations['en'].signs[signKeys[i]];
+        const signLabel = lang === 'ta' ? rasiTamilName : rasiEnglishName;
+        
+        const planetsInSign = planets.filter(pl => pl.rasiIdx === i);
+        const plNames = planetsInSign
+            .filter(pl => ['Lagna', 'Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu', 'Mandi'].includes(pl.name))
+            .map(pl => {
+                const abbrev = {
+                    Lagna: 'Lg', Sun: 'Su', Moon: 'Mo', Mars: 'Ma', Mercury: 'Me',
+                    Jupiter: 'Ju', Venus: 'Ve', Saturn: 'Sa', Rahu: 'Ra', Ketu: 'Ke', Mandi: 'Ma'
+                }[pl.name];
+                return abbrev || pl.name.substring(0, 2);
+            })
+            .join(' ');
+            
+        const px = cx;
+        const py = cy + 8;
+        
+        signsHtml += `
+            <g onmouseenter="highlightAspects(${i})" onmouseleave="resetAspects()" style="cursor: pointer;">
+                <text x="${sx}" y="${sy}" fill="var(--accent)" font-size="11px" font-weight="700" text-anchor="middle" dominant-baseline="middle">${signLabel}</text>
+                <text x="${px}" y="${py}" fill="var(--text-primary)" font-size="10px" font-weight="700" text-anchor="middle" dominant-baseline="middle">${plNames}</text>
+            </g>
+        `;
+    }
+    
+    const planetColors = {
+        Sun: '#22c55e',      // Green
+        Moon: '#3b82f6',     // Blue
+        Mars: '#ef4444',     // Red
+        Mercury: '#06b6d4',  // Cyan
+        Jupiter: '#a855f7',  // Purple
+        Venus: '#ec4899',    // Pink/Magenta
+        Saturn: '#475569',   // Charcoal/Slate
+        Rahu: '#f97316',     // Orange
+        Ketu: '#78716c'      // Brown
+    };
+    
+    let markersHtml = '';
+    Object.keys(planetColors).forEach(pName => {
+        markersHtml += `
+            <marker id="arrow-${pName}" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="${planetColors[pName]}" />
+            </marker>
+        `;
+    });
+    
+    const planetJitters = {
+        Sun: -0.06,
+        Moon: -0.04,
+        Mars: -0.02,
+        Mercury: 0.0,
+        Jupiter: 0.02,
+        Venus: 0.04,
+        Saturn: 0.06,
+        Rahu: 0.08,
+        Ketu: 0.1
+    };
+    
+    let linesHtml = '';
+    const activeAspectPlanets = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'];
+    
+    activeAspectPlanets.forEach(pName => {
+        const pl = planets.find(p => p.name === pName);
+        if (!pl) return;
+        
+        const S_A = pl.rasiIdx;
+        const targetSigns = [(S_A + 6) % 12];
+        
+        if (pName === 'Mars') {
+            targetSigns.push((S_A + 3) % 12, (S_A + 7) % 12);
+        } else if (pName === 'Jupiter' || pName === 'Rahu' || pName === 'Ketu') {
+            targetSigns.push((S_A + 4) % 12, (S_A + 8) % 12);
+        } else if (pName === 'Saturn') {
+            targetSigns.push((S_A + 2) % 12, (S_A + 9) % 12);
+        }
+        
+        targetSigns.forEach(S_B => {
+            const jitter = planetJitters[pName] || 0;
+            const srcAngle = S_A * 2 * Math.PI / 12 - Math.PI / 2 + jitter;
+            const tgtAngle = S_B * 2 * Math.PI / 12 - Math.PI / 2 + jitter;
+            
+            const x_a = 200 + 110 * Math.cos(srcAngle);
+            const y_a = 200 + 110 * Math.sin(srcAngle);
+            const x_b = 200 + 106 * Math.cos(tgtAngle);
+            const y_b = 200 + 106 * Math.sin(tgtAngle);
+            
+            const mx = (x_a + x_b) / 2;
+            const my = (y_a + y_b) / 2;
+            const cx = mx * 0.95 + 200 * 0.05;
+            const cy = my * 0.95 + 200 * 0.05;
+            
+            linesHtml += `
+                <path class="aspect-path from-${S_A}" 
+                      d="M ${x_a} ${y_a} Q ${cx} ${cy} ${x_b} ${y_b}" 
+                      fill="none" 
+                      stroke="${planetColors[pName]}" 
+                      stroke-width="1.5" 
+                      stroke-dasharray="3 3" 
+                      marker-end="url(#arrow-${pName})" 
+                      opacity="0.85" />
+            `;
+        });
+    });
+
+    const titleText = lang === 'ta' ? 'கிரக பார்வை வரைபடம்' : 'Planetary Aspects (Mapping Chart)';
+    const descText = lang === 'ta'
+        ? '*கிரகங்களின் பார்வைகளை இணைக்கும் வண்ணக் கதிர்கள்.'
+        : '*Color-coded dashed lines connecting planetary aspects.';
+
+    return `
+        <div class="chart-box aspect-map-box" style="padding: 15px; display: flex; flex-direction: column; width: 100%; max-width: 440px; box-sizing: border-box; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 8px; box-shadow: var(--shadow); align-items: center;">
+            <div class="chart-title-header" style="font-size: 16px; font-weight: 700; margin-bottom: 2px; text-align: center; text-transform: uppercase; letter-spacing: 0.5px;">${titleText}</div>
+            <div style="font-size: 10px; color: var(--text-secondary); text-align: center; margin-bottom: 12px; font-style: italic;">${descText}</div>
+            
+            <div style="position: relative; width: 100%; max-width: 380px; aspect-ratio: 1;">
+                <svg viewBox="0 0 400 400" style="width: 100%; height: 100%; overflow: visible;">
+                    <defs>
+                        ${markersHtml}
+                    </defs>
+                    
+                    <style>
+                        .aspect-path {
+                            transition: opacity 0.25s ease, stroke-width 0.25s ease;
+                        }
+                        .rasi-sector {
+                            transition: fill 0.25s ease, fill-opacity 0.25s ease;
+                        }
+                    </style>
+                    
+                    <!-- Annular colored sectors -->
+                    ${sectorsHtml}
+                    
+                    <!-- Outer boundary circle -->
+                    <circle cx="200" cy="200" r="170" fill="none" stroke="var(--card-border)" stroke-width="1" />
+                    
+                    <!-- Inner boundary circle -->
+                    <circle cx="200" cy="200" r="110" fill="none" stroke="var(--card-border)" stroke-width="1.5" />
+                    
+                    <!-- Segment Dividers -->
+                    ${dividersHtml}
+                    
+                    <!-- Aspect Paths -->
+                    ${linesHtml}
+                    
+                    <!-- Sign Names & Planet Text Lists -->
+                    ${signsHtml}
+                </svg>
+            </div>
+        </div>
+    `;
+}
+
 // Color utilities for Accent Color Customization
 function hexToHsl(hex) {
     const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
@@ -285,6 +635,15 @@ if (savedState) {
     }
 }
 state.selectedCity = null; // Ensure birth place is blank on initial load/refresh
+
+// Initialize separate calendar and location state for current planetary positions (transits)
+state.transitDate = state.transitDate || new Date().toISOString().split('T')[0];
+state.transitTime = state.transitTime || new Date().toTimeString().split(' ')[0].substring(0, 5);
+state.transitLocationName = state.transitLocationName || (state.lang === 'ta' ? 'சென்னை (DEFAULT)' : 'Chennai (DEFAULT)');
+state.transitLatitude = state.transitLatitude !== undefined ? state.transitLatitude : 13.0827;
+state.transitLongitude = state.transitLongitude !== undefined ? state.transitLongitude : 80.2707;
+state.transitRangePast = state.transitRangePast || 3;
+state.transitRangeFuture = state.transitRangeFuture || 3;
 
 // Persist Theme Preference
 const savedTheme = localStorage.getItem('horoscope_app_theme');
@@ -476,7 +835,7 @@ function renderFormView(t) {
         minutesHtml += `<option value="${i.toString().padStart(2, '0')}">${i.toString().padStart(2, '0')}</option>`;
     }
     
-    return `
+    const formHtml = `
         <div class="card" id="form-card" style="max-width: 680px; margin: 0 auto;">
             <h2 class="card-title">${t.title}</h2>
             <p class="card-subtitle">${t.subtitle}</p>
@@ -502,7 +861,14 @@ function renderFormView(t) {
                     <div class="form-group full-width autocomplete-container">
                         <label for="input-place">${t.birthPlace} <span class="label-highlight">*</span></label>
                         <div style="position: relative; display: flex; width: 100%;">
-                            <input type="text" id="input-place" placeholder="${t.birthPlacePlaceholder}" autocomplete="off" required style="padding-right: 40px;">
+                            <input type="text" id="input-place" placeholder="${t.birthPlacePlaceholder}" autocomplete="off" required style="padding-right: 70px;">
+                            <button type="button" id="locate-btn" title="${state.lang === 'ta' ? 'தற்போதைய இருப்பிடத்தைப் பயன்படுத்துக' : (state.lang === 'hi' ? 'वर्तमान स्थान का उपयोग करें' : (state.lang === 'te' ? 'ప్రస్తుత స్థానాన్ని ఉపయోగించండి' : (state.lang === 'kn' ? 'ಪ್ರಸ್ತುತ ಸ್ಥಳವನ್ನು ಬಳಸಿ' : (state.lang === 'ml' ? 'നിലവിലെ സ്ഥാനം ഉപയോഗിക്കുക' : 'Use Current Location'))))}">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="12" cy="12" r="9"></circle>
+                                    <path d="M12 2v4M12 18v4M2 12h4M18 12h4" stroke-linecap="round"></path>
+                                    <circle cx="12" cy="12" r="3" fill="currentColor"></circle>
+                                </svg>
+                            </button>
                             <button type="button" id="clear-place-btn">✕</button>
                         </div>
                         <ul class="suggestions-list" id="city-suggestions" style="display: none;"></ul>
@@ -557,6 +923,246 @@ function renderFormView(t) {
             </form>
         </div>
     `;
+
+    // Calculate current transits (Planetary positions) for transit display
+    const transitDateStr = state.transitDate;
+    const transitTimeStr = `${state.transitTime}:00`;
+    
+    const [tHourStr, tMinStr] = state.transitTime.split(':');
+    const tHour = parseInt(tHourStr, 10);
+    const transitAmpm = tHour >= 12 ? 'PM' : 'AM';
+
+    const currentTransit = calculateHoroscope({
+        name: 'Kocharam',
+        gender: 'male',
+        dateStr: transitDateStr,
+        timeStr: transitTimeStr,
+        lat: state.transitLatitude,
+        lon: state.transitLongitude,
+        fatherName: '',
+        motherName: '',
+        ampm: transitAmpm,
+        city: state.transitLocationName
+    });
+    
+    const targetPlanets = ['Lagna', 'Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu'];
+    const starLords = ['Ketu', 'Venus', 'Sun', 'Moon', 'Mars', 'Rahu', 'Jupiter', 'Saturn', 'Mercury'];
+    
+    let headerColsHtml = `<th style="text-align: center; padding: 12px; min-width: 100px;">${state.lang === 'ta' ? 'தேதி' : 'Date'}</th>`;
+    targetPlanets.forEach(pName => {
+        const pTamilName = t.planets[pName];
+        const pEnglishName = translations['en'].planets[pName];
+        const planetDisplayName = state.lang === 'ta' ? pTamilName : pEnglishName;
+        
+        headerColsHtml += `
+            <th style="text-align: center; white-space: nowrap; padding: 12px;">
+                <div>${planetDisplayName}</div>
+                <div style="font-size: 11px; font-weight: normal; opacity: 0.85; margin-top: 2px;">${pEnglishName}</div>
+            </th>
+        `;
+    });
+
+    const displayTransitDate = new Date(`${transitDateStr}T${state.transitTime}`).toLocaleDateString();
+    const displayTransitTime = new Date(`${transitDateStr}T${state.transitTime}`).toLocaleTimeString();
+    
+    const systemToday = new Date();
+    systemToday.setHours(12, 0, 0, 0);
+    
+    let tableRowsHtml = '';
+    
+    // Prepend Load More Past Dates row
+    tableRowsHtml += `
+        <tr id="load-more-past-row" style="background: rgba(0,0,0,0.02); cursor: pointer; transition: background 0.15s ease;">
+            <td colspan="11" style="text-align: center; padding: 12px; font-weight: 700; color: var(--accent); font-size: 13px; border: 1px solid var(--card-border);">
+                ▲ ${state.lang === 'ta' ? 'முந்தைய தேதிகளைக் காட்டு' : 'Load More Past Dates'} ▲
+            </td>
+        </tr>
+    `;
+    
+    for (let offset = -state.transitRangePast; offset <= state.transitRangeFuture; offset++) {
+        const d = new Date(systemToday);
+        d.setDate(systemToday.getDate() + offset);
+        
+        const dateIso = d.toISOString().split('T')[0];
+        const isActive = state.transitDate === dateIso;
+        const isToday = offset === 0;
+        
+        const dayTransit = calculateHoroscope({
+            name: 'Kocharam',
+            gender: 'male',
+            dateStr: dateIso,
+            timeStr: `${state.transitTime}:00`,
+            lat: state.transitLatitude,
+            lon: state.transitLongitude,
+            fatherName: '',
+            motherName: '',
+            ampm: transitAmpm,
+            city: state.transitLocationName
+        });
+        
+        let dayLabel = '';
+        if (isToday) {
+            dayLabel = state.lang === 'ta' ? 'இன்று (TODAY)' : 'TODAY';
+        } else {
+            const options = { weekday: 'short', month: 'short', day: 'numeric' };
+            dayLabel = d.toLocaleDateString(state.lang === 'ta' ? 'ta-IN' : 'en-US', options);
+        }
+        
+        const rowBg = isActive 
+            ? 'rgba(202, 138, 4, 0.08)' 
+            : (isToday ? 'rgba(202, 138, 4, 0.03)' : 'transparent');
+        const rowStyle = `background: ${rowBg}; cursor: pointer; transition: background 0.15s ease; ${isActive ? 'outline: 2px solid var(--accent); outline-offset: -2px;' : ''}`;
+        
+        let rowColsHtml = `
+            <td class="timeline-row-selector" data-date="${dateIso}" style="white-space: nowrap; text-align: center; padding: 12px; font-weight: bold; border: 1px solid var(--card-border); vertical-align: middle;">
+                <div style="font-size: 13px;">${dayLabel}</div>
+                <div style="font-size: 10px; color: var(--text-secondary); font-weight: normal; margin-top: 2px;">${d.toLocaleDateString()}</div>
+            </td>
+        `;
+        
+        targetPlanets.forEach(pName => {
+            const p = dayTransit.planets.find(pl => pl.name === pName);
+            if (!p) {
+                rowColsHtml += `<td>-</td>`;
+                return;
+            }
+            
+            const rasiName = state.lang === 'ta' ? t.signs[signKeys[p.rasiIdx]] : translations['en'].signs[signKeys[p.rasiIdx]];
+            const starName = state.lang === 'ta' ? t.stars[p.starIdx] : translations['en'].stars[p.starIdx];
+            
+            const starLordKey = starLords[p.starIdx % 9];
+            const starLordName = state.lang === 'ta' 
+                ? t.planets[starLordKey] 
+                : (translations[state.lang]?.planets[starLordKey] || translations['en'].planets[starLordKey]);
+            
+            const isRetro = p.isRetro && p.name !== 'Lagna' && p.name !== 'Mandi';
+            const retroLabel = isRetro ? (state.lang === 'ta' ? ' (வ)' : ' (R)') : '';
+            
+            const relativeLon = p.longitude % 30;
+            const strengthVal = getPlanetaryStrength(pName, p.rasiIdx, state.lang);
+            const strengthPrefix = state.lang === 'ta' ? 'நிலை' : 'Str';
+
+            rowColsHtml += `
+                <td style="white-space: nowrap; text-align: center; padding: 12px; border: 1px solid var(--card-border); vertical-align: middle;">
+                    <div style="font-weight: 600; font-size: 13px;">${relativeLon.toFixed(2)}°${retroLabel}</div>
+                    <div style="font-size: 12px; margin-top: 2px; font-weight: 500;">${state.lang === 'ta' ? rasiName : translations['en'].signs[signKeys[p.rasiIdx]]}</div>
+                    <div style="font-size: 11px; color: var(--accent); margin-top: 1px;">${state.lang === 'ta' ? starName : translations['en'].stars[p.starIdx]} (${p.pada})</div>
+                    <div style="font-size: 10px; color: var(--text-secondary); margin-top: 1px;">L: ${starLordName} | ${strengthPrefix}: ${strengthVal}</div>
+                </td>
+            `;
+        });
+        
+        tableRowsHtml += `
+            <tr class="timeline-table-row" data-date="${dateIso}" style="${rowStyle}">
+                ${rowColsHtml}
+            </tr>
+        `;
+    }
+    
+    // Append Load More Future Dates row
+    tableRowsHtml += `
+        <tr id="load-more-future-row" style="background: rgba(0,0,0,0.02); cursor: pointer; transition: background 0.15s ease;">
+            <td colspan="11" style="text-align: center; padding: 12px; font-weight: 700; color: var(--accent); font-size: 13px; border: 1px solid var(--card-border);">
+                ▼ ${state.lang === 'ta' ? 'அடுத்த தேதிகளைக் காட்டு' : 'Load More Future Dates'} ▼
+            </td>
+        </tr>
+    `;
+    
+    const sectionTitle = state.lang === 'ta' ? 'தற்போதைய கோச்சார கிரக நிலைகள்' : 'Current Planetary Positions';
+    const locationSubtitle = state.lang === 'ta' 
+        ? `கணிப்பு இடம்: ${state.transitLocationName} (${state.transitLatitude.toFixed(2)}° N, ${state.transitLongitude.toFixed(2)}° E)`
+        : `Calculated for: ${state.transitLocationName} (${state.transitLatitude.toFixed(2)}° N, ${state.transitLongitude.toFixed(2)}° E)`;
+    
+    const transitMoonStarName = state.lang === 'ta' ? t.stars[currentTransit.panchang.starIdx] : translations['en'].stars[currentTransit.panchang.starIdx];
+    const transitStarPadaText = `${transitMoonStarName}-${currentTransit.panchang.pada}`;
+    
+    const transitRasiGridHtml = state.chartStyle === 'north'
+        ? renderNorthChartGrid(currentTransit.planets, false, t)
+        : renderChartGrid(
+            currentTransit.planets,
+            false,
+            t,
+            transitStarPadaText,
+            state.lang === 'ta' ? 'கோச்சாரம்' : 'Kocharam',
+            `${transitDateStr.split('-').reverse().join('-')} ${state.transitTime} ${transitAmpm}`,
+            state.transitLatitude.toFixed(2),
+            state.transitLongitude.toFixed(2),
+            state.transitLocationName
+          );
+
+    const transitAspectMapHtml = renderAspectMatrixHtml(currentTransit.planets, t, state.lang);
+
+
+
+    const transitCardHtml = `
+        <div class="card" id="planetary-positions-card" style="max-width: 960px; margin: 30px auto 0; display: flex; flex-direction: column; gap: 30px; align-items: center;">
+            <div style="width: 100%;">
+                <h2 class="card-title" style="font-size: 22px; margin-bottom: 5px; text-align: left;">${sectionTitle}</h2>
+                
+                <!-- Separate Calendar and Location Controls for Transits -->
+                <div class="transit-controls" style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 15px; margin-bottom: 20px; padding: 15px; background: rgba(0,0,0,0.02); border: 1px solid var(--card-border); border-radius: 8px; width: 100%; box-sizing: border-box; align-items: flex-end;">
+                    <div style="flex: 1; min-width: 150px; display: flex; flex-direction: column; gap: 6px;">
+                        <label style="font-size: 12px; font-weight: 600; color: var(--text-secondary);">${state.lang === 'ta' ? 'தேதி' : 'Date'}</label>
+                        <input type="date" id="transit-date-input" value="${state.transitDate}" style="padding: 8px 12px; border-radius: 6px; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text-primary); width: 100%; box-sizing: border-box; font-family: inherit;">
+                    </div>
+                    <div style="flex: 1; min-width: 120px; display: flex; flex-direction: column; gap: 6px;">
+                        <label style="font-size: 12px; font-weight: 600; color: var(--text-secondary);">${state.lang === 'ta' ? 'நேரம்' : 'Time'}</label>
+                        <input type="time" id="transit-time-input" value="${state.transitTime}" style="padding: 8px 12px; border-radius: 6px; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text-primary); width: 100%; box-sizing: border-box; font-family: inherit;">
+                    </div>
+                    <div style="flex: 2; min-width: 240px; display: flex; flex-direction: column; gap: 6px; position: relative;">
+                        <label style="font-size: 12px; font-weight: 600; color: var(--text-secondary);">${state.lang === 'ta' ? 'கணிப்பு இடம்' : 'Location'}</label>
+                        <div style="position: relative; display: flex; align-items: center; width: 100%;">
+                            <input type="text" id="transit-location-input" value="${state.transitLocationName}" placeholder="${state.lang === 'ta' ? 'இடத்தைத் தட்டச்சு செய்க...' : 'Search city...'}" style="padding: 8px 36px 8px 12px; border-radius: 6px; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text-primary); width: 100%; box-sizing: border-box; font-family: inherit;" autocomplete="off">
+                            <button id="transit-locate-btn" type="button" style="position: absolute; right: 8px; background: none; border: none; cursor: pointer; color: var(--accent); width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; padding: 0;" title="${state.lang === 'ta' ? 'தற்போதைய இருப்பிடம்' : 'Use Current Location'}">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="12" cy="12" r="9"></circle>
+                                    <path d="M12 2v4M12 18v4M2 12h4M18 12h4" stroke-linecap="round"></path>
+                                    <circle cx="12" cy="12" r="3" fill="currentColor"></circle>
+                                </svg>
+                            </button>
+                        </div>
+                        <ul id="transit-suggestions-dropdown" class="suggestions-list" style="display: none; position: absolute; top: 62px; left: 0; right: 0; z-index: 1000; width: 100%;"></ul>
+                    </div>
+                </div>
+
+                <p style="font-size: 13px; color: var(--text-secondary); margin: 0 0 15px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                    <span>${locationSubtitle}</span>
+                    <span>${displayTransitTime} (${displayTransitDate})</span>
+                </p>
+            </div>
+            
+            <!-- Charts Section (Rasi Chart + Aspect Map) -->
+            <div style="display: flex; flex-wrap: wrap; gap: 30px; justify-content: center; width: 100%; align-items: start;">
+                <!-- Rasi Chart -->
+                <div class="chart-box" style="padding: 0; align-items: center; max-width: 380px; width: 100%; display: flex; flex-direction: column; justify-content: center;">
+                    <div class="chart-title-header" style="font-size: 18px; margin-bottom: 15px;">${state.lang === 'ta' ? 'கோச்சார இராசி கட்டம் (Transit Rasi)' : 'Transit Rasi Chart (D-1)'}</div>
+                    ${state.chartStyle === 'north'
+                        ? transitRasiGridHtml
+                        : `<div class="chart-grid rasi-theme" style="width: 100%;">${transitRasiGridHtml}</div>`
+                    }
+                </div>
+                
+                <!-- Aspect Map -->
+                ${transitAspectMapHtml}
+            </div>
+            
+            <!-- Table Column -->
+            <div class="table-container" style="width: 100%;">
+                <table style="font-size: 14px; width: 100%;">
+                    <thead>
+                        <tr>
+                            ${headerColsHtml}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${tableRowsHtml}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    `;
+    
+    return formHtml + transitCardHtml;
 }
 
 // Render Results View
@@ -591,12 +1197,29 @@ function renderResultsView(t) {
         ? renderNorthChartGrid(data.planets, true, t)
         : renderChartGrid(data.planets, true, t, starPadaText, genderLabel, dtDisplay, latDisplay, lonDisplay, cityText);
     
-    // Planet detail rows
-    let tableRows = '';
-    data.planets.forEach(p => {
-        if (p.name === 'Lagna' && state.lang === 'en') return; // Skip duplicate Lagna display in table if it's already shown as Lagna
-        const pTamilName = t.planets[p.name];
-        const pEnglishName = translations['en'].planets[p.name];
+    const resultsAspectMapHtml = renderAspectMatrixHtml(data.planets, t, state.lang);
+    
+    // Generate horizontal placements table
+    const targetPlanets = ['Lagna', 'Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu'];
+    let resultsHeaderColsHtml = `<th>${state.lang === 'ta' ? 'தேதி' : 'Date'}</th>`;
+    let resultsRowColsHtml = `
+        <td style="white-space: nowrap; text-align: center; padding: 12px; font-weight: bold; border: 1px solid var(--card-border);">
+            <div>${formattedDate}</div>
+            <div style="font-size: 11px; color: var(--text-secondary); font-weight: normal; margin-top: 2px;">${birthTimeDisplay}</div>
+        </td>
+    `;
+    
+    targetPlanets.forEach(pName => {
+        const p = data.planets.find(pl => pl.name === pName);
+        if (!p) {
+            resultsHeaderColsHtml += `<th>${state.lang === 'ta' ? t.planets[pName] : translations['en'].planets[pName]}</th>`;
+            resultsRowColsHtml += `<td>-</td>`;
+            return;
+        }
+        
+        const pTamilName = t.planets[pName];
+        const pEnglishName = translations['en'].planets[pName];
+        const planetDisplayName = state.lang === 'ta' ? pTamilName : pEnglishName;
         
         const rasiTamilName = t.signs[signKeys[p.rasiIdx]];
         const rasiEnglishName = translations['en'].signs[signKeys[p.rasiIdx]];
@@ -604,25 +1227,38 @@ function renderResultsView(t) {
         const starTamil = t.stars[p.starIdx];
         const starEnglish = translations['en'].stars[p.starIdx];
         
+        const starLords = ['Ketu', 'Venus', 'Sun', 'Moon', 'Mars', 'Rahu', 'Jupiter', 'Saturn', 'Mercury'];
+        const starLordKey = starLords[p.starIdx % 9];
+        const starLordName = state.lang === 'ta' 
+            ? t.planets[starLordKey] 
+            : (translations[state.lang]?.planets[starLordKey] || translations['en'].planets[starLordKey]);
+        
         const isRetro = p.isRetro && p.name !== 'Lagna' && p.name !== 'Mandi';
         const pDisplayTamil = pTamilName + (isRetro ? ' (வ)' : '');
         const pDisplayEnglish = pEnglishName + (isRetro ? ' (R)' : '');
         
-        tableRows += `
-            <tr>
-                <td>
-                    <div class="planet-tamil-name">${pDisplayTamil}</div>
-                    <div class="planet-english-name">${pDisplayEnglish}</div>
-                </td>
-                <td>
-                    <div style="font-weight: 600;">${(p.longitude % 30).toFixed(2)}°</div>
-                    <div style="font-size: 11px; color: var(--text-secondary); margin-top: 2px;">(Total: ${p.longitude.toFixed(2)}°)</div>
-                </td>
-                <td>${state.lang === 'ta' ? rasiTamilName : rasiEnglishName}</td>
-                <td>${state.lang === 'ta' ? starTamil : starEnglish}</td>
-                <td>${p.pada}</td>
-                <td>${p.house}</td>
-            </tr>
+        const relativeLon = p.longitude % 30;
+        
+        resultsHeaderColsHtml += `
+            <th style="text-align: center; white-space: nowrap; padding: 12px;">
+                <div>${state.lang === 'ta' ? pDisplayTamil : pDisplayEnglish}</div>
+                <div style="font-size: 11px; font-weight: normal; opacity: 0.85; margin-top: 2px;">${pEnglishName}${isRetro ? ' (R)' : ''}</div>
+            </th>
+        `;
+        
+        const strengthVal = getPlanetaryStrength(pName, p.rasiIdx, state.lang);
+        const strengthPrefix = state.lang === 'ta' ? 'நிலை' : 'Str';
+
+        resultsRowColsHtml += `
+            <td style="white-space: nowrap; text-align: center; padding: 12px; border: 1px solid var(--card-border);">
+                <div style="font-weight: 600; font-size: 14px;">${relativeLon.toFixed(2)}°</div>
+                <div style="font-size: 11px; color: var(--text-secondary); margin-top: 1px;">(Tot: ${p.longitude.toFixed(2)}°)</div>
+                <div style="font-size: 13px; margin-top: 4px; font-weight: 500;">${state.lang === 'ta' ? rasiTamilName : rasiEnglishName}</div>
+                <div style="font-size: 12px; color: var(--accent); margin-top: 2px;">${state.lang === 'ta' ? starTamil : starEnglish} (${p.pada})</div>
+                <div style="font-size: 11px; color: var(--text-secondary); margin-top: 2px;">L: ${starLordName}</div>
+                <div style="font-size: 11px; color: var(--text-secondary); margin-top: 2px;">${strengthPrefix}: ${strengthVal}</div>
+                <div style="font-size: 11px; color: var(--text-secondary); margin-top: 1px;">${state.lang === 'ta' ? 'பாவகம்' : 'House'}: ${p.house}</div>
+            </td>
         `;
     });
     
@@ -1003,6 +1639,9 @@ function renderResultsView(t) {
                             : `<div class="chart-grid nav-theme">${navamsamGridHtml}</div>`
                         }
                     </div>
+                    
+                    <!-- Planetary Aspect Map -->
+                    ${resultsAspectMapHtml}
                 </div>
                 <div class="kocharam-label">
                     Kocharam : ${new Date().toLocaleTimeString()} GMT+5:30 *Planet Degree in Decimal
@@ -1010,33 +1649,28 @@ function renderResultsView(t) {
             </div>
             
             <!-- Panchang Summary & Details -->
-            <div class="panchang-grid">
-                <div class="card">
-                    <h2 class="card-title" style="text-align: left; margin-bottom: 20px;">${t.panchang.title}</h2>
-                    <div class="summary-list">
-                        ${panchangHtml}
-                    </div>
+            <div class="card" style="margin-bottom: 30px;">
+                <h2 class="card-title" style="text-align: left; margin-bottom: 20px;">${t.panchang.title}</h2>
+                <div class="summary-list" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px 30px;">
+                    ${panchangHtml}
                 </div>
-                
-                <div class="card">
-                    <h2 class="card-title" style="text-align: left; margin-bottom: 20px;">${state.lang === 'ta' ? 'கிரக நிலைகள்' : 'Planetary Placements'}</h2>
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>${t.planetTable.planet}</th>
-                                    <th>${t.planetTable.degree}</th>
-                                    <th>${t.planetTable.rasi}</th>
-                                    <th>${t.planetTable.star}</th>
-                                    <th>${t.planetTable.pada}</th>
-                                    <th>${t.planetTable.house}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${tableRows}
-                            </tbody>
-                        </table>
-                    </div>
+            </div>
+            
+            <div class="card" style="margin-bottom: 30px;">
+                <h2 class="card-title" style="text-align: left; margin-bottom: 20px;">${state.lang === 'ta' ? 'கிரக நிலைகள்' : 'Planetary Placements'}</h2>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                ${resultsHeaderColsHtml}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                ${resultsRowColsHtml}
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
             
@@ -1710,35 +2344,202 @@ function bindEvents() {
                 const time24Str = `${hour.toString().padStart(2, '0')}:${minute}:00`;
                 
                 const place = placeInput ? placeInput.value : '';
-                const lat = state.selectedCity ? state.selectedCity.lat : null;
-                const lon = state.selectedCity ? state.selectedCity.lon : null;
-                const finalCityName = state.selectedCity ? state.selectedCity.name : '';
+                let lat = state.selectedCity ? state.selectedCity.lat : null;
+                let lon = state.selectedCity ? state.selectedCity.lon : null;
+                let finalCityName = state.selectedCity ? state.selectedCity.name : '';
                 
+                const calculateAndShowLive = (lLatitude, lLongitude, lCityName) => {
+                    const name = state.lang === 'ta' ? 'இப்போதைய ஜாதகம் (Live)' : 'Live Horoscope';
+                    const gender = 'male';
+                    
+                    const horoscope = calculateHoroscope({
+                        name,
+                        gender,
+                        dateStr: dateIsoStr,
+                        timeStr: time24Str,
+                        lat: lLatitude,
+                        lon: lLongitude,
+                        fatherName: '',
+                        motherName: '',
+                        ampm,
+                        city: lCityName
+                    });
+                    
+                    state.horoscope = horoscope;
+                    state.view = 'results';
+                    render();
+                };
+
                 if (!lat || !lon) {
-                    alert(state.lang === 'ta' ? 'தயவுசெய்து பட்டியலிலிருந்து ஒரு செல்லுபடியாகும் பிறந்த இடத்தை தேர்ந்தெடுக்கவும்.' : 'Please select a valid birth place from the list.');
-                    if (placeInput) placeInput.focus();
-                    return;
+                    const loadingText = {
+                        en: "Detecting location...",
+                        ta: "இருப்பிடம் கண்டறியப்படுகிறது...",
+                        hi: "स्थान का पता लगाया जा रहा है...",
+                        te: "స్థానాన్ని కనుగొంటున్నారు...",
+                        kn: "ಸ್ಥಳವನ್ನು ಪತ್ತೆಹಚ್ಚಲಾಗುತ್ತಿದೆ...",
+                        ml: "സ്ഥാനം കണ്ടെത്തുന്നു..."
+                    };
+                    const deniedText = {
+                        en: "Location access denied or unavailable. Please enter manually.",
+                        ta: "இருப்பிட அணுகல் மறுக்கப்பட்டது அல்லது கிடைக்கவில்லை. தயவுசெய்து கைமுறையாக உள்ளிடவும்.",
+                        hi: "स्थान पहुंच अस्वीकार या अनुपलब्ध। कृपया मैन्युअल रूप से दर्ज करें।",
+                        te: "స్థాన ప్రాప్యత నిరాకరించబడింది లేదా అందుబాటులో లేదు. దయచేసి మాన్യുవల్‌గా నమోదు చేయండి.",
+                        kn: "ಸ್ಥಳ ಪ್ರವೇಶವನ್ನು నిರಾಕರಿಸಲಾಗಿದೆ ಅಥವಾ ಲಭ್ಯವಿಲ್ಲ. ದಯವಿಟ್ಟು ಹಸ್ತಚಾಲಿತವಾಗಿ ನಮೂದಿಸಿ.",
+                        ml: "ലൊക്കേഷൻ അനുമതി നിഷേധിക്കപ്പെട്ടു അല്ലെങ്കിൽ ലഭ്യമല്ല. ദയവായി നേരിട്ട് നൽകുക."
+                    };
+                    const fallbackName = {
+                        en: "Live Location",
+                        ta: "தற்போதைய இருப்பிடம்",
+                        hi: "वर्तमान स्थान",
+                        te: "ప్రస్తుత స్థానం",
+                        kn: "ಪ್ರಸ್ತುತ ಸ್ಥಳ",
+                        ml: "നിലവിലെ স্থানം"
+                    };
+
+                    if (placeInput) {
+                        placeInput.value = loadingText[state.lang] || loadingText['en'];
+                        placeInput.disabled = true;
+                    }
+                    const locateBtn = document.querySelector('#locate-btn');
+                    if (locateBtn) locateBtn.classList.add('loading');
+
+                    getCurrentLocation(
+                        (lLat, lLon) => {
+                            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lLat}&lon=${lLon}&addressdetails=1`)
+                                .then(res => res.json())
+                                .then(data => {
+                                    const cleanLabel = formatCleanPlaceLabel(data);
+                                    state.selectedCity = {
+                                        name: cleanLabel,
+                                        tamilName: cleanLabel,
+                                        lat: lLat,
+                                        lon: lLon
+                                    };
+                                    if (placeInput) {
+                                        placeInput.value = cleanLabel;
+                                        placeInput.disabled = false;
+                                    }
+                                    if (locateBtn) locateBtn.classList.remove('loading');
+                                    calculateAndShowLive(lLat, lLon, cleanLabel);
+                                })
+                                .catch(err => {
+                                    console.error("Reverse lookup failed, using fallback name", err);
+                                    const nameFallback = fallbackName[state.lang] || fallbackName['en'];
+                                    state.selectedCity = {
+                                        name: nameFallback,
+                                        tamilName: nameFallback,
+                                        lat: lLat,
+                                        lon: lLon
+                                    };
+                                    if (placeInput) {
+                                        placeInput.value = nameFallback;
+                                        placeInput.disabled = false;
+                                    }
+                                    if (locateBtn) locateBtn.classList.remove('loading');
+                                    calculateAndShowLive(lLat, lLon, nameFallback);
+                                });
+                        },
+                        (err) => {
+                            console.error(err);
+                            alert(deniedText[state.lang] || deniedText['en']);
+                            if (placeInput) {
+                                placeInput.value = '';
+                                placeInput.disabled = false;
+                                placeInput.focus();
+                            }
+                            if (locateBtn) locateBtn.classList.remove('loading');
+                        }
+                    );
+                } else {
+                    calculateAndShowLive(lat, lon, finalCityName);
                 }
-                
-                const name = state.lang === 'ta' ? 'இப்போதைய ஜாதகம் (Live)' : 'Live Horoscope';
-                const gender = 'male';
-                
-                const horoscope = calculateHoroscope({
-                    name,
-                    gender,
-                    dateStr: dateIsoStr,
-                    timeStr: time24Str,
-                    lat,
-                    lon,
-                    fatherName: '',
-                    motherName: '',
-                    ampm,
-                    city: finalCityName
-                });
-                
-                state.horoscope = horoscope;
-                state.view = 'results';
-                render();
+            });
+        }
+
+        // Locate button click
+        const locateBtn = document.querySelector('#locate-btn');
+        if (locateBtn) {
+            locateBtn.addEventListener('click', () => {
+                const loadingText = {
+                    en: "Detecting location...",
+                    ta: "இருப்பிடம் கண்டறியப்படுகிறது...",
+                    hi: "स्थान का पता लगाया जा रहा है...",
+                    te: "స్థానాన్ని కనుగొంటున్నారు...",
+                    kn: "ಸ್ಥಳವನ್ನು ಪತ್ತೆಹಚ್ಚಲಾಗುತ್ತಿದೆ...",
+                    ml: "സ്ഥാനം കണ്ടെത്തുന്നു..."
+                };
+                const deniedText = {
+                    en: "Location access denied or unavailable. Please enter manually.",
+                    ta: "இருப்பிட அணுகல் மறுக்கப்பட்டது அல்லது கிடைக்கவில்லை. தயவுசெய்து கைமுறையாக உள்ளிடவும்.",
+                    hi: "स्थान पहुंच अस्वीकार या अनुपलब्ध। कृपया मैन्युअल रूप से दर्ज करें।",
+                    te: "స్థాన ప్రాప్యత నిరాకరించబడింది లేదా అందుబాటులో లేదు. దయచేసి మాన్యువల్‌గా నమోదు చేయండి.",
+                    kn: "ಸ್ಥಳ ಪ್ರವೇಶವನ್ನು నిರಾಕರಿಸಲಾಗಿದೆ ಅಥವಾ ಲಭ್ಯವಿಲ್ಲ. ದಯವಿಟ್ಟು ಹಸ್ತಚಾಲಿತವಾಗಿ ನಮೂದಿಸಿ.",
+                    ml: "ലൊക്കേഷൻ അനുമതി നിഷേധിക്കപ്പെട്ടു അല്ലെങ്കിൽ ലഭ്യമല്ല. ദയവായി നേരിട്ട് നൽകുക."
+                };
+                const fallbackName = {
+                    en: "Live Location",
+                    ta: "தற்போதைய இருப்பிடம்",
+                    hi: "वर्तमान स्थान",
+                    te: "ప్రస్తుత స్థానం",
+                    kn: "ಪ್ರಸ್ತುತ ಸ್ಥಳ",
+                    ml: "നിലവിലെ സ്ഥാനം"
+                };
+
+                if (placeInput) {
+                    placeInput.value = loadingText[state.lang] || loadingText['en'];
+                    placeInput.disabled = true;
+                }
+                locateBtn.classList.add('loading');
+
+                getCurrentLocation(
+                    (lLat, lLon) => {
+                        fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lLat}&lon=${lLon}&addressdetails=1`)
+                            .then(res => res.json())
+                            .then(data => {
+                                const cleanLabel = formatCleanPlaceLabel(data);
+                                state.selectedCity = {
+                                    name: cleanLabel,
+                                    tamilName: cleanLabel,
+                                    lat: lLat,
+                                    lon: lLon
+                                };
+                                if (placeInput) {
+                                    placeInput.value = cleanLabel;
+                                    placeInput.disabled = false;
+                                }
+                                locateBtn.classList.remove('loading');
+                                const clearBtn = document.querySelector('#clear-place-btn');
+                                if (clearBtn) clearBtn.style.display = 'flex';
+                            })
+                            .catch(err => {
+                                console.error("Reverse lookup failed, using fallback name", err);
+                                const nameFallback = fallbackName[state.lang] || fallbackName['en'];
+                                state.selectedCity = {
+                                    name: nameFallback,
+                                    tamilName: nameFallback,
+                                    lat: lLat,
+                                    lon: lLon
+                                };
+                                if (placeInput) {
+                                    placeInput.value = nameFallback;
+                                    placeInput.disabled = false;
+                                }
+                                locateBtn.classList.remove('loading');
+                                const clearBtn = document.querySelector('#clear-place-btn');
+                                if (clearBtn) clearBtn.style.display = 'flex';
+                            });
+                    },
+                    (err) => {
+                        console.error(err);
+                        alert(deniedText[state.lang] || deniedText['en']);
+                        if (placeInput) {
+                            placeInput.value = '';
+                            placeInput.disabled = false;
+                            placeInput.focus();
+                        }
+                        locateBtn.classList.remove('loading');
+                    }
+                );
             });
         }
         
@@ -1799,6 +2600,195 @@ function bindEvents() {
                 render();
             });
         }
+        
+        // Transit Date, Time & Location controls event listeners
+        const transitDateInput = document.querySelector('#transit-date-input');
+        const transitTimeInput = document.querySelector('#transit-time-input');
+        const transitLocationInput = document.querySelector('#transit-location-input');
+        const transitLocateBtn = document.querySelector('#transit-locate-btn');
+        const transitSuggestionsList = document.querySelector('#transit-suggestions-dropdown');
+        
+        if (transitDateInput) {
+            transitDateInput.addEventListener('change', (e) => {
+                state.transitDate = e.target.value;
+                render();
+            });
+        }
+        
+        if (transitTimeInput) {
+            transitTimeInput.addEventListener('change', (e) => {
+                state.transitTime = e.target.value;
+                render();
+            });
+        }
+        
+        let transitDebounceTimer;
+        if (transitLocationInput && transitSuggestionsList) {
+            transitLocationInput.addEventListener('input', (e) => {
+                const query = e.target.value.trim();
+                transitSuggestionsList.innerHTML = '';
+                
+                if (query.length < 2) {
+                    transitSuggestionsList.style.display = 'none';
+                    return;
+                }
+                
+                transitSuggestionsList.innerHTML = '';
+                
+                clearTimeout(transitDebounceTimer);
+                transitDebounceTimer = setTimeout(() => {
+                    fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=25&addressdetails=1`)
+                        .then(res => res.json())
+                        .then(data => {
+                            if (transitLocationInput.value.trim().length < 2) {
+                                transitSuggestionsList.innerHTML = '';
+                                transitSuggestionsList.style.display = 'none';
+                                return;
+                            }
+                            
+                            const itemsToShow = [];
+                            if (data && data.length > 0) {
+                                const placeFiltered = data.filter(item => {
+                                    const isExcluded = ['highway', 'shop', 'tourism', 'amenity', 'leisure', 'office', 'aeroway', 'historic', 'railway', 'man_made'].includes(item.class);
+                                    return !isExcluded;
+                                });
+
+                                placeFiltered.slice(0, 10).forEach(item => {
+                                    const cleanLabel = formatCleanPlaceLabel(item);
+                                    itemsToShow.push({
+                                        label: cleanLabel,
+                                        cityData: {
+                                            name: cleanLabel,
+                                            lat: parseFloat(item.lat),
+                                            lon: parseFloat(item.lon)
+                                        }
+                                    });
+                                });
+                            }
+                            
+                            if (itemsToShow.length > 0) {
+                                transitSuggestionsList.innerHTML = '';
+                                itemsToShow.forEach(item => {
+                                    const li = document.createElement('li');
+                                    li.textContent = item.label;
+                                    li.addEventListener('click', () => {
+                                        transitLocationInput.value = item.label;
+                                        state.transitLocationName = item.cityData.name;
+                                        state.transitLatitude = item.cityData.lat;
+                                        state.transitLongitude = item.cityData.lon;
+                                        transitSuggestionsList.style.display = 'none';
+                                        render();
+                                    });
+                                    transitSuggestionsList.appendChild(li);
+                                });
+                                transitSuggestionsList.style.display = 'block';
+                            }
+                        })
+                        .catch(err => {
+                            console.error("Transit Nominatim lookup failed", err);
+                        });
+                }, 500);
+            });
+        }
+        
+        document.addEventListener('click', (e) => {
+            if (transitLocationInput && transitSuggestionsList && e.target !== transitLocationInput && e.target !== transitSuggestionsList) {
+                transitSuggestionsList.style.display = 'none';
+            }
+        });
+        
+        if (transitLocateBtn) {
+            transitLocateBtn.addEventListener('click', () => {
+                const loadingText = {
+                    en: "Detecting...",
+                    ta: "கண்டறியப்படுகிறது..."
+                };
+                const deniedText = {
+                    en: "Location access denied or unavailable. Please enter manually.",
+                    ta: "இருப்பிடம் கண்டறிய முடியவில்லை. தயவுசெய்து கைமுறையாக உள்ளிடவும்."
+                };
+                
+                if (transitLocationInput) {
+                    transitLocationInput.value = loadingText[state.lang] || loadingText['en'];
+                    transitLocationInput.disabled = true;
+                }
+                transitLocateBtn.style.opacity = '0.5';
+                
+                getCurrentLocation(
+                    (lLat, lLon) => {
+                        fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lLat}&lon=${lLon}&addressdetails=1`)
+                            .then(res => res.json())
+                            .then(data => {
+                                const cleanLabel = formatCleanPlaceLabel(data);
+                                state.transitLocationName = cleanLabel;
+                                state.transitLatitude = lLat;
+                                state.transitLongitude = lLon;
+                                if (transitLocationInput) {
+                                    transitLocationInput.value = cleanLabel;
+                                    transitLocationInput.disabled = false;
+                                }
+                                transitLocateBtn.style.opacity = '1';
+                                render();
+                            })
+                            .catch(err => {
+                                console.error("Transit reverse lookup failed", err);
+                                const fallback = state.lang === 'ta' ? 'தற்போதைய இருப்பிடம்' : 'Current Location';
+                                state.transitLocationName = fallback;
+                                state.transitLatitude = lLat;
+                                state.transitLongitude = lLon;
+                                if (transitLocationInput) {
+                                    transitLocationInput.value = fallback;
+                                    transitLocationInput.disabled = false;
+                                }
+                                transitLocateBtn.style.opacity = '1';
+                                render();
+                            });
+                    },
+                    (err) => {
+                        console.error(err);
+                        alert(deniedText[state.lang] || deniedText['en']);
+                        if (transitLocationInput) {
+                            transitLocationInput.value = '';
+                            transitLocationInput.disabled = false;
+                            transitLocationInput.focus();
+                        }
+                        transitLocateBtn.style.opacity = '1';
+                    }
+                );
+            });
+        }
+        
+        // Transit Table Row click listeners
+        const timelineSelectors = document.querySelectorAll('.timeline-table-row');
+        timelineSelectors.forEach(el => {
+            el.addEventListener('click', () => {
+                if (el.id === 'load-more-past-row' || el.id === 'load-more-future-row') return;
+                
+                const targetDate = el.getAttribute('data-date');
+                if (targetDate) {
+                    state.transitDate = targetDate;
+                    render();
+                }
+            });
+        });
+        
+        // Load More Past listener
+        const loadPastRow = document.querySelector('#load-more-past-row');
+        const handleLoadPast = (e) => {
+            e.stopPropagation();
+            state.transitRangePast += 5;
+            render();
+        };
+        if (loadPastRow) loadPastRow.addEventListener('click', handleLoadPast);
+        
+        // Load More Future listener
+        const loadFutureRow = document.querySelector('#load-more-future-row');
+        const handleLoadFuture = (e) => {
+            e.stopPropagation();
+            state.transitRangeFuture += 5;
+            render();
+        };
+        if (loadFutureRow) loadFutureRow.addEventListener('click', handleLoadFuture);
     }
     
     // Results view events

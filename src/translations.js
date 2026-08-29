@@ -34,6 +34,8 @@ export const translations = {
             rasi: "இராசி",
             star: "நட்சத்திரம்",
             pada: "பாதம்",
+            starLord: "சாரம் / அதிபதி",
+            strength: "பலம் / நிலை",
             house: "பாவகம்"
         },
         planets: {
@@ -181,6 +183,8 @@ export const translations = {
             rasi: "Zodiac Sign",
             star: "Star (Nakshatra)",
             pada: "Pada",
+            starLord: "Star Lord",
+            strength: "Strength",
             house: "House"
         },
         planets: {
@@ -328,6 +332,8 @@ export const translations = {
             rasi: "राशि",
             star: "नक्षत्र",
             pada: "चरण",
+            starLord: "नक्षत्र स्वामी",
+            strength: "बल",
             house: "भाव"
         },
         planets: {
@@ -475,6 +481,8 @@ export const translations = {
             rasi: "రాశి",
             star: "నక్షత్రం",
             pada: "పాదం",
+            starLord: "నక్షత్ర అధిపతి",
+            strength: "బలం",
             house: "భావం"
         },
         planets: {
@@ -622,6 +630,8 @@ export const translations = {
             rasi: "ರಾಶಿ",
             star: "ನಕ್ಷತ್ರ",
             pada: "ಪಾದ",
+            starLord: "ನಕ್ಷತ್ರ ಅಧಿಪತಿ",
+            strength: "ಬಲ",
             house: "ಭಾವ"
         },
         planets: {
@@ -769,6 +779,8 @@ export const translations = {
             rasi: "രാശി",
             star: "നക്ഷത്രം",
             pada: "പാദം",
+            starLord: "നക്ഷത്രനാഥൻ",
+            strength: "ബലം",
             house: "ഭാവം"
         },
         planets: {
