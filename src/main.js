@@ -775,33 +775,33 @@ function render() {
             <div style="display: flex; gap: 10px; align-items: center;">
                 <!-- Global Page Zoom Widget (Only visible on Results page) -->
                 ${state.view === 'results' ? `
-                <div style="display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--card-border); padding: 0 8px; background: var(--input-bg); height: 38px; box-sizing: border-box; font-family: inherit;">
-                    <button id="global-zoom-out-btn" style="width: 22px; height: 22px; border-radius: 50%; border: none; background: rgba(0,0,0,0.06); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; color: var(--text-primary); transition: background 0.2s;" title="Zoom Out" ${state.globalZoom <= 70 ? 'disabled style="opacity:0.4; cursor:default;"' : ''}>
+                <div style="display: inline-flex; align-items: center; gap: 4px; border: 1px solid var(--card-border); padding: 0 4px; background: var(--input-bg); height: 24px; box-sizing: border-box; font-family: inherit;">
+                    <button id="global-zoom-out-btn" style="width: 16px; height: 16px; border-radius: 50%; border: none; background: rgba(0,0,0,0.06); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; color: var(--text-primary); transition: background 0.2s; padding: 0;" title="Zoom Out" ${state.globalZoom <= 70 ? 'disabled style="opacity:0.4; cursor:default;"' : ''}>
                         &minus;
                     </button>
-                    <span style="font-size: 12px; font-weight: 600; min-width: 36px; text-align: center; color: var(--text-primary);">${state.globalZoom}%</span>
-                    <button id="global-zoom-in-btn" style="width: 22px; height: 22px; border-radius: 50%; border: none; background: rgba(0,0,0,0.06); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; color: var(--text-primary); transition: background 0.2s;" title="Zoom In" ${state.globalZoom >= 130 ? 'disabled style="opacity:0.4; cursor:default;"' : ''}>
+                    <span style="font-size: 11px; font-weight: 600; min-width: 28px; text-align: center; color: var(--text-primary);">${state.globalZoom}%</span>
+                    <button id="global-zoom-in-btn" style="width: 16px; height: 16px; border-radius: 50%; border: none; background: rgba(0,0,0,0.06); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; color: var(--text-primary); transition: background 0.2s; padding: 0;" title="Zoom In" ${state.globalZoom >= 130 ? 'disabled style="opacity:0.4; cursor:default;"' : ''}>
                         +
                     </button>
                 </div>
                 ` : ''}
 
-                <button class="lang-btn" id="toggle-theme-btn" style="width: 38px; height: 38px; border-radius: 0; padding: 0; display: inline-flex; align-items: center; justify-content: center;" title="${isLight ? 'Dark Mode' : 'Light Mode'}">
+                <button class="lang-btn" id="toggle-theme-btn" style="width: 24px; height: 24px; border-radius: 0; padding: 0; display: inline-flex; align-items: center; justify-content: center;" title="${isLight ? 'Dark Mode' : 'Light Mode'}">
                     ${isLight ? 
-                        `<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z" stroke-linecap="round" stroke-linejoin="round"></path></svg>` : 
-                        `<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" stroke-linecap="round" stroke-linejoin="round"></path></svg>`
+                        `<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z" stroke-linecap="round" stroke-linejoin="round"></path></svg>` : 
+                        `<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" stroke-linecap="round" stroke-linejoin="round"></path></svg>`
                     }
                 </button>
                 
                 <!-- Accent Color Picker -->
                 <div style="position: relative; display: inline-block;">
-                    <button class="lang-btn" id="accent-menu-btn" style="width: 38px; height: 38px; border-radius: 0; padding: 0; display: inline-flex; align-items: center; justify-content: center; color: var(--primary);" title="${(t.accentMenu && t.accentMenu.title) || 'Accent Color'}">
-                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <button class="lang-btn" id="accent-menu-btn" style="width: 24px; height: 24px; border-radius: 0; padding: 0; display: inline-flex; align-items: center; justify-content: center; color: var(--primary);" title="${(t.accentMenu && t.accentMenu.title) || 'Accent Color'}">
+                        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path d="M12 21a9 9 0 100-18 9 9 0 000 18z" stroke-linecap="round" stroke-linejoin="round"></path>
                             <path d="M7.5 10.5a1.5 1.5 0 110-3 1.5 1.5 0 010 3zM11.5 7.5a1.5 1.5 0 110-3 1.5 1.5 0 010 3zM16.5 9.5a1.5 1.5 0 110-3 1.5 1.5 0 010 3zM15.5 14.5a1.5 1.5 0 110-3 1.5 1.5 0 010 3z" fill="currentColor"></path>
                         </svg>
                     </button>
-                    <div id="accent-dropdown" class="accent-dropdown-menu" style="display: none; position: absolute; top: 44px; right: 0; background: var(--card-bg); border: 1px solid var(--card-border); padding: 12px; width: 220px; box-shadow: var(--shadow); z-index: 1000; flex-direction: column; gap: 10px;">
+                    <div id="accent-dropdown" class="accent-dropdown-menu" style="display: none; position: absolute; top: 30px; right: 0; background: var(--card-bg); border: 1px solid var(--card-border); padding: 12px; width: 220px; box-shadow: var(--shadow); z-index: 1000; flex-direction: column; gap: 10px;">
                         <div style="font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">${(t.accentMenu && t.accentMenu.presets) || 'Preset Colors'}</div>
                         <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px;" id="preset-colors-container">
                             ${presetsHtml}
@@ -816,7 +816,7 @@ function render() {
                     </div>
                 </div>
 
-                <select class="lang-btn" id="lang-select" style="cursor: pointer; padding: 0 8px; height: 32px; font-size: 12px;">
+                <select class="lang-btn" id="lang-select" style="cursor: pointer; padding: 0 4px; height: 24px; font-size: 11px;">
                     <option value="en" ${state.lang === 'en' ? 'selected' : ''}>English</option>
                     <option value="ta" ${state.lang === 'ta' ? 'selected' : ''}>தமிழ்</option>
                     <option value="hi" ${state.lang === 'hi' ? 'selected' : ''}>हिन्दी</option>
