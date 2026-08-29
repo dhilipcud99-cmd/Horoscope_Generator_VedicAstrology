@@ -752,7 +752,7 @@ function render() {
             <div class="logo-container" id="header-logo" style="cursor: pointer; display: flex; align-items: center; gap: 15px;">
                 <img src="./logo.png" alt="Logo" style="height: 48px; width: 48px; border-radius: 50%; border: 1.5px solid var(--accent); object-fit: cover;">
                 <div>
-                    <h1>Online Horoscope Calculator</h1>
+                    <h1>Horoscope Calculator</h1>
                     <p>${logoSubtitles[state.lang] || logoSubtitles['en']}</p>
                 </div>
             </div>
