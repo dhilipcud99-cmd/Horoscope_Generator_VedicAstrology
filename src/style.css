@@ -492,7 +492,8 @@ select:focus {
     grid-template-rows: repeat(4, 1fr);
     width: 100%;
     aspect-ratio: 1;
-    max-width: 460px;
+    max-width: var(--chart-max-width, 460px);
+    font-size: var(--chart-font-size, 14px);
     border: 2px solid var(--border-color);
     box-sizing: border-box;
     background: var(--chart-bg);
@@ -572,13 +573,13 @@ body:not(.light-mode) .chart-cell.lagna-highlight:hover {
     position: absolute;
     top: 4px;
     right: 6px;
-    font-size: 10px;
+    font-size: 0.7em;
     font-weight: 700;
     opacity: 0.8;
 }
 
 .cell-degree-info {
-    font-size: 9px;
+    font-size: 0.65em;
     font-weight: 600;
     text-align: left;
     white-space: pre-wrap;
@@ -594,7 +595,7 @@ body:not(.light-mode) .chart-cell.lagna-highlight:hover {
     gap: 4px;
     flex-grow: 1;
     font-weight: 700;
-    font-size: 15px;
+    font-size: 1.1em;
     font-family: var(--font-tamil);
     text-align: center;
 }
@@ -648,7 +649,7 @@ body:not(.light-mode) .chart-center-cell::before {
 
 .center-title {
     font-family: var(--font-tamil);
-    font-size: 20px;
+    font-size: 1.4em;
     font-weight: 700;
     margin: 0 0 4px;
     z-index: 1;
@@ -656,7 +657,7 @@ body:not(.light-mode) .chart-center-cell::before {
 
 .center-star {
     font-family: var(--font-tamil);
-    font-size: 13px;
+    font-size: 0.9em;
     font-weight: 600;
     color: #e11d48;
     margin: 0 0 8px;
@@ -664,7 +665,7 @@ body:not(.light-mode) .chart-center-cell::before {
 }
 
 .center-info-row {
-    font-size: 11px;
+    font-size: 0.8em;
     margin: 2px 0;
     color: #475569;
     z-index: 1;
@@ -1255,7 +1256,7 @@ body.light-mode .dasa-row-l4:hover td {
 .north-chart-svg {
     width: 100%;
     aspect-ratio: 1;
-    max-width: 460px;
+    max-width: var(--chart-max-width, 460px);
     box-sizing: border-box;
     border-radius: 0 !important;
     overflow: visible;
