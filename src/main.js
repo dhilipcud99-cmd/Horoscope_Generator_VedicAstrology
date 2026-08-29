@@ -773,7 +773,8 @@ function render() {
                 </div>
             </div>
             <div style="display: flex; gap: 10px; align-items: center;">
-                <!-- Global Page Zoom Widget -->
+                <!-- Global Page Zoom Widget (Only visible on Results page) -->
+                ${state.view === 'results' ? `
                 <div style="display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--card-border); padding: 0 8px; background: var(--input-bg); height: 38px; box-sizing: border-box; font-family: inherit;">
                     <button id="global-zoom-out-btn" style="width: 22px; height: 22px; border-radius: 50%; border: none; background: rgba(0,0,0,0.06); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; color: var(--text-primary); transition: background 0.2s;" title="Zoom Out" ${state.globalZoom <= 70 ? 'disabled style="opacity:0.4; cursor:default;"' : ''}>
                         &minus;
@@ -783,6 +784,7 @@ function render() {
                         +
                     </button>
                 </div>
+                ` : ''}
 
                 <button class="lang-btn" id="toggle-theme-btn" style="width: 38px; height: 38px; border-radius: 0; padding: 0; display: inline-flex; align-items: center; justify-content: center;" title="${isLight ? 'Dark Mode' : 'Light Mode'}">
                     ${isLight ? 
