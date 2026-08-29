@@ -745,9 +745,12 @@ function render() {
 
     root.innerHTML = `
         <header>
-            <div class="logo-container" id="header-logo" style="cursor: pointer;">
-                <h1>Online Horoscope Calculator</h1>
-                <p>${logoSubtitles[state.lang] || logoSubtitles['en']}</p>
+            <div class="logo-container" id="header-logo" style="cursor: pointer; display: flex; align-items: center; gap: 15px;">
+                <img src="./logo.png" alt="Logo" style="height: 48px; width: 48px; border-radius: 50%; border: 1.5px solid var(--accent); object-fit: cover;">
+                <div>
+                    <h1>Online Horoscope Calculator</h1>
+                    <p>${logoSubtitles[state.lang] || logoSubtitles['en']}</p>
+                </div>
             </div>
             <div style="display: flex; gap: 10px; align-items: center;">
                 <button class="lang-btn" id="toggle-theme-btn" style="width: 38px; height: 38px; border-radius: 0; padding: 0; display: inline-flex; align-items: center; justify-content: center;" title="${isLight ? 'Dark Mode' : 'Light Mode'}">
