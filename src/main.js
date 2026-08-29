@@ -622,7 +622,7 @@ let state = {
     horoscope: null,
     selectedCity: null,
     chartStyle: 'south',
-    chartZoom: 100
+    globalZoom: 100
 };
 
 if (savedState) {
@@ -689,6 +689,9 @@ function init() {
 function render() {
     const t = translations[state.lang];
     
+    // Apply global page zoom
+    document.body.style.zoom = `${state.globalZoom || 100}%`;
+    
     // Save only language and chart style preferences (not birth details history) to protect privacy
     const stateToSave = {
         lang: state.lang,
@@ -754,6 +757,23 @@ function render() {
                 </div>
             </div>
             <div style="display: flex; gap: 10px; align-items: center;">
+                <!-- Global Page Zoom Widget -->
+                <div style="display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--card-border); padding: 0 10px; background: var(--input-bg); height: 38px; box-sizing: border-box; font-family: inherit;">
+                    <span style="display: inline-flex; align-items: center; color: var(--text-secondary); opacity: 0.85;" title="Page Zoom">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </span>
+                    <span style="font-size: 13px; font-weight: 500; color: var(--text-secondary); margin-right: 4px;">Zoom</span>
+                    <button id="global-zoom-out-btn" style="width: 20px; height: 20px; border-radius: 50%; border: none; background: rgba(0,0,0,0.06); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; color: var(--text-primary); transition: background 0.2s;" title="Zoom Out" ${state.globalZoom <= 70 ? 'disabled style="opacity:0.4; cursor:default;"' : ''}>
+                        &minus;
+                    </button>
+                    <span style="font-size: 12px; font-weight: 600; min-width: 36px; text-align: center; color: var(--text-primary);">${state.globalZoom}%</span>
+                    <button id="global-zoom-in-btn" style="width: 20px; height: 20px; border-radius: 50%; border: none; background: rgba(0,0,0,0.06); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; color: var(--text-primary); transition: background 0.2s;" title="Zoom In" ${state.globalZoom >= 130 ? 'disabled style="opacity:0.4; cursor:default;"' : ''}>
+                        +
+                    </button>
+                </div>
+
                 <button class="lang-btn" id="toggle-theme-btn" style="width: 38px; height: 38px; border-radius: 0; padding: 0; display: inline-flex; align-items: center; justify-content: center;" title="${isLight ? 'Dark Mode' : 'Light Mode'}">
                     ${isLight ? 
                         `<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z" stroke-linecap="round" stroke-linejoin="round"></path></svg>` : 
@@ -1622,28 +1642,11 @@ function renderResultsView(t) {
                         </div>
                     </div>
 
-                    <!-- Zoom Control Widget -->
-                    <div style="display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--card-border); padding: 2px 6px; background: var(--input-bg); height: 34px; box-sizing: border-box; font-family: inherit;">
-                        <span style="display: inline-flex; align-items: center; color: var(--text-secondary); opacity: 0.85;" title="Zoom">
-                            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                            </svg>
-                        </span>
-                        <span style="font-size: 13px; font-weight: 500; color: var(--text-secondary); margin-right: 4px;">Zoom</span>
-                        <button id="zoom-out-btn" style="width: 20px; height: 20px; border-radius: 50%; border: none; background: rgba(0,0,0,0.06); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; color: var(--text-primary); transition: background 0.2s;" title="Zoom Out" ${state.chartZoom <= 70 ? 'disabled style="opacity:0.4; cursor:default;"' : ''}>
-                            &minus;
-                        </button>
-                        <span style="font-size: 12px; font-weight: 600; min-width: 36px; text-align: center; color: var(--text-primary);">${state.chartZoom}%</span>
-                        <button id="zoom-in-btn" style="width: 20px; height: 20px; border-radius: 50%; border: none; background: rgba(0,0,0,0.06); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; color: var(--text-primary); transition: background 0.2s;" title="Zoom In" ${state.chartZoom >= 130 ? 'disabled style="opacity:0.4; cursor:default;"' : ''}>
-                            +
-                        </button>
-                    </div>
-
                     <button class="lang-btn" id="toggle-chart-style-btn" style="padding: 0 12px; font-size: 13px; height: 34px; display: inline-flex; align-items: center; justify-content: center;">
                         ${state.chartStyle === 'north' ? t.actions.toggleSouthStyle : t.actions.toggleNorthStyle}
                     </button>
                 </div>
-                <div class="charts-grid-wrapper" style="--chart-max-width: ${460 * state.chartZoom / 100}px; --chart-font-size: ${14 * state.chartZoom / 100}px;">
+                <div class="charts-grid-wrapper">
                     <!-- Rasi Chart -->
                     <div class="chart-box">
                         <div class="chart-title-header">${state.lang === 'ta' ? 'இராசி கட்டம் (Rasi Chart)' : 'Rasi Chart (D-1)'}</div>
@@ -2854,22 +2857,22 @@ function bindEvents() {
             });
         }
 
-        // Zoom Buttons
-        const zoomOutBtn = document.querySelector('#zoom-out-btn');
-        if (zoomOutBtn) {
-            zoomOutBtn.addEventListener('click', () => {
-                if (state.chartZoom > 70) {
-                    state.chartZoom -= 10;
+        // Global Zoom Buttons
+        const globalZoomOutBtn = document.querySelector('#global-zoom-out-btn');
+        if (globalZoomOutBtn) {
+            globalZoomOutBtn.addEventListener('click', () => {
+                if (state.globalZoom > 70) {
+                    state.globalZoom -= 10;
                     render();
                 }
             });
         }
 
-        const zoomInBtn = document.querySelector('#zoom-in-btn');
-        if (zoomInBtn) {
-            zoomInBtn.addEventListener('click', () => {
-                if (state.chartZoom < 130) {
-                    state.chartZoom += 10;
+        const globalZoomInBtn = document.querySelector('#global-zoom-in-btn');
+        if (globalZoomInBtn) {
+            globalZoomInBtn.addEventListener('click', () => {
+                if (state.globalZoom < 130) {
+                    state.globalZoom += 10;
                     render();
                 }
             });
