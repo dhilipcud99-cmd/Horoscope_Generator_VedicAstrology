@@ -1361,9 +1361,6 @@ function renderResultsView(t) {
                 <td>${startStr}</td>
                 <td>${endStr}</td>
                 <td style="text-align: center;">${durationStr}</td>
-                <td>
-                    <span class="dasa-badge ${badgeClass}">${statusText}</span>
-                </td>
             </tr>
         `;
     });
@@ -1728,7 +1725,6 @@ function renderResultsView(t) {
                                 <th>${t.dasa.start}</th>
                                 <th>${t.dasa.end}</th>
                                 <th style="text-align: center;">${t.dasa.duration}</th>
-                                <th>${t.dasa.status}</th>
                             </tr>
                         </thead>
                         <tbody id="dasa-tbody">
@@ -2983,9 +2979,6 @@ function bindEvents() {
                                 <td>${startStr}</td>
                                 <td>${endStr}</td>
                                 <td style="text-align: center;">${durationStr}</td>
-                                <td>
-                                    <span class="dasa-badge ${badgeClass}">${statusText}</span>
-                                </td>
                             </tr>
                         `;
                     });
