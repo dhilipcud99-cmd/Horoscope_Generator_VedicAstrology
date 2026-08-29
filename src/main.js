@@ -836,7 +836,7 @@ function renderFormView(t) {
     }
     
     const formHtml = `
-        <div class="card" id="form-card" style="max-width: 680px; margin: 0 auto;">
+        <div class="card" id="form-card" style="max-width: 960px; margin: 0 auto;">
             <h2 class="card-title">${t.title}</h2>
             <p class="card-subtitle">${t.subtitle}</p>
             
