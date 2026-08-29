@@ -860,7 +860,7 @@ function renderFormView(t) {
     }
     
     const formHtml = `
-        <div class="card" id="form-card" style="max-width: 960px; margin: 0 auto;">
+        <div class="card" id="form-card">
             <h2 class="card-title">${t.title}</h2>
             <p class="card-subtitle">${t.subtitle}</p>
             
@@ -1119,7 +1119,7 @@ function renderFormView(t) {
 
 
     const transitCardHtml = `
-        <div class="card" id="planetary-positions-card" style="max-width: 960px; margin: 30px auto 0; display: flex; flex-direction: column; gap: 30px; align-items: center;">
+        <div class="card" id="planetary-positions-card" style="display: flex; flex-direction: column; gap: 30px; align-items: center;">
             <div style="width: 100%;">
                 <h2 class="card-title" style="font-size: 22px; margin-bottom: 5px; text-align: left;">${sectionTitle}</h2>
                 
