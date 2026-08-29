@@ -758,18 +758,12 @@ function render() {
             </div>
             <div style="display: flex; gap: 10px; align-items: center;">
                 <!-- Global Page Zoom Widget -->
-                <div style="display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--card-border); padding: 0 10px; background: var(--input-bg); height: 38px; box-sizing: border-box; font-family: inherit;">
-                    <span style="display: inline-flex; align-items: center; color: var(--text-secondary); opacity: 0.85;" title="Page Zoom">
-                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                        </svg>
-                    </span>
-                    <span style="font-size: 13px; font-weight: 500; color: var(--text-secondary); margin-right: 4px;">Zoom</span>
-                    <button id="global-zoom-out-btn" style="width: 20px; height: 20px; border-radius: 50%; border: none; background: rgba(0,0,0,0.06); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; color: var(--text-primary); transition: background 0.2s;" title="Zoom Out" ${state.globalZoom <= 70 ? 'disabled style="opacity:0.4; cursor:default;"' : ''}>
+                <div style="display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--card-border); padding: 0 8px; background: var(--input-bg); height: 38px; box-sizing: border-box; font-family: inherit;">
+                    <button id="global-zoom-out-btn" style="width: 22px; height: 22px; border-radius: 50%; border: none; background: rgba(0,0,0,0.06); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; color: var(--text-primary); transition: background 0.2s;" title="Zoom Out" ${state.globalZoom <= 70 ? 'disabled style="opacity:0.4; cursor:default;"' : ''}>
                         &minus;
                     </button>
                     <span style="font-size: 12px; font-weight: 600; min-width: 36px; text-align: center; color: var(--text-primary);">${state.globalZoom}%</span>
-                    <button id="global-zoom-in-btn" style="width: 20px; height: 20px; border-radius: 50%; border: none; background: rgba(0,0,0,0.06); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; color: var(--text-primary); transition: background 0.2s;" title="Zoom In" ${state.globalZoom >= 130 ? 'disabled style="opacity:0.4; cursor:default;"' : ''}>
+                    <button id="global-zoom-in-btn" style="width: 22px; height: 22px; border-radius: 50%; border: none; background: rgba(0,0,0,0.06); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; color: var(--text-primary); transition: background 0.2s;" title="Zoom In" ${state.globalZoom >= 130 ? 'disabled style="opacity:0.4; cursor:default;"' : ''}>
                         +
                     </button>
                 </div>
