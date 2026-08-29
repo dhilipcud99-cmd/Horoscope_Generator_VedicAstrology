@@ -816,7 +816,7 @@ function render() {
                     </div>
                 </div>
 
-                <select class="lang-btn" id="lang-select" style="cursor: pointer; padding: 0 10px; height: 38px;">
+                <select class="lang-btn" id="lang-select" style="cursor: pointer; padding: 0 8px; height: 32px; font-size: 12px;">
                     <option value="en" ${state.lang === 'en' ? 'selected' : ''}>English</option>
                     <option value="ta" ${state.lang === 'ta' ? 'selected' : ''}>தமிழ்</option>
                     <option value="hi" ${state.lang === 'hi' ? 'selected' : ''}>हिन्दी</option>
