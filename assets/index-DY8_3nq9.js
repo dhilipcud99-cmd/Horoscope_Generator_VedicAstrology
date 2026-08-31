@@ -338,9 +338,6 @@
                 <td style="padding: 12px 14px; color: #ef4444; vertical-align: middle; line-height: 1.5;">
                     ${d||`-`}
                 </td>
-                <td style="padding: 12px 14px; color: var(--text-primary); font-weight: 600; vertical-align: middle;">
-                    ${h}
-                </td>
                 <td style="padding: 12px 14px; vertical-align: middle;">
                     ${f}
                 </td>
@@ -413,7 +410,6 @@
                                     <tr style="background: rgba(0,0,0,0.03); border-bottom: 2px solid var(--card-border);">
                                         <th style="padding: 10px 14px; text-align: left;">${r===`ta`?`ஜென்ம நட்சத்திரம் & பாதம்`:`Birth Star & Padas`}</th>
                                         <th style="padding: 10px 14px; text-align: left;">${r===`ta`?`சந்திராஷ்டம நட்சத்திரம் & பாதம்`:`Chandrashtama Star & Padas`}</th>
-                                        <th style="padding: 10px 14px; text-align: left;">${r===`ta`?`8-ம் ராசி`:`8th Sign`}</th>
                                         <th style="padding: 10px 14px; text-align: left;">${r===`ta`?`சந்திராஷ்டம ஆரம்பம் & முடிவு தேதிகள்`:`Chandrashtama Dates & Timings`}</th>
                                     </tr>
                                 </thead>
