@@ -1270,18 +1270,21 @@ function renderChandrashtamaCardHtml(currentTransit, t) {
     const padaLength = 30 / 9; // 3.3333333333333335 deg
     const eighthRasiStartLon = eighthHouseIdx * 30;
     
-    // Build accurate per-pada rows with exact timings
+    // Build accurate per-pada rows with exact timings and clear columns
     let padaRasiIndex = 0;
     let starPadaRowsHtml = '';
     
     starsInSelected.forEach((s) => {
         const sName = lang === 'ta' ? t.stars[s.starIdx] : translations['en'].stars[s.starIdx];
+        const padasCount = s.padas.length;
         
-        s.padas.forEach((padaNum) => {
+        s.padas.forEach((padaNum, pIdx) => {
             const currentPadaIdx = padaRasiIndex;
             padaRasiIndex++;
             
-            let timingHtml = '';
+            let pStartStr = '-';
+            let pEndStr = '-';
+            let durHours = '-';
             let isPadaActive = false;
             
             if (activeOrNextPeriod) {
@@ -1299,33 +1302,36 @@ function renderChandrashtamaCardHtml(currentTransit, t) {
                 }
                 
                 isPadaActive = nowMs >= pStart.getTime() && nowMs <= pEnd.getTime();
-                const durHours = ((pEnd - pStart) / (3600 * 1000)).toFixed(1);
-                
-                timingHtml = `
-                    <div style="font-size: 13px; font-weight: 600; color: ${isPadaActive ? '#ef4444' : 'var(--text-primary)'};">
-                        ${formatDateTimeReadable(pStart)}
-                    </div>
-                    <div style="font-size: 12px; color: var(--text-secondary); margin-top: 1px;">
-                        ${lang === 'ta' ? 'முதல்' : 'to'} <strong style="color: var(--text-primary);">${formatDateTimeReadable(pEnd)}</strong> ${lang === 'ta' ? 'வரை' : ''}
-                    </div>
-                    <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 2px; display: flex; align-items: center; gap: 6px;">
-                        <span>⏱️ ${durHours} hrs</span>
-                        ${isPadaActive ? `<span class="status-badge badge-danger" style="font-size: 10px; padding: 1px 6px;">🔴 ${lang === 'ta' ? 'நடப்பில் உள்ளது' : 'Active Now'}</span>` : ''}
-                    </div>
-                `;
-            } else {
-                timingHtml = `<span style="color: var(--text-secondary); font-size: 12px;">-</span>`;
+                durHours = ((pEnd - pStart) / (3600 * 1000)).toFixed(1);
+                pStartStr = formatDateTimeReadable(pStart);
+                pEndStr = formatDateTimeReadable(pEnd);
             }
             
+            const isLastPadaOfStar = (pIdx === padasCount - 1);
+            const rowBorderBottom = isLastPadaOfStar ? '2px solid var(--card-border)' : '1px solid rgba(0,0,0,0.04)';
+            const rowBg = isPadaActive ? 'background: rgba(239, 68, 68, 0.08);' : '';
+            
             starPadaRowsHtml += `
-                <tr style="border-bottom: 1px solid var(--card-border); ${isPadaActive ? 'background: rgba(239, 68, 68, 0.06);' : ''}">
-                    <td style="padding: 11px 14px; vertical-align: middle; width: 38%;">
-                        <div style="font-size: 14.5px; font-weight: 700; color: ${isPadaActive ? '#ef4444' : 'var(--accent)'};">
-                            ${sName} <span style="font-size: 13px; font-weight: 600; color: var(--text-primary); margin-left: 3px;">- ${padaNum}${lang === 'ta' ? '-ம் பாதம்' : ' Pada'}</span>
-                        </div>
+                <tr style="border-bottom: ${rowBorderBottom}; ${rowBg}">
+                    ${pIdx === 0 ? `
+                        <td rowspan="${padasCount}" style="padding: 14px 16px; font-weight: 700; font-size: 15px; color: var(--accent); vertical-align: middle; border-right: 1.5px solid var(--card-border); background: rgba(0,0,0,0.015);">
+                            <div>${sName}</div>
+                        </td>
+                    ` : ''}
+                    <td style="padding: 10px 12px; text-align: center; vertical-align: middle; border-right: 1px solid var(--card-border);">
+                        <span style="font-weight: 600; font-size: 13px; color: var(--text-primary); background: var(--card-bg); border: 1px solid var(--card-border); padding: 3px 8px; border-radius: 4px; display: inline-block;">
+                            ${padaNum}${lang === 'ta' ? '-ம் பாதம்' : ' Pada'}
+                        </span>
                     </td>
-                    <td style="padding: 11px 14px; vertical-align: middle;">
-                        ${timingHtml}
+                    <td style="padding: 10px 14px; vertical-align: middle; font-weight: 600; color: ${isPadaActive ? '#ef4444' : 'var(--text-primary)'}; font-size: 13.5px;">
+                        ${pStartStr}
+                    </td>
+                    <td style="padding: 10px 14px; vertical-align: middle; font-weight: 600; color: ${isPadaActive ? '#ef4444' : 'var(--text-primary)'}; font-size: 13.5px;">
+                        ${pEndStr}
+                    </td>
+                    <td style="padding: 10px 12px; text-align: center; vertical-align: middle; font-size: 12.5px; color: var(--text-secondary);">
+                        <div>⏱️ ${durHours} hrs</div>
+                        ${isPadaActive ? `<span class="status-badge badge-danger" style="margin-top: 3px; font-size: 10px; padding: 2px 6px;">🔴 ${lang === 'ta' ? 'நடப்பில்' : 'Active'}</span>` : ''}
                     </td>
                 </tr>
             `;
@@ -1423,9 +1429,12 @@ function renderChandrashtamaCardHtml(currentTransit, t) {
                         <div class="table-container" style="margin: 0;">
                             <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
                                 <thead>
-                                    <tr style="background: rgba(0,0,0,0.03); border-bottom: 2px solid var(--card-border);">
-                                        <th style="padding: 10px 14px; text-align: left; width: 35%;">${lang === 'ta' ? 'ஜென்ம நட்சத்திரம் & பாதம்' : 'Birth Star & Padas'}</th>
-                                        <th style="padding: 10px 14px; text-align: left;">${lang === 'ta' ? 'சந்திராஷ்டம ஆரம்பம் & முடிவு தேதிகள்' : 'Chandrashtama Dates & Timings'}</th>
+                                    <tr style="background: rgba(0,0,0,0.04); border-bottom: 2px solid var(--card-border);">
+                                        <th style="padding: 12px 14px; text-align: left; width: 22%;">${lang === 'ta' ? 'நட்சத்திரம்' : 'Nakshatra'}</th>
+                                        <th style="padding: 12px 12px; text-align: center; width: 14%;">${lang === 'ta' ? 'பாதம்' : 'Pada'}</th>
+                                        <th style="padding: 12px 14px; text-align: left; width: 27%;">${lang === 'ta' ? 'ஆரம்ப நேரம்' : 'Start Time'}</th>
+                                        <th style="padding: 12px 14px; text-align: left; width: 27%;">${lang === 'ta' ? 'முடிவு நேரம்' : 'End Time'}</th>
+                                        <th style="padding: 12px 12px; text-align: center; width: 10%;">${lang === 'ta' ? 'கால அளவு' : 'Duration'}</th>
                                     </tr>
                                 </thead>
                                 <tbody>

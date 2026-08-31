@@ -318,26 +318,27 @@
                 </table>
             </div>
         </div>
-    `,O=En(m,t);return c+D+O}function En(t,n){let r=X.lang,i=t.planets.find(e=>e.name===`Moon`),a=i?i.longitude:0,o=q(a),s=Wt(a),c=Qt(o),l=X.chandrashtamaSelectedRasi===void 0?c:X.chandrashtamaSelectedRasi,u=J[l],d=r===`ta`?n.signs[u]:e.en.signs[u],f=e.en.signs[u],p=Zt(l),m=J[p],h=r===`ta`?n.signs[m]:e.en.signs[m],g=e.en.signs[m],_=r===`ta`?n.signs[J[o]]:e.en.signs[J[o]],v=r===`ta`?n.stars[s.starIdx]:e.en.stars[s.starIdx],y=e=>`${e.toLocaleDateString(r===`ta`?`ta-IN`:`en-US`,{day:`numeric`,month:`short`,year:`numeric`})}, ${e.toLocaleTimeString([],{hour:`2-digit`,minute:`2-digit`})}`,b=rn(l,X.transitDate,75),x=b.length>0?b[0]:null,S=new Date(`${X.transitDate}T${X.transitTime}:00`).getTime(),C=$t(l),w=30/9,T=p*30,E=0,D=``;C.forEach(t=>{let i=r===`ta`?n.stars[t.starIdx]:e.en.stars[t.starIdx];t.padas.forEach(e=>{let t=E;E++;let n=``,a=!1;if(x){let e=T+t*w,i=T+(t+1)*w,o=x.start;t>0&&(o=tn(x.start,x.end,e));let s=x.end;t<8&&(s=tn(x.start,x.end,i)),a=S>=o.getTime()&&S<=s.getTime();let c=((s-o)/(3600*1e3)).toFixed(1);n=`
-                    <div style="font-size: 13px; font-weight: 600; color: ${a?`#ef4444`:`var(--text-primary)`};">
-                        ${y(o)}
-                    </div>
-                    <div style="font-size: 12px; color: var(--text-secondary); margin-top: 1px;">
-                        ${r===`ta`?`முதல்`:`to`} <strong style="color: var(--text-primary);">${y(s)}</strong> ${r===`ta`?`வரை`:``}
-                    </div>
-                    <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 2px; display: flex; align-items: center; gap: 6px;">
-                        <span>⏱️ ${c} hrs</span>
-                        ${a?`<span class="status-badge badge-danger" style="font-size: 10px; padding: 1px 6px;">🔴 ${r===`ta`?`நடப்பில் உள்ளது`:`Active Now`}</span>`:``}
-                    </div>
-                `}else n=`<span style="color: var(--text-secondary); font-size: 12px;">-</span>`;D+=`
-                <tr style="border-bottom: 1px solid var(--card-border); ${a?`background: rgba(239, 68, 68, 0.06);`:``}">
-                    <td style="padding: 11px 14px; vertical-align: middle; width: 38%;">
-                        <div style="font-size: 14.5px; font-weight: 700; color: ${a?`#ef4444`:`var(--accent)`};">
-                            ${i} <span style="font-size: 13px; font-weight: 600; color: var(--text-primary); margin-left: 3px;">- ${e}${r===`ta`?`-ம் பாதம்`:` Pada`}</span>
-                        </div>
+    `,O=En(m,t);return c+D+O}function En(t,n){let r=X.lang,i=t.planets.find(e=>e.name===`Moon`),a=i?i.longitude:0,o=q(a),s=Wt(a),c=Qt(o),l=X.chandrashtamaSelectedRasi===void 0?c:X.chandrashtamaSelectedRasi,u=J[l],d=r===`ta`?n.signs[u]:e.en.signs[u],f=e.en.signs[u],p=Zt(l),m=J[p],h=r===`ta`?n.signs[m]:e.en.signs[m],g=e.en.signs[m],_=r===`ta`?n.signs[J[o]]:e.en.signs[J[o]],v=r===`ta`?n.stars[s.starIdx]:e.en.stars[s.starIdx],y=e=>`${e.toLocaleDateString(r===`ta`?`ta-IN`:`en-US`,{day:`numeric`,month:`short`,year:`numeric`})}, ${e.toLocaleTimeString([],{hour:`2-digit`,minute:`2-digit`})}`,b=rn(l,X.transitDate,75),x=b.length>0?b[0]:null,S=new Date(`${X.transitDate}T${X.transitTime}:00`).getTime(),C=$t(l),w=30/9,T=p*30,E=0,D=``;C.forEach(t=>{let i=r===`ta`?n.stars[t.starIdx]:e.en.stars[t.starIdx],a=t.padas.length;t.padas.forEach((e,t)=>{let n=E;E++;let o=`-`,s=`-`,c=`-`,l=!1;if(x){let e=T+n*w,t=T+(n+1)*w,r=x.start;n>0&&(r=tn(x.start,x.end,e));let i=x.end;n<8&&(i=tn(x.start,x.end,t)),l=S>=r.getTime()&&S<=i.getTime(),c=((i-r)/(3600*1e3)).toFixed(1),o=y(r),s=y(i)}let u=t===a-1?`2px solid var(--card-border)`:`1px solid rgba(0,0,0,0.04)`;D+=`
+                <tr style="border-bottom: ${u}; ${l?`background: rgba(239, 68, 68, 0.08);`:``}">
+                    ${t===0?`
+                        <td rowspan="${a}" style="padding: 14px 16px; font-weight: 700; font-size: 15px; color: var(--accent); vertical-align: middle; border-right: 1.5px solid var(--card-border); background: rgba(0,0,0,0.015);">
+                            <div>${i}</div>
+                        </td>
+                    `:``}
+                    <td style="padding: 10px 12px; text-align: center; vertical-align: middle; border-right: 1px solid var(--card-border);">
+                        <span style="font-weight: 600; font-size: 13px; color: var(--text-primary); background: var(--card-bg); border: 1px solid var(--card-border); padding: 3px 8px; border-radius: 4px; display: inline-block;">
+                            ${e}${r===`ta`?`-ம் பாதம்`:` Pada`}
+                        </span>
                     </td>
-                    <td style="padding: 11px 14px; vertical-align: middle;">
-                        ${n}
+                    <td style="padding: 10px 14px; vertical-align: middle; font-weight: 600; color: ${l?`#ef4444`:`var(--text-primary)`}; font-size: 13.5px;">
+                        ${o}
+                    </td>
+                    <td style="padding: 10px 14px; vertical-align: middle; font-weight: 600; color: ${l?`#ef4444`:`var(--text-primary)`}; font-size: 13.5px;">
+                        ${s}
+                    </td>
+                    <td style="padding: 10px 12px; text-align: center; vertical-align: middle; font-size: 12.5px; color: var(--text-secondary);">
+                        <div>⏱️ ${c} hrs</div>
+                        ${l?`<span class="status-badge badge-danger" style="margin-top: 3px; font-size: 10px; padding: 2px 6px;">🔴 ${r===`ta`?`நடப்பில்`:`Active`}</span>`:``}
                     </td>
                 </tr>
             `})});let O=``;if(x){let e=S>=x.start.getTime()&&S<=x.end.getTime(),t=y(x.start),n=y(x.end),i=((x.end-x.start)/(3600*1e3)).toFixed(1);O=`
@@ -405,9 +406,12 @@
                         <div class="table-container" style="margin: 0;">
                             <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
                                 <thead>
-                                    <tr style="background: rgba(0,0,0,0.03); border-bottom: 2px solid var(--card-border);">
-                                        <th style="padding: 10px 14px; text-align: left; width: 35%;">${r===`ta`?`ஜென்ம நட்சத்திரம் & பாதம்`:`Birth Star & Padas`}</th>
-                                        <th style="padding: 10px 14px; text-align: left;">${r===`ta`?`சந்திராஷ்டம ஆரம்பம் & முடிவு தேதிகள்`:`Chandrashtama Dates & Timings`}</th>
+                                    <tr style="background: rgba(0,0,0,0.04); border-bottom: 2px solid var(--card-border);">
+                                        <th style="padding: 12px 14px; text-align: left; width: 22%;">${r===`ta`?`நட்சத்திரம்`:`Nakshatra`}</th>
+                                        <th style="padding: 12px 12px; text-align: center; width: 14%;">${r===`ta`?`பாதம்`:`Pada`}</th>
+                                        <th style="padding: 12px 14px; text-align: left; width: 27%;">${r===`ta`?`ஆரம்ப நேரம்`:`Start Time`}</th>
+                                        <th style="padding: 12px 14px; text-align: left; width: 27%;">${r===`ta`?`முடிவு நேரம்`:`End Time`}</th>
+                                        <th style="padding: 12px 12px; text-align: center; width: 10%;">${r===`ta`?`கால அளவு`:`Duration`}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
