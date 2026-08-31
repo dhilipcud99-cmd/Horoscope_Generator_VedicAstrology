@@ -658,7 +658,7 @@
                                     ${M}
                                 </div>
                             `:`
-                                <div class="chart-grid" style="max-width: 310px; width: 100%; aspect-ratio: 1;">
+                                <div class="chart-grid rasi-theme" style="max-width: 310px; width: 100%; aspect-ratio: 1; --chart-font-size: 11px;">
                                     ${M}
                                 </div>
                             `}
