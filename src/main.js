@@ -1292,77 +1292,6 @@ function renderChandrashtamaCardHtml(currentTransit, t) {
         `;
     });
     
-    // Calculate upcoming Chandrashtama dates for selected Rasi
-    const upcomingPeriods = calculateUpcomingChandrashtamaForRasi(selectedRasiIdx, state.transitDate, 75);
-    const nowMs = new Date(`${state.transitDate}T${state.transitTime}:00`).getTime();
-    
-    let upcomingCardsHtml = '';
-    if (upcomingPeriods.length === 0) {
-        upcomingCardsHtml = `<div style="text-align: center; padding: 25px; color: var(--text-secondary);">${lang === 'ta' ? 'குறிப்பிட்ட காலத்தில் சந்திராஷ்டமம் இல்லை.' : 'No upcoming Chandrashtama periods found.'}</div>`;
-    } else {
-        upcomingPeriods.forEach((p, pIdx) => {
-            const isCurrentlyActive = nowMs >= p.start.getTime() && nowMs <= p.end.getTime();
-            const pStartStr = formatDateTimeReadable(p.start);
-            const pEndStr = formatDateTimeReadable(p.end);
-            const durHours = ((p.end - p.start) / (3600 * 1000)).toFixed(1);
-            
-            // Star & Pada sub-windows inside this transit window
-            let starSegmentsHtml = '';
-            if (p.starTransits && p.starTransits.length > 0) {
-                p.starTransits.forEach(st => {
-                    const stName = lang === 'ta' ? t.stars[st.starIdx] : translations['en'].stars[st.starIdx];
-                    const padasText = st.padas.map(pd => `${pd}${lang === 'ta' ? '-ம் பாதம்' : ' Pada'}`).join(', ');
-                    const stStartStr = formatDateTimeReadable(st.start);
-                    const stEndStr = formatDateTimeReadable(st.end);
-                    const isStActive = nowMs >= st.start.getTime() && nowMs <= st.end.getTime();
-                    
-                    starSegmentsHtml += `
-                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; padding: 8px 12px; background: ${isStActive ? 'rgba(239, 68, 68, 0.08)' : 'rgba(0,0,0,0.02)'}; border-left: 3px solid ${isStActive ? '#ef4444' : 'var(--accent)'}; border-radius: 4px; font-size: 13px;">
-                            <div>
-                                <strong style="color: ${isStActive ? '#ef4444' : 'var(--text-primary)'};">⭐ ${stName}</strong>
-                                <span style="font-size: 11.5px; color: var(--text-secondary); margin-left: 4px;">(${padasText})</span>
-                                ${isStActive ? `<span class="status-badge badge-danger" style="margin-left: 6px; font-size: 10.5px;">🔴 ${lang === 'ta' ? 'நடப்பில்' : 'Active'}</span>` : ''}
-                            </div>
-                            <div style="font-size: 12.5px; color: var(--text-secondary);">
-                                <span style="color: var(--text-primary); font-weight: 500;">${stStartStr}</span> 
-                                <span style="margin: 0 4px;">➔</span> 
-                                <span style="color: var(--text-primary); font-weight: 500;">${stEndStr}</span>
-                            </div>
-                        </div>
-                    `;
-                });
-            }
-
-            upcomingCardsHtml += `
-                <div style="display: flex; flex-direction: column; gap: 10px; padding: 16px; background: ${isCurrentlyActive ? 'rgba(239, 68, 68, 0.05)' : 'var(--card-bg)'}; border: 1.5px solid ${isCurrentlyActive ? '#ef4444' : 'var(--card-border)'}; border-radius: 8px; margin-bottom: 14px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <span style="font-size: 16px; font-weight: 700; color: var(--accent);">📅 ${lang === 'ta' ? `காலப்பகுதி #${pIdx + 1}` : `Period #${pIdx + 1}`}</span>
-                            ${isCurrentlyActive ? `<span class="status-badge badge-danger">🔴 ${lang === 'ta' ? 'சந்திராஷ்டமம் நடப்பில் உள்ளது' : 'Active Now'}</span>` : ''}
-                        </div>
-                        <div style="font-size: 12.5px; color: var(--text-secondary);">
-                            ⏱️ <strong>${durHours} hrs</strong> (~2.25 ${lang === 'ta' ? 'நாட்கள்' : 'days'})
-                        </div>
-                    </div>
-                    
-                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; font-size: 14px; background: rgba(0,0,0,0.02); padding: 8px 12px; border-radius: 6px;">
-                        <div><strong>${lang === 'ta' ? 'ஆரம்பம்' : 'Start'}:</strong> ${pStartStr}</div>
-                        <div><strong>${lang === 'ta' ? 'முடிவு' : 'End'}:</strong> ${pEndStr}</div>
-                        <div><strong>${lang === 'ta' ? 'சந்திராஷ்டம ராசி' : '8th Sign'}:</strong> <span style="color: #ef4444; font-weight: 600;">${eighthHouseName}</span></div>
-                    </div>
-
-                    <!-- Star & Pada breakdown for this period -->
-                    <div style="display: flex; flex-direction: column; gap: 6px; margin-top: 4px;">
-                        <div style="font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase;">
-                            ⭐ ${lang === 'ta' ? 'நட்சத்திர & பாத வாரியான துல்லிய நேரங்கள்' : 'Star & Pada-wise Exact Timings'}:
-                        </div>
-                        ${starSegmentsHtml}
-                    </div>
-                </div>
-            `;
-        });
-    }
-    
     // Rasi Selector Pills
     let rasiPillsHtml = '<div class="rasi-selector-container" style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; margin-bottom: 16px;">';
     for (let i = 0; i < 12; i++) {
@@ -1379,8 +1308,8 @@ function renderChandrashtamaCardHtml(currentTransit, t) {
     }
     rasiPillsHtml += '</div>';
 
-    const title = lang === 'ta' ? 'சந்திராஷ்டம கணிப்பான் (நட்சத்திர & பாத விவரங்கள்)' : 'Chandrashtama Calculator (Star & Pada Details)';
-    const subtitle = lang === 'ta' ? 'ராசியைத் தேர்ந்தெடுத்து நட்சத்திர & பாத வாரியான துல்லிய சந்திராஷ்டம ஆரம்பம்/முடிவு நேரங்களை அறியவும்' : 'Select your Rasi to view star & pada-wise exact Chandrashtama timings';
+    const title = lang === 'ta' ? 'சந்திராஷ்டம விவரங்கள் (நட்சத்திர & பாத வாரியாக)' : 'Chandrashtama Details (Star & Pada-wise)';
+    const subtitle = lang === 'ta' ? 'ராசியைத் தேர்ந்தெடுத்து நட்சத்திர & பாத வாரியான சந்திராஷ்டம நட்சத்திரங்களை அறியவும்' : 'Select your Rasi to view star & pada-wise Chandrashtama details';
 
     return `
         <div class="card" id="chandrashtama-card">
@@ -1399,7 +1328,7 @@ function renderChandrashtamaCardHtml(currentTransit, t) {
                 ${rasiPillsHtml}
 
                 <!-- Selected Sign Overview Card with Star & Pada Mapping -->
-                <div style="display: flex; flex-direction: column; gap: 14px; padding: 16px 18px; background: rgba(0,0,0,0.02); border: 1px solid var(--card-border); border-radius: 10px; margin-bottom: 16px;">
+                <div style="display: flex; flex-direction: column; gap: 14px; padding: 16px 18px; background: rgba(0,0,0,0.02); border: 1px solid var(--card-border); border-radius: 10px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
                         <div>
                             <span style="font-size: 11px; color: var(--text-secondary); font-weight: 600; text-transform: uppercase;">
@@ -1439,14 +1368,6 @@ function renderChandrashtamaCardHtml(currentTransit, t) {
                             </table>
                         </div>
                     </div>
-                </div>
-
-                <!-- Upcoming Periods with Star & Pada Breakdown -->
-                <div>
-                    <h3 style="font-size: 16px; font-weight: 700; color: var(--text-primary); margin-bottom: 12px;">
-                        🗓️ ${lang === 'ta' ? `அடுத்த சந்திராஷ்டம காலங்கள் & நட்சத்திர வாரியான நேரங்கள் (${selectedRasiName})` : `Upcoming Chandrashtama Periods & Star Timings (${selectedRasiName})`}
-                    </h3>
-                    ${upcomingCardsHtml}
                 </div>
             </div>
         </div>
