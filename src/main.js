@@ -1349,12 +1349,9 @@ function renderChandrashtamaCardHtml(currentTransit, t) {
         
         starPadaRowsHtml += `
             <tr style="border-bottom: 1px solid var(--card-border);">
-                <td style="padding: 12px 14px; font-weight: 600; color: var(--accent); vertical-align: middle;">
-                    <div>${sName}</div>
-                    <div style="font-size: 11.5px; color: var(--text-secondary); font-weight: normal; margin-top: 2px;">${padasText}</div>
-                </td>
-                <td style="padding: 12px 14px; color: #ef4444; vertical-align: middle; line-height: 1.5;">
-                    ${targetStarsHtml || '-'}
+                <td style="padding: 12px 14px; font-weight: 600; color: var(--accent); vertical-align: middle; width: 35%;">
+                    <div style="font-size: 14.5px;">${sName}</div>
+                    <div style="font-size: 12px; color: var(--text-secondary); font-weight: normal; margin-top: 2px;">${padasText}</div>
                 </td>
                 <td style="padding: 12px 14px; vertical-align: middle;">
                     ${timingHtml}
@@ -1455,8 +1452,7 @@ function renderChandrashtamaCardHtml(currentTransit, t) {
                             <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
                                 <thead>
                                     <tr style="background: rgba(0,0,0,0.03); border-bottom: 2px solid var(--card-border);">
-                                        <th style="padding: 10px 14px; text-align: left;">${lang === 'ta' ? 'ஜென்ம நட்சத்திரம் & பாதம்' : 'Birth Star & Padas'}</th>
-                                        <th style="padding: 10px 14px; text-align: left;">${lang === 'ta' ? 'சந்திராஷ்டம நட்சத்திரம் & பாதம்' : 'Chandrashtama Star & Padas'}</th>
+                                        <th style="padding: 10px 14px; text-align: left; width: 35%;">${lang === 'ta' ? 'ஜென்ம நட்சத்திரம் & பாதம்' : 'Birth Star & Padas'}</th>
                                         <th style="padding: 10px 14px; text-align: left;">${lang === 'ta' ? 'சந்திராஷ்டம ஆரம்பம் & முடிவு தேதிகள்' : 'Chandrashtama Dates & Timings'}</th>
                                     </tr>
                                 </thead>
