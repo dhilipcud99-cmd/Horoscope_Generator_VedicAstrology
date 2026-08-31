@@ -498,3 +498,303 @@ export function calculateSubPeriods(parentPeriod, birthDateStr) {
     
     return filteredSubPeriods;
 }
+
+// -------------------------------------------------------------
+// CHANDRASHTAMA (சந்திராஷ்டமம்) CALCULATIONS
+// -------------------------------------------------------------
+
+// Calculate sidereal Moon longitude for any given Date object
+export function getMoonSiderealLongitude(date) {
+    const astroTime = new AstroTime(date);
+    const jd = 2451545.0 + astroTime.ut;
+    const ayanamsa = getAyanamsa(jd);
+    const vector = GeoVector(Body.Moon, astroTime, true);
+    const ecl = Ecliptic(vector);
+    return (ecl.elon - ayanamsa + 360) % 360;
+}
+
+// Get Chandrashtama (8th house) Rasi index for a given Janma Rasi index (0-11)
+export function getChandrashtamaRasiForJanmaRasi(janmaRasiIdx) {
+    return (janmaRasiIdx + 7) % 12;
+}
+
+// Get the Janma Rasi index that has Chandrashtama when transit Moon is in transitMoonRasiIdx
+export function getJanmaRasiForTransitMoonRasi(transitMoonRasiIdx) {
+    return (transitMoonRasiIdx + 5) % 12;
+}
+
+// Map of 27 Janma Nakshatras to their respective peak Chandrashtama star index(es)
+export const starChandrashtamaMap = [
+    [16],       // 0: Ashwini -> Anuradha (Anusham)
+    [17],       // 1: Bharani -> Jyeshtha (Kettai)
+    [15, 16],   // 2: Krittika -> Vishakha (pada 4) / Anuradha (Scorpio) / Mula (Sagittarius)
+    [19],       // 3: Rohini -> Poorva Ashadha (Pooradam)
+    [20, 21],   // 4: Mrigashirsha -> Uttara Ashadha (Uthiradam) / Shravana (Thiruvonam)
+    [22],       // 5: Ardra -> Dhanishta (Avittam)
+    [23, 24],   // 6: Punarvasu -> Shatabhisha (Sadhayam) / Poorva Bhadrapada (Poorattathi)
+    [25],       // 7: Pushya -> Uttara Bhadrapada (Uthirattathi)
+    [26],       // 8: Ashlesha -> Revati (Revathi)
+    [24, 25],   // 9: Magha -> Poorva Bhadrapada / Uttara Bhadrapada
+    [25, 26],   // 10: Poorva Phalguni -> Uttara Bhadrapada / Revati
+    [0, 1],     // 11: Uttara Phalguni -> Ashwini / Bharani
+    [1, 2],     // 12: Hasta -> Bharani / Krittika
+    [2, 3],     // 13: Chitra -> Krittika / Rohini
+    [4, 5],     // 14: Swati -> Mrigashirsha / Ardra
+    [5, 6],     // 15: Vishakha -> Ardra / Punarvasu
+    [7, 8],     // 16: Anuradha -> Pushya / Ashlesha
+    [8, 9],     // 17: Jyeshtha -> Ashlesha / Magha
+    [10, 11],   // 18: Mula -> Poorva Phalguni / Uttara Phalguni
+    [11, 12],   // 19: Poorva Ashadha -> Uttara Phalguni / Hasta
+    [12, 13],   // 20: Uttara Ashadha -> Hasta / Chitra
+    [13, 14],   // 21: Shravana -> Chitra / Swati
+    [15, 16],   // 22: Dhanishta -> Vishakha / Anuradha
+    [16, 17],   // 23: Shatabhisha -> Anuradha / Jyeshtha
+    [18, 19],   // 24: Poorva Bhadrapada -> Mula / Poorva Ashadha
+    [19, 20],   // 25: Uttara Bhadrapada -> Poorva Ashadha / Uttara Ashadha
+    [20, 21]    // 26: Revati -> Uttara Ashadha / Shravana
+];
+
+// Returns stars belonging to a given Rasi (0-11)
+export function getStarsInRasi(rasiIdx) {
+    const starLength = 360 / 27; // 13.3333 deg
+    const padaLength = starLength / 4; // 3.3333 deg
+    const startLon = rasiIdx * 30;
+    const endLon = (rasiIdx + 1) * 30;
+    
+    const stars = [];
+    for (let s = 0; s < 27; s++) {
+        const sStart = s * starLength;
+        const sEnd = (s + 1) * starLength;
+        if (sEnd > startLon && sStart < endLon) {
+            // Find which padas overlap with this rasi
+            const padas = [];
+            for (let p = 1; p <= 4; p++) {
+                const pStart = sStart + (p - 1) * padaLength;
+                const pEnd = sStart + p * padaLength;
+                if (pEnd > startLon + 0.001 && pStart < endLon - 0.001) {
+                    padas.push(p);
+                }
+            }
+            stars.push({ starIdx: s, padas });
+        }
+    }
+    return stars;
+}
+
+// Find precise start and end time when the Moon transits a given sign around a target date
+export function findMoonSignTransitWindow(targetDate, targetRasiIdx) {
+    const centerTime = new Date(targetDate).getTime();
+    
+    // Search backward to find entry (ingress)
+    let leftTime = centerTime - 4 * 24 * 3600 * 1000;
+    let rightTime = centerTime;
+    
+    // Step in 1-hour increments backward to find boundary
+    let entryStepTime = centerTime;
+    while (entryStepTime > leftTime) {
+        const testLon = getMoonSiderealLongitude(new Date(entryStepTime));
+        const rIdx = getRasiSignIndex(testLon);
+        if (rIdx !== targetRasiIdx) {
+            leftTime = entryStepTime;
+            rightTime = entryStepTime + 3600 * 1000;
+            break;
+        }
+        entryStepTime -= 3600 * 1000;
+    }
+    
+    // Refine entry using bisection to ~1 minute precision
+    for (let iter = 0; iter < 12; iter++) {
+        const midTime = (leftTime + rightTime) / 2;
+        const testLon = getMoonSiderealLongitude(new Date(midTime));
+        const rIdx = getRasiSignIndex(testLon);
+        if (rIdx === targetRasiIdx) {
+            rightTime = midTime;
+        } else {
+            leftTime = midTime;
+        }
+    }
+    const ingressTime = new Date(rightTime);
+    
+    // Search forward to find exit (egress)
+    leftTime = centerTime;
+    rightTime = centerTime + 4 * 24 * 3600 * 1000;
+    let exitStepTime = centerTime;
+    while (exitStepTime < rightTime) {
+        const testLon = getMoonSiderealLongitude(new Date(exitStepTime));
+        const rIdx = getRasiSignIndex(testLon);
+        if (rIdx !== targetRasiIdx) {
+            leftTime = exitStepTime - 3600 * 1000;
+            rightTime = exitStepTime;
+            break;
+        }
+        exitStepTime += 3600 * 1000;
+    }
+    
+    // Refine exit using bisection
+    for (let iter = 0; iter < 12; iter++) {
+        const midTime = (leftTime + rightTime) / 2;
+        const testLon = getMoonSiderealLongitude(new Date(midTime));
+        const rIdx = getRasiSignIndex(testLon);
+        if (rIdx === targetRasiIdx) {
+            leftTime = midTime;
+        } else {
+            rightTime = midTime;
+        }
+    }
+    const egressTime = new Date(leftTime);
+    
+    return {
+        rasiIdx: targetRasiIdx,
+        start: ingressTime,
+        end: egressTime
+    };
+}
+
+// Find the exact time when Moon reaches a specific sidereal longitude between tMin and tMax
+export function findMoonLongitudeTime(tMin, tMax, targetLon) {
+    let left = tMin.getTime();
+    let right = tMax.getTime();
+    
+    for (let iter = 0; iter < 18; iter++) {
+        const mid = (left + right) / 2;
+        const lon = getMoonSiderealLongitude(new Date(mid));
+        
+        let diff = lon - targetLon;
+        if (diff > 180) diff -= 360;
+        if (diff < -180) diff += 360;
+        
+        if (diff < 0) {
+            left = mid;
+        } else {
+            right = mid;
+        }
+    }
+    
+    return new Date((left + right) / 2);
+}
+
+// Break down a sign transit window into exact star and pada sub-windows
+export function getStarTransitsInSignWindow(windowStart, windowEnd, rasiIdx) {
+    const starLength = 360 / 27; // 13.333333333333334
+    const starsInSign = getStarsInRasi(rasiIdx);
+    
+    const starWindows = [];
+    
+    starsInSign.forEach(starInfo => {
+        const starIdx = starInfo.starIdx;
+        const padas = starInfo.padas;
+        
+        const sStartLon = Math.max(starIdx * starLength, rasiIdx * 30);
+        const sEndLon = Math.min((starIdx + 1) * starLength, (rasiIdx + 1) * 30);
+        
+        let sStart = windowStart;
+        if (Math.abs(sStartLon - rasiIdx * 30) > 0.01) {
+            sStart = findMoonLongitudeTime(windowStart, windowEnd, sStartLon);
+        }
+        
+        let sEnd = windowEnd;
+        if (Math.abs(sEndLon - (rasiIdx + 1) * 30) > 0.01) {
+            sEnd = findMoonLongitudeTime(windowStart, windowEnd, sEndLon);
+        }
+        
+        starWindows.push({
+            starIdx,
+            padas,
+            start: sStart,
+            end: sEnd
+        });
+    });
+    
+    return starWindows;
+}
+
+// Calculate upcoming Chandrashtama periods for a specific Janma Rasi over the next `daysCount` days
+export function calculateUpcomingChandrashtamaForRasi(janmaRasiIdx, startDateStr = new Date().toISOString(), daysCount = 60) {
+    const target8thRasi = getChandrashtamaRasiForJanmaRasi(janmaRasiIdx);
+    const startDate = new Date(startDateStr);
+    const startMs = startDate.getTime();
+    const endMs = startMs + daysCount * 24 * 3600 * 1000;
+    
+    const results = [];
+    let currentMs = startMs;
+    const stepMs = 6 * 3600 * 1000; // 6-hour probe step
+    
+    while (currentMs <= endMs) {
+        const testLon = getMoonSiderealLongitude(new Date(currentMs));
+        const rIdx = getRasiSignIndex(testLon);
+        
+        if (rIdx === target8thRasi) {
+            const window = findMoonSignTransitWindow(new Date(currentMs), target8thRasi);
+            // Check if this window was already captured
+            const alreadyExists = results.some(r => Math.abs(r.start.getTime() - window.start.getTime()) < 12 * 3600 * 1000);
+            if (!alreadyExists) {
+                const stars = getStarsInRasi(target8thRasi);
+                const starTransits = getStarTransitsInSignWindow(window.start, window.end, target8thRasi);
+                results.push({
+                    janmaRasiIdx,
+                    transitRasiIdx: target8thRasi,
+                    start: window.start,
+                    end: window.end,
+                    stars,
+                    starTransits
+                });
+            }
+            // Skip past the end of this window
+            currentMs = window.end.getTime() + 12 * 3600 * 1000;
+        } else {
+            currentMs += stepMs;
+        }
+    }
+    
+    return results;
+}
+
+// Calculate full monthly Chandrashtama transit windows for an entire calendar month
+export function calculateMonthlyChandrashtama(year, month) {
+    // month is 1-indexed (1 = Jan, 12 = Dec)
+    const monthStart = new Date(Date.UTC(year, month - 1, 1, 0, 0, 0));
+    const nextMonthStart = new Date(Date.UTC(year, month, 1, 0, 0, 0));
+    
+    const transitWindows = [];
+    let currentMs = monthStart.getTime() - 24 * 3600 * 1000; // Look back 1 day to catch ingresses spanning 1st
+    const endMs = nextMonthStart.getTime() + 24 * 3600 * 1000; // Look forward 1 day
+    
+    let lastRasi = null;
+    const stepMs = 3 * 3600 * 1000; // 3-hour probe step
+    
+    while (currentMs <= endMs) {
+        const testLon = getMoonSiderealLongitude(new Date(currentMs));
+        const rIdx = getRasiSignIndex(testLon);
+        
+        if (rIdx !== lastRasi) {
+            const window = findMoonSignTransitWindow(new Date(currentMs), rIdx);
+            
+            // Ensure we don't duplicate
+            const exists = transitWindows.some(w => Math.abs(w.start.getTime() - window.start.getTime()) < 6 * 3600 * 1000);
+            if (!exists) {
+                // Check if this window overlaps with the calendar month
+                if (window.end >= monthStart && window.start < nextMonthStart) {
+                    const affectedJanmaRasiIdx = getJanmaRasiForTransitMoonRasi(rIdx);
+                    const starsInTransitRasi = getStarsInRasi(rIdx);
+                    
+                    transitWindows.push({
+                        transitRasiIdx: rIdx,
+                        affectedJanmaRasiIdx,
+                        start: window.start,
+                        end: window.end,
+                        stars: starsInTransitRasi
+                    });
+                }
+            }
+            lastRasi = rIdx;
+            currentMs = window.end.getTime() + 3600 * 1000;
+        } else {
+            currentMs += stepMs;
+        }
+    }
+    
+    // Sort chronologically
+    transitWindows.sort((a, b) => a.start - b.start);
+    return transitWindows;
+}
+

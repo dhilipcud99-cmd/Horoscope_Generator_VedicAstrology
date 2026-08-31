@@ -146,6 +146,60 @@ export const translations = {
             title: "ஜாதகக் கட்ட நிறம்",
             presets: "முன்னமைக்கப்பட்ட கட்ட நிறங்கள்",
             custom: "தனிப்பயன் கட்ட நிறம்"
+        },
+        chandrashtama: {
+            title: "சந்திராஷ்டமம் கணிப்பான் & வழிகாட்டி",
+            subtitle: "கோச்சார சந்திரன் ஜென்ம ராசிக்கு 8-ம் இடத்திற்கு வரும் கால கணிப்புகள்",
+            tabs: {
+                today: "இன்றைய நிலை",
+                checker: "ராசி / நட்சத்திர வாரியாக",
+                calendar: "மாதாந்திர நாட்காட்டி",
+                remedies: "பரிகாரங்கள் & விதிமுறைகள்"
+            },
+            activeNowBadge: "சந்திராஷ்டமம் நடப்பில் உள்ளது",
+            upcomingBadge: "அடுத்த சந்திராஷ்டம ராசி",
+            safeBadge: "நன்மை / சுபம்",
+            activeCardTitle: "தற்போதைய சந்திராஷ்டம நிலை",
+            activeRasiLabel: "பாதிக்கப்படும் ஜென்ம ராசி",
+            activeStarsLabel: "பாதிக்கப்படும் ஜென்ம நட்சத்திரங்கள்",
+            transitMoonLabel: "கோச்சார சந்திரன் நிலை",
+            ingressLabel: "ஆரம்பம்",
+            egressLabel: "முடிவு",
+            durationLabel: "கால அளவு",
+            allSignsTitle: "12 ராசிகளின் தற்போதைய நிலை",
+            cautionNote: "⚠️ எச்சரிக்கை: இந்த நேரத்தில் முக்கிய முடிவுகள், புதிய ஒப்பந்தங்கள், பெரிய முதலீடுகள், சொத்து/வாகனம் வாங்குதல் மற்றும் நீண்ட பயணங்களைத் தவிர்க்கவும்.",
+            checkerTitle: "உங்கள் ராசி / நட்சத்திரத்திற்கான சந்திராஷ்டமம்",
+            selectRasiPrompt: "ஜென்ம ராசியைத் தேர்ந்தெடுக்கவும்:",
+            eighthSignLabel: "8-ம் வீடு (சந்திராஷ்டம ராசி):",
+            transitStarsInSign: "அதில் உள்ள நட்சத்திரங்கள்:",
+            upcomingPeriodsTitle: "அடுத்த 60 நாட்களுக்கான சந்திராஷ்டம தேதிகள்",
+            noUpcomingFound: "குறிப்பிட்ட காலத்தில் சந்திராஷ்டமம் இல்லை.",
+            calendarTitle: "மாதாந்திர சந்திராஷ்டம அட்டவணை",
+            prevMonth: "முந்தைய மாதம்",
+            nextMonth: "அடுத்த மாதம்",
+            colDateWindow: "தேதி & நேரம் (ஆரம்பம் - முடிவு)",
+            colTransitMoon: "சந்திரன் நிலை",
+            colAffectedRasi: "சந்திராஷ்டம ராசி",
+            colAffectedStars: "நட்சத்திரங்கள்",
+            remediesTitle: "சந்திராஷ்டம பரிகாரங்கள் & வழிகாட்டுதல்கள்",
+            whatIsTitle: "சந்திராஷ்டமம் என்றால் என்ன?",
+            whatIsDesc: "சந்திரன் உங்கள் பிறந்த ராசிக்கு எட்டாம் இடத்தில் சஞ்சரிக்கும் 2¼ நாட்கள் (சுமார் 54 மணி நேரம்) சந்திராஷ்டமம் எனப்படும். மனோகாரகனான சந்திரன் மறைவு ஸ்தானமான 8-ல் இருக்கும் போது மனம் சஞ்சலப்படலாம்.",
+            dontsTitle: "தவிர்க்க வேண்டியவை (Don'ts)",
+            dontsList: [
+                "முக்கியமான புதிய ஒப்பந்தங்கள், உடன்படிக்கைகளில் கையெழுத்திட வேண்டாம்.",
+                "புதிய தொழில் தொடங்குதல், பெரிய அளவிலான நிதி முதலீடுகளை தவிர்க்கவும்.",
+                "தேவையற்ற வாக்குவாதங்கள், கோபம் மற்றும் உணர்ச்சிவசப்படுவதைத் தவிர்க்கவும்.",
+                "நீண்ட தூர இரவு நேர பயணங்கள் மற்றும் சுப காரியங்கள் (திருமணம், கிரகப்பிரவேசம்) தொடங்குவதை தவிர்க்கவும்.",
+                "விலையுயர்ந்த பொருட்கள், நிலம், வாகனம் வாங்குவதை தள்ளிப்போடவும்."
+            ],
+            dosTitle: "செய்ய வேண்டியவை & பரிகாரங்கள் (Do's & Remedies)",
+            dosList: [
+                "சிவபெருமான், பார்வதி தேவி அல்லது சந்திர பகவானை வழிபடவும்.",
+                "'ஓம் நம சிவாய' அல்லது 'சந்திர காயத்ரி மந்திரம்' 108 முறை ஜபிக்கவும்.",
+                "திங்கட்கிழமை சிவபெருமானுக்கு பால் அல்லது தயிர் அபிஷேகம் செய்யவும்.",
+                "பசு மாட்டிற்கு அகத்திக்கீரை, வாழைப்பழம் அல்லது பறவைகளுக்கு உணவளிக்கவும்.",
+                "அமைதியாகவும், நேர்மறை சிந்தனையுடனும் வழக்கமான அன்றாடப் பணிகளை மட்டும் கவனமாகச் செய்யவும்."
+            ]
         }
     },
     en: {
@@ -295,6 +349,60 @@ export const translations = {
             title: "Chart Accent Color",
             presets: "Chart Presets",
             custom: "Chart Custom Color"
+        },
+        chandrashtama: {
+            title: "Chandrashtama Calculator & Guide",
+            subtitle: "Transit Moon 8th House (Ashtama Sancharam) Timings, Warnings & Remedies",
+            tabs: {
+                today: "Today's Status",
+                checker: "Rasi / Star Checker",
+                calendar: "Monthly Calendar",
+                remedies: "Remedies & Rules"
+            },
+            activeNowBadge: "Chandrashtama Active Now",
+            upcomingBadge: "Upcoming Next",
+            safeBadge: "Safe / Clear",
+            activeCardTitle: "Current Chandrashtama Status",
+            activeRasiLabel: "Affected Janma Rasi (Moon Sign)",
+            activeStarsLabel: "Affected Birth Stars (Nakshatras)",
+            transitMoonLabel: "Transit Moon Position",
+            ingressLabel: "Starts At",
+            egressLabel: "Ends At",
+            durationLabel: "Duration",
+            allSignsTitle: "Current Status for All 12 Zodiac Signs",
+            cautionNote: "⚠️ Caution: Avoid taking crucial life decisions, signing high-value contracts, major investments, purchasing property/vehicles, and unnecessary disputes.",
+            checkerTitle: "Check Chandrashtama for Your Sign",
+            selectRasiPrompt: "Select Your Janma Rasi (Moon Sign):",
+            eighthSignLabel: "8th House (Chandrashtama Sign):",
+            transitStarsInSign: "Stars in this 8th House:",
+            upcomingPeriodsTitle: "Upcoming Chandrashtama Dates (Next 60 Days)",
+            noUpcomingFound: "No Chandrashtama periods found in the selected range.",
+            calendarTitle: "Monthly Chandrashtama Calendar",
+            prevMonth: "Previous Month",
+            nextMonth: "Next Month",
+            colDateWindow: "Date & Time Window (Starts - Ends)",
+            colTransitMoon: "Transit Moon Sign",
+            colAffectedRasi: "Affected Janma Rasi",
+            colAffectedStars: "Affected Stars",
+            remediesTitle: "Chandrashtama Guidance & Remedies",
+            whatIsTitle: "What is Chandrashtama?",
+            whatIsDesc: "Chandrashtama occurs when the transit Moon passes through the 8th house from your natal Moon sign. Lasting approximately 2¼ days (~54 hours), this transit may cause emotional instability, anxiety, delays, and unexpected misunderstandings.",
+            dontsTitle: "Activities to Avoid (Don'ts)",
+            dontsList: [
+                "Avoid signing important contracts, legal agreements, or entering partnerships.",
+                "Postpone major financial investments, stock trading, and high-value transactions.",
+                "Avoid arguments, confrontations, heated discussions, and impulse decisions.",
+                "Avoid long journeys, late-night driving, and initiating auspicious ceremonies.",
+                "Avoid purchasing vehicles, property, or luxury assets."
+            ],
+            dosTitle: "Recommended Practices & Remedies (Do's)",
+            dosList: [
+                "Worship Lord Shiva, Goddess Parvati, or Chandra Bhagavan.",
+                "Chant 'Om Namah Shivaya' or Chandra Gayatri Mantra 108 times daily.",
+                "Offer milk or white flowers at a Shiva temple on Mondays.",
+                "Feed cows with green fodder/bananas or feed birds in the morning.",
+                "Stay calm, practice meditation, and focus only on routine daily duties."
+            ]
         }
     },
     hi: {
@@ -444,6 +552,60 @@ export const translations = {
             title: "कुंडली का मुख्य रंग",
             presets: "पूर्व निर्धारित कुंडली रंग",
             custom: "कस्टम कुंडली रंग"
+        },
+        chandrashtama: {
+            title: "चंद्राष्टम कैलकुलेटर और मार्गदर्शन",
+            subtitle: "गोचर चंद्रमा के 8वें भाव में संचरण का समय और सावधानियां",
+            tabs: {
+                today: "आज की स्थिति",
+                checker: "राशि / नक्षत्र वार",
+                calendar: "मासिक कैलेंडर",
+                remedies: "उपाय और नियम"
+            },
+            activeNowBadge: "चंद्राष्टम सक्रिय है",
+            upcomingBadge: "आगामी चंद्राष्टम",
+            safeBadge: "सुरक्षित / शुभ",
+            activeCardTitle: "वर्तमान चंद्राष्टम स्थिति",
+            activeRasiLabel: "प्रभावित जन्म राशि",
+            activeStarsLabel: "प्रभावित जन्म नक्षत्र",
+            transitMoonLabel: "गोचर चंद्रमा की स्थिति",
+            ingressLabel: "आरंभ",
+            egressLabel: "समाप्ति",
+            durationLabel: "अवधि",
+            allSignsTitle: "सभी 12 राशियों की वर्तमान स्थिति",
+            cautionNote: "⚠️ सावधानी: इस दौरान महत्वपूर्ण निर्णय, नए अनुबंध, बड़े निवेश, संपत्ति/वाहन की खरीद और लंबी यात्राओं से बचें।",
+            checkerTitle: "अपनी राशि / नक्षत्र के लिए चंद्राष्टम जांचें",
+            selectRasiPrompt: "अपनी जन्म राशि चुनें:",
+            eighthSignLabel: "8वां भाव (चंद्राष्टम राशि):",
+            transitStarsInSign: "इस भाव के नक्षत्र:",
+            upcomingPeriodsTitle: "अगले 60 दिनों की चंद्राष्टम तिथियां",
+            noUpcomingFound: "इस अवधि में कोई चंद्राष्टम नहीं मिला।",
+            calendarTitle: "मासिक चंद्राष्टम कैलेंडर",
+            prevMonth: "पिछला महीना",
+            nextMonth: "अगला महीना",
+            colDateWindow: "दिनांक और समय (आरंभ - समाप्ति)",
+            colTransitMoon: "चंद्रमा की राशि",
+            colAffectedRasi: "प्रभावित जन्म राशि",
+            colAffectedStars: "प्रभावित नक्षत्र",
+            remediesTitle: "चंद्राष्टम उपाय एवं मार्गदर्शन",
+            whatIsTitle: "चंद्राष्टम क्या है?",
+            whatIsDesc: "जब गोचर चंद्रमा जन्म राशि से 8वें भाव में संचार करता है, तो इसे चंद्राष्टम कहा जाता है। यह अवधि लगभग सवा दो दिन (54 घंटे) की होती है।",
+            dontsTitle: "क्या न करें (Don'ts)",
+            dontsList: [
+                "महत्वपूर्ण अनुबंधों या समझौतों पर हस्ताक्षर न करें।",
+                "नए व्यापार या बड़े निवेश से बचें।",
+                "अनावश्यक वाद-विवाद, क्रोध और जल्दबाजी के फैसलों से बचें।",
+                "लंबी दूरी की यात्राएं और शुभ कार्य टालें।",
+                "वाहन या संपत्ति खरीदने से बचें।"
+            ],
+            dosTitle: "क्या करें और उपाय (Do's)",
+            dosList: [
+                "भगवान शिव, माता पार्वती या चंद्र देव की पूजा करें।",
+                "'ॐ नमः शिवाय' या चंद्र गायत्री मंत्र का 108 बार जाप करें।",
+                "सोमवार को शिवलिंग पर कच्चा दूध या जल अर्पित करें।",
+                "गाय को हरा चारा या पक्षियों को दाना डालें।",
+                "शांत रहें और केवल नियमित दैनिक कार्यों पर ध्यान दें।"
+            ]
         }
     },
     te: {
@@ -593,6 +755,60 @@ export const translations = {
             title: "చార్ట్ లక్ష్య రంగు",
             presets: "చార్ట్ ప్రీసెట్ రంగులు",
             custom: "చార్ట్ కస్టమ్ రంగు"
+        },
+        chandrashtama: {
+            title: "చంద్రాష్టమం క్యాలిక్యులేటర్ & గైడ్",
+            subtitle: "గోచార చంద్రుడు జన్మరాశికి 8వ స్థానంలో సంచరించే సమయాలు మరియు జాగ్రత్తలు",
+            tabs: {
+                today: "నేటి స్థితి",
+                checker: "రాశి / నక్షత్రాల వారీగా",
+                calendar: "నెలవారీ క్యాలెండర్",
+                remedies: "పరిహారాలు & నియమాలు"
+            },
+            activeNowBadge: "చంద్రాష్టమం నడుస్తోంది",
+            upcomingBadge: "తదుపరి చంద్రాష్టమం",
+            safeBadge: "శుభం / సురక్షితం",
+            activeCardTitle: "ప్రస్తుత చంద్రాష్టమ స్థితి",
+            activeRasiLabel: "ప్రభావిత జన్మ రాశి",
+            activeStarsLabel: "ప్రభావిత జన్మ నక్షత్రాలు",
+            transitMoonLabel: "గోచార చంద్రుని స్థితి",
+            ingressLabel: "ప్రారంభం",
+            egressLabel: "ముగింపు",
+            durationLabel: "వ్యవధి",
+            allSignsTitle: "12 రాశుల ప్రస్తుత స్థితి",
+            cautionNote: "⚠️ హెచ్చరిక: ఈ సమయంలో ముఖ్యమైన నిర్ణయాలు, కొత్త ఒప్పందాలు, పెద్ద పెట్టుబడులు, వాహన/ఆస్తి కొనుగోళ్లు మరియు ప్రయాణాలు నివారించండి.",
+            checkerTitle: "మీ రాశి / నక్షత్రం కోసం చంద్రాష్టమం తనిఖీ చేయండి",
+            selectRasiPrompt: "మీ జన్మ రాశిని ఎంచుకోండి:",
+            eighthSignLabel: "8వ ఇల్లు (చంద్రాష్టమ రాశి):",
+            transitStarsInSign: "ఈ రాశిలోని నక్షత్రాలు:",
+            upcomingPeriodsTitle: "రాబోయే 60 రోజుల చంద్రాష్టమ తేదీలు",
+            noUpcomingFound: "ఈ వ్యవధిలో చంద్రాష్టమం లేదు.",
+            calendarTitle: "నెలవారీ చంద్రాష్టమ పట్టిక",
+            prevMonth: "గత నెల",
+            nextMonth: "తదుపరి నెల",
+            colDateWindow: "తేదీ & సమయం (ప్రారంభం - ముగింపు)",
+            colTransitMoon: "చంద్రుని రాశి",
+            colAffectedRasi: "ప్రభావిత జన్మ రాశి",
+            colAffectedStars: "ప్రభావిత నక్షత్రాలు",
+            remediesTitle: "చంద్రాష్టమ పరిహారాలు & మార్గదర్శకాలు",
+            whatIsTitle: "చంద్రాష్టమం అంటే ఏమిటి?",
+            whatIsDesc: "గోచార చంద్రుడు మీ జన్మరాశి నుండి 8వ స్థానంలో సంచరించే 2¼ రోజుల (సుమారు 54 గంటలు) కాలాన్ని చంద్రాష్టమం అంటారు.",
+            dontsTitle: "నివారించాల్సినవి (Don'ts)",
+            dontsList: [
+                "ముఖ్యమైన పత్రాలు లేదా ఒప్పందాలపై సంతకాలు చేయవద్దు.",
+                "పెద్ద ఆర్థిక పెట్టుబడులు మరియు కొత్త వ్యాపారాలు ప్రారంభించవద్దు.",
+                "అనవసర వివాదాలు, కోపం మరియు ఆవేశ నిర్ణయాలు నివారించండి.",
+                "సుదూర ప్రయాణాలు మరియు శుభకార్యాలు వాయిదా వేయండి.",
+                "కొత్త వాహనాలు లేదా ఆస్తులు కొనవద్దు."
+            ],
+            dosTitle: "చేయవలసినవి & పరిహారాలు (Do's)",
+            dosList: [
+                "శివుడు లేదా చంద్ర భగవానుడిని ఆరాధించండి.",
+                "'ఓం నమః శివాయ' మంత్రాన్ని 108 సార్లు జపించండి.",
+                "సోమవారం శివలింగానికి పాలాభిషేకం చేయండి.",
+                "ఆవుకు గ్రాసం లేదా పక్షులకు ఆహారం వేయండి.",
+                "ప్రశాంతంగా ఉండి నిత్య విధులను మాత్రమే శ్రద్ధగా నిర్వహించండి."
+            ]
         }
     },
     kn: {
@@ -742,6 +958,60 @@ export const translations = {
             title: "ಜಾತಕ ಕೋಷ್ಟಕದ ಬಣ್ಣ",
             presets: "ಕೋಷ್ಟಕದ ಪೂರ್ವಸಿದ್ಧ ಬಣ್ಣಗಳು",
             custom: "ಕೋಷ್ಟಕದ ಕಸ್ಟಮ್ ಬಣ್ಣ"
+        },
+        chandrashtama: {
+            title: "ಚಂದ್ರಾಷ್ಟಮ ಕ್ಯಾಲ್ಕುಲೇಟರ್ ಮತ್ತು ಮಾರ್ಗದರ್ಶಿ",
+            subtitle: "ಗೋಚಾರ ಚಂದ್ರನು ಜನ್ಮರಾಶಿಯ 8ನೇ ಮನೆಯಲ್ಲಿ ಸಂಚರಿಸುವ ಸಮಯ ಮತ್ತು ಮುನ್ನೆಚ್ಚರಿಕೆಗಳು",
+            tabs: {
+                today: "ಇಂದಿನ ಸ್ಥಿತಿ",
+                checker: "ರಾಶಿ / ನಕ್ಷತ್ರವಾರು",
+                calendar: "ಮಾಸಿಕ ಕ್ಯಾಲೆಂಡರ್",
+                remedies: "ಪರಿಹಾರಗಳು ಮತ್ತು ನಿಯಮಗಳು"
+            },
+            activeNowBadge: "ಚಂದ್ರಾಷ್ಟಮ ಚಾಲ್ತಿಯಲ್ಲಿದೆ",
+            upcomingBadge: "ಮುಂದಿನ ಚಂದ್ರಾಷ್ಟಮ",
+            safeBadge: "ಶುಭ / ಸುರಕ್ಷಿತ",
+            activeCardTitle: "ಪ್ರಸ್ತುತ ಚಂದ್ರಾಷ್ಟಮ ಸ್ಥಿತಿ",
+            activeRasiLabel: "ಬಾಧಿತ ಜನ್ಮ ರಾಶಿ",
+            activeStarsLabel: "ಬಾಧಿತ ಜನ್ಮ ನಕ್ಷತ್ರಗಳು",
+            transitMoonLabel: "ಗೋಚಾರ ಚಂದ್ರನ ಸ್ಥಿತಿ",
+            ingressLabel: "ಆರಂಭ",
+            egressLabel: "ಮುಕ್ತಾಯ",
+            durationLabel: "ಅವಧಿ",
+            allSignsTitle: "12 ರಾಶಿಗಳ ಪ್ರಸ್ತುತ ಸ್ಥಿತಿ",
+            cautionNote: "⚠️ ಎಚ್ಚರಿಕೆ: ಈ ಸಮಯದಲ್ಲಿ ಪ್ರಮುಖ ನಿರ್ಧಾರಗಳು, ಹೊಸ ಒಪ್ಪಂದಗಳು, ದೊಡ್ಡ ಹೂಡಿಕೆಗಳು ಮತ್ತು ಪ್ರಯಾಣಗಳನ್ನು ತಪ್ಪಿಸಿ.",
+            checkerTitle: "ನಿಮ್ಮ ರಾಶಿ / ನಕ್ಷತ್ರಕ್ಕಾಗಿ ಚಂದ್ರಾಷ್ಟಮ ಪರಿಶೀಲಿಸಿ",
+            selectRasiPrompt: "ನಿಮ್ಮ ಜನ್ಮ ರಾಶಿಯನ್ನು ಆಯ್ಕೆಮಾಡಿ:",
+            eighthSignLabel: "8ನೇ ಮನೆ (ಚಂದ್ರಾಷ್ಟಮ ರಾಶಿ):",
+            transitStarsInSign: "ಈ ರಾಶಿಯ ನಕ್ಷತ್ರಗಳು:",
+            upcomingPeriodsTitle: "ಮುಂದಿನ 60 ದಿನಗಳ ಚಂದ್ರಾಷ್ಟಮ ದಿನಾಂಕಗಳು",
+            noUpcomingFound: "ಈ ಅವಧಿಯಲ್ಲಿ ಚಂದ್ರಾಷ್ಟಮವಿಲ್ಲ.",
+            calendarTitle: "ಮಾಸಿಕ ಚಂದ್ರಾಷ್ಟಮ ಕ್ಯಾಲೆಂಡರ್",
+            prevMonth: "ಹಿಂದಿನ ತಿಂಗಳು",
+            nextMonth: "ಮುಂದಿನ ತಿಂಗಳು",
+            colDateWindow: "ದಿನಾಂಕ ಮತ್ತು ಸಮಯ (ಆರಂಭ - ಮುಕ್ತಾಯ)",
+            colTransitMoon: "ಚಂದ್ರನ ರಾಶಿ",
+            colAffectedRasi: "ಬಾಧಿತ ಜನ್ಮ ರಾಶಿ",
+            colAffectedStars: "ಬಾಧಿತ ನಕ್ಷತ್ರಗಳು",
+            remediesTitle: "ಚಂದ್ರಾಷ್ಟಮ ಪರಿಹಾರಗಳು ಮತ್ತು ನಿಯಮಗಳು",
+            whatIsTitle: "ಚಂದ್ರಾಷ್ಟಮ ಎಂದರೇನು?",
+            whatIsDesc: "ಗೋಚಾರ ಚಂದ್ರನು ನಿಮ್ಮ ಜನ್ಮರಾಶಿಯಿಂದ 8ನೇ ಮನೆಯಲ್ಲಿ ಸಂಚರಿಸುವ 2¼ ದಿನಗಳ (ಸುಮಾರು 54 ಗಂಟೆಗಳು) ಅವಧಿಯನ್ನು ಚಂದ್ರಾಷ್ಟಮ ಎನ್ನಲಾಗುತ್ತದೆ.",
+            dontsTitle: "ಮಾಡಬಾರದ ಕೆಲಸಗಳು (Don'ts)",
+            dontsList: [
+                "ಪ್ರಮುಖ ಒಪ್ಪಂದಗಳು ಮತ್ತು ಪತ್ರಗಳಿಗೆ ಸಹಿ ಹಾಕಬೇಡಿ.",
+                "ಹೊಸ ವ್ಯಾಪಾರ ಅಥವಾ ದೊಡ್ಡ ಹೂಡಿಕೆಗಳನ್ನು ತಪ್ಪಿಸಿ.",
+                "ಅನಗತ್ಯ ವಾದ-ವಿವಾದಗಳು ಮತ್ತು ಕೋಪವನ್ನು ನಿಯಂತ್ರಿಸಿ.",
+                "ದೂರದ ಪ್ರಯಾಣ ಮತ್ತು ಶುಭ ಕಾರ್ಯಗಳನ್ನು ಮುಂದೂಡಿ.",
+                "ವಾಹನ ಅಥವಾ ಆಸ್ತಿ ಖರೀದಿ ತಪ್ಪಿಸಿ."
+            ],
+            dosTitle: "ಮಾಡಬೇಕಾದ ಕೆಲಸಗಳು ಮತ್ತು ಪರಿಹಾರಗಳು (Do's)",
+            dosList: [
+                "ಶಿವ ಅಥವಾ ಚಂದ್ರ ದೇವರನ್ನು ಆರಾಧಿಸಿ.",
+                "'ಓಂ ನಮಃ ಶಿವಾಯ' ಮಂತ್ರವನ್ನು 108 ಬಾರಿ ಜಪಿಸಿ.",
+                "ಸೋಮವಾರ ಶಿವಲಿಂಗಕ್ಕೆ ಹಾಲಿನ ಅಭಿಷೇಕ ಮಾಡಿ.",
+                "ಹಸುವಿಗೆ ಅಥವಾ ಪಕ್ಷಿಗಳಿಗೆ ಆಹಾರ ನೀಡಿ.",
+                "ಶಾಂತರಾಗಿರಿ ಮತ್ತು ದಿನನಿತ್ಯದ ಕೆಲಸಗಳನ್ನು ಮಾತ್ರ ಗಮನವಿಟ್ಟು ಮಾಡಿ."
+            ]
         }
     },
     ml: {
@@ -891,6 +1161,61 @@ export const translations = {
             title: "ചാർട്ട് പ്രധാന നിറം",
             presets: "ചാർട്ട് പ്രിസെറ്റ് നിറങ്ങൾ",
             custom: "ചാർട്ട് കസ്റ്റം നിറം"
+        },
+        chandrashtama: {
+            title: "ചന്ദ്രാഷ്ടമം കാൽക്കുലേറ്ററും നിർദ്ദേശങ്ങളും",
+            subtitle: "ഗോചാര ചന്ദ്രൻ ജന്മരാശിയുടെ എട്ടാം ഭാവത്തിൽ സഞ്ചരിക്കുന്ന സമയവും മുൻകരുതലുകളും",
+            tabs: {
+                today: "ഇന്നത്തെ അവസ്ഥ",
+                checker: "രാശി / നಕ್ಷത്ര പ്രകാരം",
+                calendar: "പ്രതിമാസ കലണ്ടർ",
+                remedies: "പരിഹാരങ്ങളും നിയമങ്ങളും"
+            },
+            activeNowBadge: "ചന്ദ്രാഷ്ടമം നിലവിലുണ്ട്",
+            upcomingBadge: "അടുത്ത ചന്ദ്രാഷ്ടമം",
+            safeBadge: "ശുഭം / സുരക്ഷിതം",
+            activeCardTitle: "നിലവിലെ ചന്ദ്രാష్టമ അവസ്ഥ",
+            activeRasiLabel: "ബാധിക്കപ്പെടുന്ന ജന്മരാശി",
+            activeStarsLabel: "ബാധിക്കപ്പെടുന്ന ജന്മനക്ഷത്രങ്ങൾ",
+            transitMoonLabel: "ഗോചാര ചന്ദ്രന്റെ സ്ഥാനം",
+            ingressLabel: "ആരംഭം",
+            egressLabel: "സമാപനം",
+            durationLabel: "കാലയളവ്",
+            allSignsTitle: "12 രാശികളുടെ നിലവിലെ അവസ്ഥ",
+            cautionNote: "⚠️ മുന്നറിയിപ്പ്: ഈ സമയത്ത് പ്രധാന തീരുമാനങ്ങൾ, പുതിയ കരാറുകൾ, വലിയ സാമ്പത്തിക നിക്ഷേപങ്ങൾ, ദീർഘദൂര യാത്രകൾ എന്നിവ ഒഴിവാക്കുക.",
+            checkerTitle: "നിങ്ങളുടെ രാശി / നക്ഷത്രത്തിലെ ചന്ദ്രാഷ്ടമം പരിശോധിക്കുക",
+            selectRasiPrompt: "നിങ്ങളുടെ ജന്മരാശി തിരഞ്ഞെടുക്കുക:",
+            eighthSignLabel: "8-ാം ഭാവം (ചന്ദ്രാഷ്ടമ രാശി):",
+            transitStarsInSign: "ഈ രാശിയിലെ നക്ഷത്രങ്ങൾ:",
+            upcomingPeriodsTitle: "അടുത്ത 60 ദിവസങ്ങളിലെ ചന്ദ്രാഷ്ടമ തീയതികൾ",
+            noUpcomingFound: "ഈ കാലയളവിൽ ചന്ദ്രാഷ്ടമം കണ്ടെത്തിയില്ല.",
+            calendarTitle: "പ്രതിമാസ ചന്ദ്രാഷ്ടമ പട്ടിക",
+            prevMonth: "മുൻ മാസം",
+            nextMonth: "അടുത്ത മാസം",
+            colDateWindow: "തീയതി & സമയം (ആരംഭം - അവസാനം)",
+            colTransitMoon: "ചന്ദ്രന്റെ രാശി",
+            colAffectedRasi: "ബാധിക്കപ്പെടുന്ന ജന്മരാശി",
+            colAffectedStars: "ബാധിക്കപ്പെടുന്ന നക്ഷത്രങ്ങൾ",
+            remediesTitle: "ചന്ദ്രാഷ്ടമ പരിഹാരങ്ങളും മാർഗ്ഗനിർദ്ദേശങ്ങളും",
+            whatIsTitle: "എന്താണ് ചന്ദ്രാഷ്ടമം?",
+            whatIsDesc: "ഗോചാര ചന്ദ്രൻ ജന്മരാശിയിൽ നിന്ന് എട്ടാം ഭാവത്തിലൂടെ സഞ്ചരിക്കുന്ന 2¼ ദിവസത്തെ (ഏകദേശം 54 മണിക്കൂർ) സമയമാണ് ചന്ദ്രാഷ്ടമം എന്ന് അറിയപ്പെടുന്നത്.",
+            dontsTitle: "ഒഴിവാക്കേണ്ടവ (Don'ts)",
+            dontsList: [
+                "പ്രധാനപ്പെട്ട കരാറുകളിലോ രേഖകളിലോ ഒപ്പിടരുത്.",
+                "പുതിയ ബിസിനസ്സുകൾ അല്ലെങ്കിൽ വലിയ നിക്ഷേപങ്ങൾ ഒഴിവാക്കുക.",
+                "അനാവശ്യ തർക്കങ്ങൾ, ദേഷ്യം, തിടുക്കപ്പെട്ട തീരുമാനങ്ങൾ എന്നിവ ഒഴിവാക്കുക.",
+                "ദീർഘദൂര രാത്രി യാത്രകളും ശുഭകാര്യങ്ങളും മാറ്റിവയ്ക്കുക.",
+                "വാഹനങ്ങളോ വസ്തുക്കളോ വാങ്ങുന്നത് ഒഴിവാക്കുക."
+            ],
+            dosTitle: "ചെയ്യേണ്ടവയും പരിഹാരങ്ങളും (Do's)",
+            dosList: [
+                "പരമശിവൻ, പാർവതി ദേവി അല്ലെങ്കിൽ ചന്ദ്രഭഗവാനെ പ്രാർത്ഥിക്കുക.",
+                "'ഓം നമഃ ശിവായ' മന്ത്രം 108 തവണ ജപിക്കുക.",
+                "തിങ്കളാഴ്ച ശിവക്ഷേത്രത്തിൽ പാൽ അഭിഷേകം നടത്തുക.",
+                "പശുക്കൾക്ക് അല്ലെങ്കിൽ പക്ഷികൾക്ക് ഭക്ഷണം നൽകുക.",
+                "ശാന്തത പാലിക്കുകയും ദൈനംദിന ജോലികൾ മാത്രം ശ്രദ്ധയോടെ ചെയ്യുകയും ചെയ്യുക."
+            ]
         }
     }
 };
+
