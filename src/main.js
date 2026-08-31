@@ -15,7 +15,8 @@ import {
     findMoonSignTransitWindow,
     findMoonLongitudeTime,
     calculateUpcomingChandrashtamaForRasi,
-    calculateMonthlyChandrashtama
+    calculateMonthlyChandrashtama,
+    calculateNextPlanetTransitions
 } from './astroCalculations.js';
 import { getPredictions } from './predictions.js';
 
@@ -684,6 +685,7 @@ state.chandrashtamaSelectedRasi = state.chandrashtamaSelectedRasi !== undefined 
 const currentSystemDate = new Date();
 state.chandrashtamaCalendarYear = state.chandrashtamaCalendarYear || currentSystemDate.getFullYear();
 state.chandrashtamaCalendarMonth = state.chandrashtamaCalendarMonth || (currentSystemDate.getMonth() + 1);
+state.planetTransitionFilter = state.planetTransitionFilter || 'all';
 
 // Persist Theme Preference
 const savedTheme = localStorage.getItem('horoscope_app_theme');
@@ -1222,8 +1224,9 @@ function renderFormView(t) {
     `;
     
     const chandrashtamaCardHtml = renderChandrashtamaCardHtml(currentTransit, t);
+    const planetTransitionsCardHtml = renderPlanetTransitionsCardHtml(currentTransit, t);
     
-    return formHtml + transitCardHtml + chandrashtamaCardHtml;
+    return formHtml + transitCardHtml + chandrashtamaCardHtml + planetTransitionsCardHtml;
 }
 
 // Render Chandrashtama Card with Rasi Selector, Star & Pada Mapping, and Accurate Upcoming Dates
@@ -1443,6 +1446,212 @@ function renderChandrashtamaCardHtml(currentTransit, t) {
                             </table>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+// Render Planet Transitions (கிரகப் பெயர்ச்சிகள்) Card
+function renderPlanetTransitionsCardHtml(currentTransit, t) {
+    const lang = state.lang;
+    const baseDate = new Date(`${state.transitDate}T${state.transitTime}:00`);
+    const transitions = calculateNextPlanetTransitions(baseDate);
+    
+    const activeFilter = state.planetTransitionFilter || 'all';
+    
+    // Filter transitions
+    let filteredTransitions = transitions;
+    if (activeFilter === 'major') {
+        filteredTransitions = transitions.filter(tr => tr.isMajor);
+    } else if (activeFilter === 'inner') {
+        filteredTransitions = transitions.filter(tr => !tr.isMajor);
+    }
+    
+    // Planet icon and color maps
+    const planetIcons = {
+        Sun: '☀️', Moon: '🌙', Mars: '♂️', Mercury: '☿',
+        Jupiter: '♃', Venus: '♀️', Saturn: '🪐', Rahu: '☊', Ketu: '☋'
+    };
+    
+    const planetColors = {
+        Sun: '#f59e0b', Moon: '#a1a1aa', Mars: '#ef4444', Mercury: '#10b981',
+        Jupiter: '#fbbf24', Venus: '#ec4899', Saturn: '#3b82f6', Rahu: '#8b5cf6', Ketu: '#d97706'
+    };
+    
+    const formatDateTime = (d) => {
+        const dateStr = d.toLocaleDateString(lang === 'ta' ? 'ta-IN' : 'en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+        const timeStr = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        return `${dateStr}, ${timeStr}`;
+    };
+    
+    // Format human-friendly time remaining
+    const formatTimeRemaining = (diffDays) => {
+        if (diffDays < 1) {
+            const hrs = Math.max(1, Math.round(diffDays * 24));
+            return lang === 'ta' ? `இன்னும் ${hrs} மணி நேரத்தில்` : `In ${hrs} hours`;
+        }
+        const days = Math.round(diffDays);
+        if (days === 1) {
+            return lang === 'ta' ? 'நாளை' : 'Tomorrow (1 day)';
+        }
+        if (days > 365) {
+            const yrs = (days / 365.25).toFixed(1);
+            return lang === 'ta' ? `இன்னும் ~${yrs} ஆண்டுகளில்` : `In ~${yrs} years`;
+        }
+        if (days > 30) {
+            const months = (days / 30.4).toFixed(1);
+            return lang === 'ta' ? `இன்னும் ~${months} மாதங்களில்` : `In ~${months} months`;
+        }
+        return lang === 'ta' ? `இன்னும் ${days} நாட்களில்` : `In ${days} days`;
+    };
+
+    // Soonest upcoming transition highlight banner
+    let highlightBannerHtml = '';
+    if (transitions.length > 0) {
+        const soonest = transitions[0];
+        const sPName = lang === 'ta' ? t.planets[soonest.name] : translations['en'].planets[soonest.name];
+        const sIcon = planetIcons[soonest.name] || '🪐';
+        const sCurRasiName = lang === 'ta' ? t.signs[signKeys[soonest.currentRasi]] : translations['en'].signs[signKeys[soonest.currentRasi]];
+        const sNextRasiName = lang === 'ta' ? t.signs[signKeys[soonest.nextRasi]] : translations['en'].signs[signKeys[soonest.nextRasi]];
+        const sNextStarName = lang === 'ta' ? t.stars[soonest.nextStar.starIdx] : translations['en'].stars[soonest.nextStar.starIdx];
+        
+        highlightBannerHtml = `
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; padding: 12px 16px; background: rgba(202, 138, 4, 0.08); border: 1px solid rgba(202, 138, 4, 0.3); border-radius: 8px; font-size: 13.5px; margin-bottom: 14px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="font-size: 24px;">${sIcon}</div>
+                    <div>
+                        <div style="font-size: 11px; color: var(--text-secondary); text-transform: uppercase; font-weight: 600;">
+                            ⚡ ${lang === 'ta' ? 'அடுத்த பெயர்ச்சி (அருகிலுள்ள மாற்றம்)' : 'Next Upcoming Ingress'}
+                        </div>
+                        <div style="font-size: 15px; font-weight: 700; color: var(--accent); margin-top: 1px;">
+                            ${sPName}: <span style="color: var(--text-primary);">${sCurRasiName}</span> ➔ <strong style="color: #ef4444;">${sNextRasiName}</strong> <span style="font-size: 12px; font-weight: normal; color: var(--text-secondary);">(${sNextStarName} ${soonest.nextStar.pada}-ம் பாதம்)</span>
+                        </div>
+                    </div>
+                </div>
+                <div style="text-align: right;">
+                    <div style="font-weight: 600; color: var(--text-primary); font-size: 13.5px;">
+                        📅 ${formatDateTime(soonest.transitionDate)}
+                    </div>
+                    <div style="font-size: 12px; color: #ca8a04; font-weight: 600; margin-top: 2px;">
+                        ⏳ ${formatTimeRemaining(soonest.diffDays)}
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    // Filter Tab Buttons
+    const filterTabs = [
+        { key: 'all', label: lang === 'ta' ? 'அனைத்து கிரகங்கள் (9)' : 'All Planets (9)', icon: '🌌' },
+        { key: 'major', label: lang === 'ta' ? 'முக்கிய பெயர்ச்சிகள் (குரு, சனி, ராகு, கேது)' : 'Major Planets (Jupiter, Saturn, Rahu, Ketu)', icon: '🪐' },
+        { key: 'inner', label: lang === 'ta' ? 'உள் கிரகங்கள் (சூரியன், செவ்வாய், புதன், சுக்கிரன், சந்திரன்)' : 'Inner Planets (Sun, Mars, Mercury, Venus, Moon)', icon: '☀️' }
+    ];
+
+    let filterTabsHtml = '<div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px;">';
+    filterTabs.forEach(tb => {
+        const isSel = tb.key === activeFilter;
+        filterTabsHtml += `
+            <button type="button" class="planet-transition-pill rasi-select-pill ${isSel ? 'selected' : ''}" data-filter="${tb.key}" style="font-size: 12.5px; padding: 6px 14px;">
+                ${tb.icon} ${tb.label}
+            </button>
+        `;
+    });
+    filterTabsHtml += '</div>';
+
+    // Rows
+    let rowsHtml = '';
+    filteredTransitions.forEach(tr => {
+        const pName = lang === 'ta' ? t.planets[tr.name] : translations['en'].planets[tr.name];
+        const pNameEng = translations['en'].planets[tr.name];
+        const icon = planetIcons[tr.name] || '🪐';
+        const color = planetColors[tr.name] || 'var(--accent)';
+        
+        const curRasiName = lang === 'ta' ? t.signs[signKeys[tr.currentRasi]] : translations['en'].signs[signKeys[tr.currentRasi]];
+        const curDeg = (tr.currentLongitude % 30).toFixed(1);
+        const curStarName = lang === 'ta' ? t.stars[tr.currentStar.starIdx] : translations['en'].stars[tr.currentStar.starIdx];
+        
+        const nextRasiName = lang === 'ta' ? t.signs[signKeys[tr.nextRasi]] : translations['en'].signs[signKeys[tr.nextRasi]];
+        const nextRasiEng = translations['en'].signs[signKeys[tr.nextRasi]];
+        const nextStarName = lang === 'ta' ? t.stars[tr.nextStar.starIdx] : translations['en'].stars[tr.nextStar.starIdx];
+        
+        const isSoon = tr.diffDays <= 7;
+        const timeRemainingText = formatTimeRemaining(tr.diffDays);
+        
+        rowsHtml += `
+            <tr style="border-bottom: 1px solid var(--card-border); ${isSoon ? 'background: rgba(202, 138, 4, 0.04);' : ''}">
+                <td style="padding: 12px 14px; vertical-align: middle;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 20px;">${icon}</span>
+                        <div>
+                            <div style="font-weight: 700; font-size: 14.5px; color: ${color};">${pName}</div>
+                            <div style="font-size: 11px; color: var(--text-secondary);">${pNameEng} ${tr.isMajor ? `<span style="color:#ef4444; font-weight:600;">• ${lang === 'ta' ? 'முக்கிய கிரகம்' : 'Major'}</span>` : ''}</div>
+                        </div>
+                    </div>
+                </td>
+                <td style="padding: 12px 14px; vertical-align: middle;">
+                    <div style="font-weight: 600; color: var(--text-primary); font-size: 13.5px;">
+                        ${curRasiName} <span style="font-size: 11.5px; font-weight: normal; color: var(--text-secondary);">(${curDeg}°)</span>
+                    </div>
+                    <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 2px;">
+                        ${curStarName} (${tr.currentStar.pada}-ம் பாதம்)
+                    </div>
+                </td>
+                <td style="padding: 12px 14px; vertical-align: middle;">
+                    <div style="font-weight: 700; color: #ef4444; font-size: 14px; display: flex; align-items: center; gap: 6px;">
+                        <span style="font-size: 15px;">➔</span> ${nextRasiName} <span style="font-size: 11.5px; font-weight: normal; color: var(--text-secondary);">(${nextRasiEng})</span>
+                    </div>
+                    <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 2px;">
+                        ${nextStarName} (${tr.nextStar.pada}-ம் பாதம்)
+                    </div>
+                </td>
+                <td style="padding: 12px 14px; vertical-align: middle; font-weight: 600; color: var(--text-primary); font-size: 13px;">
+                    <div>📅 ${formatDateTime(tr.transitionDate)}</div>
+                </td>
+                <td style="padding: 12px 14px; text-align: center; vertical-align: middle;">
+                    <span style="font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 20px; display: inline-block; ${isSoon ? 'background: rgba(239, 68, 68, 0.12); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3);' : 'background: rgba(0,0,0,0.04); color: var(--text-primary); border: 1px solid var(--card-border);'}">
+                        ⏳ ${timeRemainingText}
+                    </span>
+                </td>
+            </tr>
+        `;
+    });
+
+    const title = lang === 'ta' ? 'கிரகப் பெயர்ச்சிகள் (ராசி சஞ்சாரம்)' : 'Planet Transitions (Rasi Ingress)';
+    const subtitle = lang === 'ta' ? 'அனைத்து 9 கிரகங்களின் அடுத்த ராசி பெயர்ச்சி தேதிகள், நேரங்கள் மற்றும் கால அவகாசம்' : 'Upcoming sign ingress dates, exact timings and remaining time for all 9 planets';
+
+    return `
+        <div class="card" id="planet-transitions-card" style="margin-top: 20px;">
+            <div style="width: 100%;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
+                    <div>
+                        <h2 class="card-title" style="font-size: 20px; margin-bottom: 3px; text-align: left;">🪐 ${title}</h2>
+                        <p style="font-size: 13px; color: var(--text-secondary); margin: 0; text-align: left;">${subtitle}</p>
+                    </div>
+                </div>
+
+                <!-- Highlight Banner for Soonest Ingress -->
+                ${highlightBannerHtml}
+
+                <!-- Filter Tabs -->
+                ${filterTabsHtml}
+
+                <!-- Planet Transitions Table -->
+                <div class="table-container" style="margin: 0;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                        <thead>
+                            <tr style="background: rgba(0,0,0,0.04); border-bottom: 2px solid var(--card-border);">
+                                <th style="padding: 12px 14px; text-align: left; width: 22%;">${lang === 'ta' ? 'கிரகம்' : 'Planet'}</th>
+                                <th style="padding: 12px 14px; text-align: left; width: 22%;">${lang === 'ta' ? 'தற்போதைய ராசி' : 'Current House'}</th>
+                                <th style="padding: 12px 14px; text-align: left; width: 22%;">${lang === 'ta' ? 'பெயர்ச்சி அடையும் ராசி' : 'Moving to House'}</th>
+                                <th style="padding: 12px 14px; text-align: left; width: 20%;">${lang === 'ta' ? 'பெயர்ச்சி தேதி & நேரம்' : 'Transition Date & Time'}</th>
+                                <th style="padding: 12px 14px; text-align: center; width: 14%;">${lang === 'ta' ? 'கால அவகாசம்' : 'Time Remaining'}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${rowsHtml}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -3550,12 +3759,24 @@ function bindEvents() {
         if (loadFutureRow) loadFutureRow.addEventListener('click', handleLoadFuture);
 
         // Chandrashtama Rasi Selector Pills
-        const rasiPills = document.querySelectorAll('.rasi-select-pill');
+        const rasiPills = document.querySelectorAll('.rasi-select-pill[data-rasi]');
         rasiPills.forEach(pill => {
             pill.addEventListener('click', () => {
                 const rasiIdx = parseInt(pill.getAttribute('data-rasi'), 10);
                 if (!isNaN(rasiIdx)) {
                     state.chandrashtamaSelectedRasi = rasiIdx;
+                    render();
+                }
+            });
+        });
+
+        // Planet Transition Filter Pills
+        const transitionPills = document.querySelectorAll('.planet-transition-pill[data-filter]');
+        transitionPills.forEach(pill => {
+            pill.addEventListener('click', () => {
+                const filter = pill.getAttribute('data-filter');
+                if (filter) {
+                    state.planetTransitionFilter = filter;
                     render();
                 }
             });

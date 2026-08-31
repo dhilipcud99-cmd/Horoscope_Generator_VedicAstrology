@@ -798,3 +798,131 @@ export function calculateMonthlyChandrashtama(year, month) {
     return transitWindows;
 }
 
+// -------------------------------------------------------------
+// PLANETARY TRANSITIONS (கிரகப் பெயர்ச்சிகள்)
+// -------------------------------------------------------------
+
+// Calculate sidereal longitude of any planet for a given date
+export function getPlanetSiderealLongitude(planetName, date) {
+    const astroTime = new AstroTime(date);
+    const jd = 2451545.0 + astroTime.ut;
+    const T = (jd - 2451545.0) / 36525.0;
+    const ayanamsa = getAyanamsa(jd);
+    
+    if (planetName === 'Rahu' || planetName === 'Ketu') {
+        const L = (218.3164477 + 481267.88123421 * T - 0.0015786 * T * T) % 360;
+        const L_S = (280.46646 + 36000.76983 * T + 0.0003032 * T * T) % 360;
+        const M_prime = (357.52911 + 35999.05029 * T - 0.0001537 * T * T) % 360;
+        const O = (125.044522 - 1934.136261 * T + 0.0020708 * T * T) % 360;
+        const F = (L - O + 360) % 360;
+        const D = (L - L_S + 360) % 360;
+        const delta_O = 1.4979 * Math.sin(2 * (L_S - O) * DEG2RAD) - 0.1500 * Math.sin(M_prime * DEG2RAD) - 0.1200 * Math.sin(2 * F * DEG2RAD) + 0.1000 * Math.sin(2 * D * DEG2RAD);
+        const rahuTropical = (O - delta_O + 360) % 360;
+        const rahuSidereal = (rahuTropical - ayanamsa + 360) % 360;
+        return planetName === 'Rahu' ? rahuSidereal : (rahuSidereal + 180) % 360;
+    }
+    
+    const bodies = {
+        Sun: Body.Sun,
+        Moon: Body.Moon,
+        Mercury: Body.Mercury,
+        Venus: Body.Venus,
+        Mars: Body.Mars,
+        Jupiter: Body.Jupiter,
+        Saturn: Body.Saturn
+    };
+    
+    const pBody = bodies[planetName];
+    if (!pBody) return 0;
+    
+    const vector = GeoVector(pBody, astroTime, true);
+    const ecl = Ecliptic(vector);
+    return (ecl.elon - ayanamsa + 360) % 360;
+}
+
+// Calculate the next upcoming transition (ingress into next Rasi) for all 9 planets
+export function calculateNextPlanetTransitions(baseDate = new Date()) {
+    const planets = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"];
+    const results = [];
+    const baseMs = baseDate.getTime();
+    
+    const stepConfigs = {
+        Moon: { stepMs: 2 * 3600 * 1000, maxDays: 5 },
+        Sun: { stepMs: 12 * 3600 * 1000, maxDays: 35 },
+        Mercury: { stepMs: 6 * 3600 * 1000, maxDays: 50 },
+        Venus: { stepMs: 12 * 3600 * 1000, maxDays: 50 },
+        Mars: { stepMs: 24 * 3600 * 1000, maxDays: 80 },
+        Jupiter: { stepMs: 3 * 24 * 3600 * 1000, maxDays: 450 },
+        Saturn: { stepMs: 5 * 24 * 3600 * 1000, maxDays: 1100 },
+        Rahu: { stepMs: 5 * 24 * 3600 * 1000, maxDays: 600 },
+        Ketu: { stepMs: 5 * 24 * 3600 * 1000, maxDays: 600 }
+    };
+    
+    planets.forEach(pName => {
+        const initialLon = getPlanetSiderealLongitude(pName, baseDate);
+        const initialRasi = getRasiSignIndex(initialLon);
+        const initialStar = getStarAndPada(initialLon);
+        
+        const config = stepConfigs[pName] || { stepMs: 24 * 3600 * 1000, maxDays: 100 };
+        const maxMs = baseMs + config.maxDays * 24 * 3600 * 1000;
+        
+        let t = baseMs;
+        let foundLeft = baseMs;
+        let foundRight = null;
+        let nextRasi = null;
+        
+        while (t <= maxMs) {
+            t += config.stepMs;
+            const curLon = getPlanetSiderealLongitude(pName, new Date(t));
+            const curRasi = getRasiSignIndex(curLon);
+            
+            if (curRasi !== initialRasi) {
+                foundLeft = t - config.stepMs;
+                foundRight = t;
+                nextRasi = curRasi;
+                break;
+            }
+        }
+        
+        if (foundRight !== null) {
+            let left = foundLeft;
+            let right = foundRight;
+            
+            for (let iter = 0; iter < 18; iter++) {
+                const mid = (left + right) / 2;
+                const midLon = getPlanetSiderealLongitude(pName, new Date(mid));
+                const midRasi = getRasiSignIndex(midLon);
+                
+                if (midRasi === initialRasi) {
+                    left = mid;
+                } else {
+                    right = mid;
+                }
+            }
+            
+            const transitionDate = new Date(right);
+            const enteringLon = getPlanetSiderealLongitude(pName, transitionDate);
+            const enteringStar = getStarAndPada(enteringLon);
+            const enteringRasi = getRasiSignIndex(enteringLon);
+            
+            const diffMs = transitionDate.getTime() - baseMs;
+            const diffDays = Math.max(0, diffMs / (24 * 3600 * 1000));
+            const isMajor = (pName === 'Jupiter' || pName === 'Saturn' || pName === 'Rahu' || pName === 'Ketu');
+            
+            results.push({
+                name: pName,
+                isMajor,
+                currentRasi: initialRasi,
+                currentLongitude: initialLon,
+                currentStar: initialStar,
+                nextRasi: enteringRasi,
+                nextStar: enteringStar,
+                transitionDate,
+                diffDays
+            });
+        }
+    });
+    
+    results.sort((a, b) => a.transitionDate.getTime() - b.transitionDate.getTime());
+    return results;
+}
