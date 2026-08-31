@@ -8,6 +8,7 @@ import {
     getStarAndPada, 
     calculateSubPeriods,
     getMoonSiderealLongitude,
+    getPlanetSiderealLongitude,
     getChandrashtamaRasiForJanmaRasi,
     getJanmaRasiForTransitMoonRasi,
     starChandrashtamaMap,
@@ -1225,8 +1226,9 @@ function renderFormView(t) {
     
     const chandrashtamaCardHtml = renderChandrashtamaCardHtml(currentTransit, t);
     const planetTransitionsCardHtml = renderPlanetTransitionsCardHtml(currentTransit, t);
+    const monthlyCalendarCardHtml = renderMonthlyCalendarCardHtml(currentTransit, t);
     
-    return formHtml + transitCardHtml + chandrashtamaCardHtml + planetTransitionsCardHtml;
+    return formHtml + transitCardHtml + chandrashtamaCardHtml + planetTransitionsCardHtml + monthlyCalendarCardHtml;
 }
 
 // Render Chandrashtama Card with Rasi Selector, Star & Pada Mapping, and Accurate Upcoming Dates
@@ -1652,6 +1654,298 @@ function renderPlanetTransitionsCardHtml(currentTransit, t) {
                             ${rowsHtml}
                         </tbody>
                     </table>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+// Render Monthly Vedic Astrology & Chandrashtama Calendar
+function renderMonthlyCalendarCardHtml(currentTransit, t) {
+    const lang = state.lang;
+    
+    const year = state.chandrashtamaCalendarYear || new Date().getFullYear();
+    const month = state.chandrashtamaCalendarMonth || (new Date().getMonth() + 1); // 1-12
+    
+    // Moon info & selected Janma Rasi for Chandrashtama highlight
+    const moonPlanet = currentTransit.planets.find(p => p.name === 'Moon');
+    const moonLon = moonPlanet ? moonPlanet.longitude : 0;
+    const transitMoonRasiIdx = getRasiSignIndex(moonLon);
+    const affectedJanmaRasiIdx = getJanmaRasiForTransitMoonRasi(transitMoonRasiIdx);
+    const selectedRasiIdx = (state.chandrashtamaSelectedRasi !== undefined) ? state.chandrashtamaSelectedRasi : affectedJanmaRasiIdx;
+    const selectedRasiName = lang === 'ta' ? t.signs[signKeys[selectedRasiIdx]] : translations['en'].signs[signKeys[selectedRasiIdx]];
+    const eighthHouseIdx = getChandrashtamaRasiForJanmaRasi(selectedRasiIdx);
+    
+    // Day of week strings
+    const weekDays = {
+        ta: ["ஞாயிறு", "திங்கள்", "செவ்வாய்", "புதன்", "வியாழன்", "வெள்ளி", "சனி"],
+        en: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+        hi: ["रवि", "सोम", "मंगल", "बुध", "गुरु", "शुक्र", "शनि"],
+        te: ["ఆది", "సోమ", "మంగళ", "బుధ", "గురు", "శుక్ర", "శని"],
+        kn: ["ಭಾನು", "ಸೋಮ", "ಮಂಗಳ", "ಬುಧ", "ಗುರು", "ಶುಕ್ರ", "ಶನಿ"],
+        ml: ["ഞായർ", "തിങ്കൾ", "ചൊവ്വ", "ബുധൻ", "വ്യാഴം", "വെള്ളി", "ശനി"]
+    };
+    const daysHeader = weekDays[lang] || weekDays['en'];
+    
+    // Month Names
+    const monthNames = {
+        ta: ["ஜனவரி", "பிப்ரவரி", "மார்ச்", "ஏப்ரல்", "மே", "ஜூன்", "ஜூலை", "ஆகஸ்ட்", "செப்டம்பர்", "அக்டோபர்", "நவம்பர்", "டிசம்பர்"],
+        en: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+        hi: ["जनवरी", "फ़रवरी", "मार्च", "अप्रैल", "मई", "जून", "जुलाई", "अगस्त", "सितंबर", "अक्टूबर", "नवंबर", "दिसंबर"],
+        te: ["జనవరి", "ఫిబ్రవరి", "మార్చి", "ఏప్రిల్", "మే", "జూన్", "జూలై", "ఆగస్టు", "సెప్టెంబర్", "అక్టోబర్", "నవంబర్", "డిసెంబర్"],
+        kn: ["ಜನವರಿ", "ಫೆಬ್ರವರಿ", "ಮಾರ್ಚ್", "ಏಪ್ರಿಲ್", "ಮೇ", "ಜೂನ್", "ಜುಲೈ", "ಆಗಸ್ಟ್", "ಸೆಪ್ಟೆಂಬರ್", "ಅಕ್ಟೋಬರ್", "ನವೆಂಬರ್", "ಡಿಸೆಂಬರ್"],
+        ml: ["ജനുവരി", "ഫെബ്രുവരി", "മാർച്ച്", "മേയ്", "ജൂൺ", "ജൂലൈ", "ഓഗസ്റ്റ്", "സെപ്റ്റംബർ", "ഒക്ടോബർ", "നവംബർ", "ഡിസംബർ"]
+    };
+    const curMonthName = (monthNames[lang] || monthNames['en'])[month - 1];
+
+    // Tithi Names
+    const tithiList = [
+        { ta: "சுக்ல பிரதமை", en: "Shukla 1" },
+        { ta: "சுக்ல துவிதியை", en: "Shukla 2" },
+        { ta: "சுக்ல திருதியை", en: "Shukla 3" },
+        { ta: "சுக்ல சதுர்த்தி", en: "Shukla 4" },
+        { ta: "சுக்ல பஞ்சமி", en: "Shukla 5" },
+        { ta: "சுக்ல சஷ்டி", en: "Shukla 6" },
+        { ta: "சுக்ல சப்தமி", en: "Shukla 7" },
+        { ta: "சுக்ல அஷ்டமி", en: "Shukla 8" },
+        { ta: "சுக்ல நவமி", en: "Shukla 9" },
+        { ta: "சுக்ல தசமி", en: "Shukla 10" },
+        { ta: "ஏகாதசி 🌿", en: "Ekadashi 🌿" },
+        { ta: "துவாதசி", en: "Dwadashi" },
+        { ta: "திரயோதசி", en: "Trayodashi" },
+        { ta: "சதுர்தசி", en: "Chaturdashi" },
+        { ta: "பௌர்ணமி 🌕", en: "Pournami 🌕" },
+        { ta: "கிருஷ்ண பிரதமை", en: "Krishna 1" },
+        { ta: "கிருஷ்ண துவிதியை", en: "Krishna 2" },
+        { ta: "கிருஷ்ண திருதியை", en: "Krishna 3" },
+        { ta: "கிருஷ்ண சதுர்த்தி", en: "Krishna 4" },
+        { ta: "கிருஷ்ண பஞ்சமி", en: "Krishna 5" },
+        { ta: "கிருஷ்ண சஷ்டி", en: "Krishna 6" },
+        { ta: "கிருஷ்ண சப்தமி", en: "Krishna 7" },
+        { ta: "கிருஷ்ண அஷ்டமி", en: "Krishna 8" },
+        { ta: "கிருஷ்ண நவமி", en: "Krishna 9" },
+        { ta: "கிருஷ்ண தசமி", en: "Krishna 10" },
+        { ta: "ஏகாதசி 🌿", en: "Ekadashi 🌿" },
+        { ta: "துவாதசி", en: "Dwadashi" },
+        { ta: "திரயோதசி", en: "Trayodashi" },
+        { ta: "சதுர்தசி", en: "Chaturdashi" },
+        { ta: "அமாவாசை 🌑", en: "Amavasya 🌑" }
+    ];
+
+    // Days in Month
+    const numDaysInMonth = new Date(year, month, 0).getDate();
+    const firstDayOfWeek = new Date(year, month - 1, 1).getDay(); // 0 = Sun, 6 = Sat
+    
+    // System Today
+    const today = new Date();
+    const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+    
+    // Current Active Transit Date
+    const activeTransitDate = state.transitDate;
+
+    // Month Navigation Options
+    let monthOptionsHtml = '';
+    for (let m = 1; m <= 12; m++) {
+        const mName = (monthNames[lang] || monthNames['en'])[m - 1];
+        monthOptionsHtml += `<option value="${m}" ${m === month ? 'selected' : ''}>${mName}</option>`;
+    }
+
+    let yearOptionsHtml = '';
+    const currentYr = new Date().getFullYear();
+    for (let y = currentYr - 5; y <= currentYr + 10; y++) {
+        yearOptionsHtml += `<option value="${y}" ${y === year ? 'selected' : ''}>${y}</option>`;
+    }
+
+    // Weekday Headers HTML
+    let weekDaysHtml = '';
+    daysHeader.forEach(dName => {
+        weekDaysHtml += `
+            <div style="padding: 8px 4px; text-align: center; font-weight: 700; font-size: 12.5px; color: var(--text-secondary); text-transform: uppercase;">
+                ${dName}
+            </div>
+        `;
+    });
+
+    // Calendar Cells Grid HTML
+    let calendarCellsHtml = '';
+    
+    // Empty cells before day 1
+    for (let i = 0; i < firstDayOfWeek; i++) {
+        calendarCellsHtml += `
+            <div style="background: rgba(0,0,0,0.01); border: 1px dashed var(--card-border); opacity: 0.35; border-radius: 8px; min-height: 86px;"></div>
+        `;
+    }
+
+    // Days 1 to N
+    for (let day = 1; day <= numDaysInMonth; day++) {
+        const dayStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const isToday = (dayStr === todayStr);
+        const isSelected = (dayStr === activeTransitDate);
+        
+        const dayNoon = new Date(year, month - 1, day, 12, 0, 0);
+        const dayStart = new Date(year, month - 1, day, 0, 0, 0);
+        const dayEnd = new Date(year, month - 1, day, 23, 59, 59);
+        
+        // Moon calculations at noon
+        const dMoonLon = getMoonSiderealLongitude(dayNoon);
+        const dMoonRasi = getRasiSignIndex(dMoonLon);
+        const dMoonStarInfo = getStarAndPada(dMoonLon);
+        const dMoonRasiName = lang === 'ta' ? t.signs[signKeys[dMoonRasi]] : translations['en'].signs[signKeys[dMoonRasi]];
+        const dMoonStarName = lang === 'ta' ? t.stars[dMoonStarInfo.starIdx] : translations['en'].stars[dMoonStarInfo.starIdx];
+        
+        // Sun calculations at noon
+        const dSunLon = getPlanetSiderealLongitude('Sun', dayNoon);
+        
+        // Tithi
+        const tDiff = (dMoonLon - dSunLon + 360) % 360;
+        const tIdx = Math.floor(tDiff / 12) % 30;
+        const tithiObj = tithiList[tIdx] || { ta: 'திதி', en: 'Tithi' };
+        const tithiName = lang === 'ta' ? tithiObj.ta : tithiObj.en;
+        
+        const isPournami = (tIdx === 14);
+        const isAmavasya = (tIdx === 29);
+        const isEkadashi = (tIdx === 10 || tIdx === 25);
+        
+        // Chandrashtama Check for selected Rasi
+        const isChandrashtamaDay = (dMoonRasi === eighthHouseIdx);
+        
+        // Planetary Ingress Check for the day
+        const dayIngresses = [];
+        const checkPlanets = ["Sun", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"];
+        checkPlanets.forEach(pName => {
+            const pStartLon = getPlanetSiderealLongitude(pName, dayStart);
+            const pEndLon = getPlanetSiderealLongitude(pName, dayEnd);
+            const pStartRasi = getRasiSignIndex(pStartLon);
+            const pEndRasi = getRasiSignIndex(pEndLon);
+            if (pStartRasi !== pEndRasi) {
+                const pLabel = lang === 'ta' ? t.planets[pName] : translations['en'].planets[pName];
+                const toRasi = lang === 'ta' ? t.signs[signKeys[pEndRasi]] : translations['en'].signs[signKeys[pEndRasi]];
+                dayIngresses.push(`${pLabel} ➔ ${toRasi}`);
+            }
+        });
+
+        // Styling
+        let cellBg = 'var(--card-bg)';
+        let cellBorder = '1px solid var(--card-border)';
+        
+        if (isChandrashtamaDay) {
+            cellBg = 'rgba(239, 68, 68, 0.08)';
+            cellBorder = '1.5px solid rgba(239, 68, 68, 0.45)';
+        }
+        if (isSelected) {
+            cellBorder = '2px solid var(--accent)';
+        }
+        
+        let tithiBadgeColor = 'var(--text-secondary)';
+        if (isPournami) tithiBadgeColor = '#ca8a04; font-weight: 700;';
+        if (isAmavasya) tithiBadgeColor = '#475569; font-weight: 700;';
+        if (isEkadashi) tithiBadgeColor = '#16a34a; font-weight: 700;';
+
+        calendarCellsHtml += `
+            <div class="cal-day-cell" data-date="${dayStr}" style="background: ${cellBg}; border: ${cellBorder}; border-radius: 8px; padding: 8px; min-height: 94px; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer; transition: transform 0.15s ease, box-shadow 0.15s ease; position: relative;">
+                <!-- Date Number Header -->
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 15px; font-weight: 700; color: ${isToday ? 'var(--accent)' : 'var(--text-primary)'}; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; ${isToday ? 'background: rgba(202, 138, 4, 0.18); border-radius: 50%; border: 1.5px solid var(--accent);' : ''}">
+                        ${day}
+                    </span>
+                    ${isToday ? `<span style="font-size: 9.5px; font-weight: 700; color: var(--accent); text-transform: uppercase;">${lang === 'ta' ? 'இன்று' : 'Today'}</span>` : ''}
+                </div>
+
+                <!-- Astrological details -->
+                <div style="margin: 4px 0; display: flex; flex-direction: column; gap: 2px;">
+                    <!-- Star and Moon Sign -->
+                    <div style="font-size: 11.5px; font-weight: 600; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${dMoonStarName} - ${dMoonRasiName}">
+                        ⭐ ${dMoonStarName}
+                    </div>
+                    <div style="font-size: 10.5px; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        🌙 ${dMoonRasiName}
+                    </div>
+                    <!-- Tithi -->
+                    <div style="font-size: 10px; color: ${tithiBadgeColor}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        ${tithiName}
+                    </div>
+                </div>
+
+                <!-- Badges (Chandrashtama & Ingress) -->
+                <div style="display: flex; flex-direction: column; gap: 2px;">
+                    ${isChandrashtamaDay ? `
+                        <div style="font-size: 9.5px; font-weight: 700; color: #ef4444; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.35); border-radius: 4px; padding: 2px 4px; text-align: center;">
+                            🔴 ${lang === 'ta' ? 'சந்திராஷ்டமம்' : 'Chandrashtama'}
+                        </div>
+                    ` : ''}
+                    ${dayIngresses.map(ing => `
+                        <div style="font-size: 9px; font-weight: 600; color: #854d0e; background: rgba(234, 179, 8, 0.18); border: 1px solid rgba(234, 179, 8, 0.4); border-radius: 4px; padding: 1px 3px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${ing}">
+                            🪐 ${ing}
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    }
+
+    const title = lang === 'ta' ? 'மாதாந்திர ஜோதிட நாட்காட்டி (காலண்டர்)' : 'Monthly Vedic Astrology Calendar';
+    const subtitle = lang === 'ta' ? `${selectedRasiName} ராசிக்கான சந்திராஷ்டம நாட்கள், தினசரி நட்சத்திரம், திதி மற்றும் கிரகப் பெயர்ச்சிகள்` : `Daily Nakshatra, Tithi, Chandrashtama highlights for ${selectedRasiName} & planetary ingress`;
+
+    return `
+        <div class="card" id="monthly-calendar-card" style="margin-top: 20px;">
+            <div style="width: 100%;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 14px;">
+                    <div>
+                        <h2 class="card-title" style="font-size: 20px; margin-bottom: 3px; text-align: left;">📅 ${title}</h2>
+                        <p style="font-size: 13px; color: var(--text-secondary); margin: 0; text-align: left;">${subtitle}</p>
+                    </div>
+                </div>
+
+                <!-- Calendar Month/Year Controls -->
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; padding: 10px 14px; background: rgba(0,0,0,0.02); border: 1px solid var(--card-border); border-radius: 8px; margin-bottom: 14px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <button type="button" id="cal-prev-month-btn" class="lang-btn" style="padding: 4px 10px; height: 32px; font-weight: bold;" title="Previous Month">
+                            ◀ ${lang === 'ta' ? 'முந்தைய மாதம்' : 'Prev'}
+                        </button>
+                        <select id="cal-month-select" class="lang-btn" style="padding: 4px 8px; height: 32px; font-weight: 600; font-size: 13px;">
+                            ${monthOptionsHtml}
+                        </select>
+                        <select id="cal-year-select" class="lang-btn" style="padding: 4px 8px; height: 32px; font-weight: 600; font-size: 13px;">
+                            ${yearOptionsHtml}
+                        </select>
+                        <button type="button" id="cal-next-month-btn" class="lang-btn" style="padding: 4px 10px; height: 32px; font-weight: bold;" title="Next Month">
+                            ${lang === 'ta' ? 'அடுத்த மாதம்' : 'Next'} ▶
+                        </button>
+                    </div>
+
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <button type="button" id="cal-today-btn" class="lang-btn" style="padding: 4px 12px; height: 32px; font-weight: 600;">
+                            📍 ${lang === 'ta' ? 'இன்றைய மாதம்' : 'This Month'}
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Legend Bar -->
+                <div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center; font-size: 12px; color: var(--text-secondary); margin-bottom: 12px; padding: 6px 10px; background: rgba(0,0,0,0.015); border-radius: 6px;">
+                    <div style="display: flex; align-items: center; gap: 4px;">
+                        <span style="display: inline-block; width: 10px; height: 10px; background: #ef4444; border-radius: 2px;"></span>
+                        <span>🔴 ${lang === 'ta' ? 'சந்திராஷ்டம நாட்கள்' : 'Chandrashtama Days'} (${selectedRasiName})</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 4px;">
+                        <span style="display: inline-block; width: 10px; height: 10px; background: #ca8a04; border-radius: 2px;"></span>
+                        <span>🪐 ${lang === 'ta' ? 'கிரகப் பெயர்ச்சி' : 'Planet Ingress'}</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 4px;">
+                        <span>🌕 பௌர்ணமி / 🌑 அமாவாசை / 🌿 ஏகாதசி</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 4px;">
+                        <span style="color: var(--accent); font-weight: 600;">💡 ${lang === 'ta' ? 'தேதியை கிளிக் செய்து விரிவான கோச்சார நிலையை அறியலாம்' : 'Click any day to inspect its astrological transit'}</span>
+                    </div>
+                </div>
+
+                <!-- 7-Day Header -->
+                <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-bottom: 6px;">
+                    ${weekDaysHtml}
+                </div>
+
+                <!-- Calendar Day Cells Grid -->
+                <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px;">
+                    ${calendarCellsHtml}
                 </div>
             </div>
         </div>
@@ -3777,6 +4071,77 @@ function bindEvents() {
                 const filter = pill.getAttribute('data-filter');
                 if (filter) {
                     state.planetTransitionFilter = filter;
+                    render();
+                }
+            });
+        });
+
+        // Monthly Calendar Navigation Listeners
+        const calPrevBtn = document.querySelector('#cal-prev-month-btn');
+        if (calPrevBtn) {
+            calPrevBtn.addEventListener('click', () => {
+                let m = state.chandrashtamaCalendarMonth || (new Date().getMonth() + 1);
+                let y = state.chandrashtamaCalendarYear || new Date().getFullYear();
+                m--;
+                if (m < 1) {
+                    m = 12;
+                    y--;
+                }
+                state.chandrashtamaCalendarMonth = m;
+                state.chandrashtamaCalendarYear = y;
+                render();
+            });
+        }
+
+        const calNextBtn = document.querySelector('#cal-next-month-btn');
+        if (calNextBtn) {
+            calNextBtn.addEventListener('click', () => {
+                let m = state.chandrashtamaCalendarMonth || (new Date().getMonth() + 1);
+                let y = state.chandrashtamaCalendarYear || new Date().getFullYear();
+                m++;
+                if (m > 12) {
+                    m = 1;
+                    y++;
+                }
+                state.chandrashtamaCalendarMonth = m;
+                state.chandrashtamaCalendarYear = y;
+                render();
+            });
+        }
+
+        const calTodayBtn = document.querySelector('#cal-today-btn');
+        if (calTodayBtn) {
+            calTodayBtn.addEventListener('click', () => {
+                const now = new Date();
+                state.chandrashtamaCalendarMonth = now.getMonth() + 1;
+                state.chandrashtamaCalendarYear = now.getFullYear();
+                render();
+            });
+        }
+
+        const calMonthSelect = document.querySelector('#cal-month-select');
+        if (calMonthSelect) {
+            calMonthSelect.addEventListener('change', (e) => {
+                state.chandrashtamaCalendarMonth = parseInt(e.target.value, 10);
+                render();
+            });
+        }
+
+        const calYearSelect = document.querySelector('#cal-year-select');
+        if (calYearSelect) {
+            calYearSelect.addEventListener('change', (e) => {
+                state.chandrashtamaCalendarYear = parseInt(e.target.value, 10);
+                render();
+            });
+        }
+
+        // Calendar Day Cell Click to Select Date
+        const calDayCells = document.querySelectorAll('.cal-day-cell[data-date]');
+        calDayCells.forEach(cell => {
+            cell.addEventListener('click', () => {
+                const dStr = cell.getAttribute('data-date');
+                if (dStr) {
+                    state.transitDate = dStr;
                     render();
                 }
             });
