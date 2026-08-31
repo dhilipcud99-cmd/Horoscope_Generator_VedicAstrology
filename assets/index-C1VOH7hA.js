@@ -520,33 +520,33 @@
                 </div>
             </div>
         </div>
-    `}function An(t,n){let r=X.lang,i=X.chandrashtamaCalendarYear||new Date().getFullYear(),a=X.chandrashtamaCalendarMonth||new Date().getMonth()+1,o=t.planets.find(e=>e.name===`Moon`),s=Qt(q(o?o.longitude:0)),c=X.chandrashtamaSelectedRasi===void 0?s:X.chandrashtamaSelectedRasi,l=r===`ta`?n.signs[J[c]]:e.en.signs[J[c]],u=Zt(c),d={ta:[`ஞாயிறு`,`திங்கள்`,`செவ்வாய்`,`புதன்`,`வியாழன்`,`வெள்ளி`,`சனி`],en:[`Sun`,`Mon`,`Tue`,`Wed`,`Thu`,`Fri`,`Sat`],hi:[`रवि`,`सोम`,`मंगल`,`बुध`,`गुरु`,`शुक्र`,`शनि`],te:[`ఆది`,`సోమ`,`మంగళ`,`బుధ`,`గురు`,`శుక్ర`,`శని`],kn:[`ಭಾನು`,`ಸೋಮ`,`ಮಂಗಳ`,`ಬುಧ`,`ಗುರು`,`ಶುಕ್ರ`,`ಶನಿ`],ml:[`ഞായർ`,`തിങ്കൾ`,`ചൊവ്വ`,`ബുധൻ`,`വ്യാഴം`,`വെള്ളി`,`ശനി`]},f=d[r]||d.en,p={ta:[`ஜனவரி`,`பிப்ரவரி`,`மார்ச்`,`ஏப்ரல்`,`மே`,`ஜூன்`,`ஜூலை`,`ஆகஸ்ட்`,`செப்டம்பர்`,`அக்டோபர்`,`நவம்பர்`,`டிசம்பர்`],en:[`January`,`February`,`March`,`April`,`May`,`June`,`July`,`August`,`September`,`October`,`November`,`December`],hi:[`जनवरी`,`फ़रवरी`,`मार्च`,`अप्रैल`,`मई`,`जून`,`जुलाई`,`अगस्त`,`सितंबर`,`अक्टूबर`,`नवंबर`,`दिसंबर`],te:[`జనవరి`,`ఫిబ్రవరి`,`మార్చి`,`ఏప్రిల్`,`మే`,`జూన్`,`జూలై`,`ఆగస్టు`,`సెప్టెంబర్`,`అక్టోబర్`,`నవంబర్`,`డిసెంబర్`],kn:[`ಜನವರಿ`,`ಫೆಬ್ರವರಿ`,`ಮಾರ್ಚ್`,`ಏಪ್ರಿಲ್`,`ಮೇ`,`ಜೂನ್`,`ಜುಲೈ`,`ಆಗಸ್ಟ್`,`ಸೆಪ್ಟೆಂಬರ್`,`ಅಕ್ಟೋಬರ್`,`ನವೆಂಬರ್`,`ಡಿಸೆಂಬರ್`],ml:[`ജനുവരി`,`ഫെബ്രുവരി`,`മാർച്ച്`,`മേയ്`,`ജൂൺ`,`ജൂലൈ`,`ഓഗസ്റ്റ്`,`സെപ്റ്റംബർ`,`ഒക്ടോബർ`,`നവംബർ`,`ഡിസംബർ`]};(p[r]||p.en)[a-1];let m=[{ta:`சுக்ல பிரதமை`,en:`Shukla 1`},{ta:`சுக்ல துவிதியை`,en:`Shukla 2`},{ta:`சுக்ல திருதியை`,en:`Shukla 3`},{ta:`சுக்ல சதுர்த்தி`,en:`Shukla 4`},{ta:`சுக்ல பஞ்சமி`,en:`Shukla 5`},{ta:`சுக்ல சஷ்டி`,en:`Shukla 6`},{ta:`சுக்ல சப்தமி`,en:`Shukla 7`},{ta:`சுக்ல அஷ்டமி`,en:`Shukla 8`},{ta:`சுக்ல நவமி`,en:`Shukla 9`},{ta:`சுக்ல தசமி`,en:`Shukla 10`},{ta:`ஏகாதசி 🌿`,en:`Ekadashi 🌿`},{ta:`துவாதசி`,en:`Dwadashi`},{ta:`திரயோதசி`,en:`Trayodashi`},{ta:`சதுர்தசி`,en:`Chaturdashi`},{ta:`பௌர்ணமி 🌕`,en:`Pournami 🌕`},{ta:`கிருஷ்ண பிரதமை`,en:`Krishna 1`},{ta:`கிருஷ்ண துவிதியை`,en:`Krishna 2`},{ta:`கிருஷ்ண திருதியை`,en:`Krishna 3`},{ta:`கிருஷ்ண சதுர்த்தி`,en:`Krishna 4`},{ta:`கிருஷ்ண பஞ்சமி`,en:`Krishna 5`},{ta:`கிருஷ்ண சஷ்டி`,en:`Krishna 6`},{ta:`கிருஷ்ண சப்தமி`,en:`Krishna 7`},{ta:`கிருஷ்ண அஷ்டமி`,en:`Krishna 8`},{ta:`கிருஷ்ண நவமி`,en:`Krishna 9`},{ta:`கிருஷ்ண தசமி`,en:`Krishna 10`},{ta:`ஏகாதசி 🌿`,en:`Ekadashi 🌿`},{ta:`துவாதசி`,en:`Dwadashi`},{ta:`திரயோதசி`,en:`Trayodashi`},{ta:`சதுர்தசி`,en:`Chaturdashi`},{ta:`அமாவாசை 🌑`,en:`Amavasya 🌑`}],h=new Date(i,a,0).getDate(),g=new Date(i,a-1,1).getDay(),_=new Date,v=`${_.getFullYear()}-${String(_.getMonth()+1).padStart(2,`0`)}-${String(_.getDate()).padStart(2,`0`)}`,y=X.transitDate,b=``;for(let e=1;e<=12;e++){let t=(p[r]||p.en)[e-1];b+=`<option value="${e}" ${e===a?`selected`:``}>${t}</option>`}let x=``,S=new Date().getFullYear();for(let e=S-5;e<=S+10;e++)x+=`<option value="${e}" ${e===i?`selected`:``}>${e}</option>`;let C=``;f.forEach(e=>{C+=`
-            <div style="padding: 8px 4px; text-align: center; font-weight: 700; font-size: 12.5px; color: var(--text-secondary); text-transform: uppercase;">
+    `}function An(t,n){let r=X.lang,i=X.chandrashtamaCalendarYear||new Date().getFullYear(),a=X.chandrashtamaCalendarMonth||new Date().getMonth()+1,o=t.planets.find(e=>e.name===`Moon`),s=Qt(q(o?o.longitude:0)),c=X.chandrashtamaSelectedRasi===void 0?s:X.chandrashtamaSelectedRasi,l=r===`ta`?n.signs[J[c]]:e.en.signs[J[c]],u=Zt(c),d={ta:[`ஞாயிறு`,`திங்கள்`,`செவ்வாய்`,`புதன்`,`வியாழன்`,`வெள்ளி`,`சனி`],en:[`Sun`,`Mon`,`Tue`,`Wed`,`Thu`,`Fri`,`Sat`],hi:[`रवि`,`सोम`,`मंगल`,`बुध`,`गुरु`,`शुक्र`,`शनि`],te:[`ఆది`,`సోమ`,`మంగళ`,`బుధ`,`గురు`,`శుక్ర`,`శని`],kn:[`ಭಾನು`,`ಸೋಮ`,`ಮಂಗಳ`,`ಬುಧ`,`ಗುರು`,`ಶುಕ್ರ`,`ಶನಿ`],ml:[`ഞായർ`,`തിങ്കൾ`,`ചൊവ്വ`,`ബുധൻ`,`വ്യാഴം`,`വെള്ളി`,`ശനി`]},f=d[r]||d.en,p={ta:[`ஜனவரி`,`பிப்ரவரி`,`மார்ச்`,`ஏப்ரல்`,`மே`,`ஜூன்`,`ஜூலை`,`ஆகஸ்ட்`,`செப்டம்பர்`,`அக்டோபர்`,`நவம்பர்`,`டிசம்பர்`],en:[`January`,`February`,`March`,`April`,`May`,`June`,`July`,`August`,`September`,`October`,`November`,`December`],hi:[`जनवरी`,`फ़रवरी`,`मार्च`,`अप्रैल`,`मई`,`जून`,`जुलाई`,`अगस्त`,`सितंबर`,`अक्टूबर`,`नवंबर`,`दिसंबर`],te:[`జనవరి`,`ఫిబ్రవరి`,`మార్చి`,`ఏప్రిల్`,`మే`,`జూన్`,`జూలై`,`ఆగస్టు`,`సెప్టెంబర్`,`அக்டோபர்`,`நவம்பர்`,`டிசம்பர்`],kn:[`ಜನವರಿ`,`ಫೆಬ್ರವರಿ`,`ಮಾರ್ಚ್`,`ಏಪ್ರಿಲ್`,`ಮೇ`,`ಜೂನ್`,`ಜುಲೈ`,`ಆಗಸ್ಟ್`,`ಸೆಪ್ಟೆಂಬರ್`,`ಅಕ್ಟೋಬರ್`,`ನವೆಂಬರ್`,`ಡಿಸೆಂಬರ್`],ml:[`ജനുവരി`,`ഫെബ്രുവരി`,`മാർച്ച്`,`മേയ്`,`ജൂൺ`,`ജൂലൈ`,`ഓഗസ്റ്റ്`,`സെപ്റ്റംബർ`,`ഒക്ടോബർ`,`നവംബർ`,`ഡിസംബർ`]};(p[r]||p.en)[a-1];let m=[{ta:`சுக்ல பிரதமை`,en:`Shukla 1`},{ta:`சுக்ல துவிதியை`,en:`Shukla 2`},{ta:`சுக்ல திருதியை`,en:`Shukla 3`},{ta:`சுக்ல சதுர்த்தி`,en:`Shukla 4`},{ta:`சுக்ல பஞ்சமி`,en:`Shukla 5`},{ta:`சுக்ல சஷ்டி`,en:`Shukla 6`},{ta:`சுக்ல சப்தமி`,en:`Shukla 7`},{ta:`சுக்ல அஷ்டமி`,en:`Shukla 8`},{ta:`சுக்ல நவமி`,en:`Shukla 9`},{ta:`சுக்ல தசமி`,en:`Shukla 10`},{ta:`ஏகாதசி 🌿`,en:`Ekadashi 🌿`},{ta:`துவாதசி`,en:`Dwadashi`},{ta:`திரயோதசி`,en:`Trayodashi`},{ta:`சதுர்தசி`,en:`Chaturdashi`},{ta:`பௌர்ணமி 🌕`,en:`Pournami 🌕`},{ta:`கிருஷ்ண பிரதமை`,en:`Krishna 1`},{ta:`கிருஷ்ண துவிதியை`,en:`Krishna 2`},{ta:`கிருஷ்ண திருதியை`,en:`Krishna 3`},{ta:`கிருஷ்ண சதுர்த்தி`,en:`Krishna 4`},{ta:`கிருஷ்ண பஞ்சமி`,en:`Krishna 5`},{ta:`கிருஷ்ண சஷ்டி`,en:`Krishna 6`},{ta:`கிருஷ்ண சப்தமி`,en:`Krishna 7`},{ta:`கிருஷ்ண அஷ்டமி`,en:`Krishna 8`},{ta:`கிருஷ்ண நவமி`,en:`Krishna 9`},{ta:`கிருஷ்ண தசமி`,en:`Krishna 10`},{ta:`ஏகாதசி 🌿`,en:`Ekadashi 🌿`},{ta:`துவாதசி`,en:`Dwadashi`},{ta:`திரயோதசி`,en:`Trayodashi`},{ta:`சதுர்தசி`,en:`Chaturdashi`},{ta:`அமாவாசை 🌑`,en:`Amavasya 🌑`}],h=new Date(i,a,0).getDate(),g=new Date(i,a-1,1).getDay(),_=new Date,v=`${_.getFullYear()}-${String(_.getMonth()+1).padStart(2,`0`)}-${String(_.getDate()).padStart(2,`0`)}`,y=X.transitDate||v,b=``;for(let e=1;e<=12;e++){let t=(p[r]||p.en)[e-1];b+=`<option value="${e}" ${e===a?`selected`:``}>${t}</option>`}let x=``,S=new Date().getFullYear();for(let e=S-5;e<=S+10;e++)x+=`<option value="${e}" ${e===i?`selected`:``}>${e}</option>`;let C=``;f.forEach(e=>{C+=`
+            <div style="padding: 8px 4px; text-align: center; font-weight: 700; font-size: 12px; color: var(--text-secondary); text-transform: uppercase;">
                 ${e}
             </div>
         `});let w=``;for(let e=0;e<g;e++)w+=`
-            <div style="background: rgba(0,0,0,0.01); border: 1px dashed var(--card-border); opacity: 0.35; border-radius: 8px; min-height: 86px;"></div>
-        `;for(let t=1;t<=h;t++){let o=`${i}-${String(a).padStart(2,`0`)}-${String(t).padStart(2,`0`)}`,s=o===v,c=o===y,l=new Date(i,a-1,t,12,0,0),d=new Date(i,a-1,t,0,0,0),f=new Date(i,a-1,t,23,59,59),p=Xt(l),h=q(p),g=Wt(p),_=r===`ta`?n.signs[J[h]]:e.en.signs[J[h]],b=r===`ta`?n.stars[g.starIdx]:e.en.stars[g.starIdx],x=(p-an(`Sun`,l)+360)%360,S=Math.floor(x/12)%30,C=m[S]||{ta:`திதி`,en:`Tithi`},T=r===`ta`?C.ta:C.en,E=S===14,D=S===29,O=S===10||S===25,k=h===u,A=[];[`Sun`,`Mars`,`Mercury`,`Jupiter`,`Venus`,`Saturn`,`Rahu`,`Ketu`].forEach(t=>{let i=an(t,d),a=an(t,f),o=q(i),s=q(a);if(o!==s){let i=r===`ta`?n.planets[t]:e.en.planets[t],a=r===`ta`?n.signs[J[s]]:e.en.signs[J[s]];A.push(`${i} ➔ ${a}`)}});let j=`var(--card-bg)`,M=`1px solid var(--card-border)`;k&&(j=`rgba(239, 68, 68, 0.08)`,M=`1.5px solid rgba(239, 68, 68, 0.45)`),c&&(M=`2px solid var(--accent)`);let N=`var(--text-secondary)`;E&&(N=`#ca8a04; font-weight: 700;`),D&&(N=`#475569; font-weight: 700;`),O&&(N=`#16a34a; font-weight: 700;`),w+=`
-            <div class="cal-day-cell" data-date="${o}" style="box-sizing: border-box; width: 100%; background: ${j}; border: ${M}; border-radius: 8px; padding: 8px 10px; min-height: 96px; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer; transition: transform 0.15s ease, box-shadow 0.15s ease; position: relative; overflow: hidden;">
+            <div style="background: rgba(0,0,0,0.01); border: 1px dashed var(--card-border); opacity: 0.35; border-radius: 8px; min-height: 90px;"></div>
+        `;for(let t=1;t<=h;t++){let o=`${i}-${String(a).padStart(2,`0`)}-${String(t).padStart(2,`0`)}`,s=o===v,c=o===y,l=new Date(i,a-1,t,12,0,0),d=new Date(i,a-1,t,0,0,0),f=new Date(i,a-1,t,23,59,59),p=Xt(l),h=q(p),g=Wt(p),_=r===`ta`?n.signs[J[h]]:e.en.signs[J[h]],b=r===`ta`?n.stars[g.starIdx]:e.en.stars[g.starIdx],x=(p-an(`Sun`,l)+360)%360,S=Math.floor(x/12)%30,C=m[S]||{ta:`திதி`,en:`Tithi`},T=r===`ta`?C.ta:C.en,E=S===14,D=S===29,O=S===10||S===25,k=h===u,A=[];[`Sun`,`Mars`,`Mercury`,`Jupiter`,`Venus`,`Saturn`,`Rahu`,`Ketu`].forEach(t=>{let i=an(t,d),a=an(t,f),o=q(i),s=q(a);if(o!==s){let i=r===`ta`?n.planets[t]:e.en.planets[t],a=r===`ta`?n.signs[J[s]]:e.en.signs[J[s]];A.push(`${i} ➔ ${a}`)}});let j=`var(--card-bg)`,M=`1px solid var(--card-border)`;k&&(j=`rgba(239, 68, 68, 0.08)`,M=`1.5px solid rgba(239, 68, 68, 0.45)`),c&&(j=`rgba(202, 138, 4, 0.12)`,M=`2px solid var(--accent)`);let N=`var(--text-secondary)`;E&&(N=`#ca8a04; font-weight: 700;`),D&&(N=`#475569; font-weight: 700;`),O&&(N=`#16a34a; font-weight: 700;`),w+=`
+            <div class="cal-day-cell" data-date="${o}" style="box-sizing: border-box; width: 100%; background: ${j}; border: ${M}; border-radius: 8px; padding: 7px 8px; min-height: 90px; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer; transition: transform 0.15s ease, box-shadow 0.15s ease; position: relative; overflow: hidden; ${c?`box-shadow: 0 0 0 2px rgba(202, 138, 4, 0.3);`:``}">
                 <!-- Date Number Header -->
                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <span style="font-size: 15px; font-weight: 700; color: ${s?`var(--accent)`:`var(--text-primary)`}; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; ${s?`background: rgba(202, 138, 4, 0.18); border-radius: 50%; border: 1.5px solid var(--accent);`:``}">
+                    <span style="font-size: 14.5px; font-weight: 700; color: ${s||c?`var(--accent)`:`var(--text-primary)`}; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; ${s||c?`background: rgba(202, 138, 4, 0.18); border-radius: 50%; border: 1.5px solid var(--accent);`:``}">
                         ${t}
                     </span>
-                    ${s?`<span style="font-size: 9.5px; font-weight: 700; color: var(--accent); text-transform: uppercase;">${r===`ta`?`இன்று`:`Today`}</span>`:``}
+                    ${s?`<span style="font-size: 9px; font-weight: 700; color: var(--accent); text-transform: uppercase;">${r===`ta`?`இன்று`:`Today`}</span>`:``}
                 </div>
 
                 <!-- Astrological details -->
-                <div style="margin: 4px 0; display: flex; flex-direction: column; gap: 2px;">
+                <div style="margin: 3px 0; display: flex; flex-direction: column; gap: 2px;">
                     <!-- Star and Moon Sign -->
-                    <div style="font-size: 11.5px; font-weight: 600; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${b} - ${_}">
+                    <div style="font-size: 11px; font-weight: 600; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${b} - ${_}">
                         ⭐ ${b}
                     </div>
-                    <div style="font-size: 10.5px; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                    <div style="font-size: 10px; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                         🌙 ${_}
                     </div>
                     <!-- Tithi -->
-                    <div style="font-size: 10px; color: ${N}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                    <div style="font-size: 9.5px; color: ${N}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                         ${T}
                     </div>
                 </div>
@@ -554,79 +554,142 @@
                 <!-- Badges (Chandrashtama & Ingress) -->
                 <div style="display: flex; flex-direction: column; gap: 2px;">
                     ${k?`
-                        <div style="font-size: 9.5px; font-weight: 700; color: #ef4444; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.35); border-radius: 4px; padding: 2px 4px; text-align: center;">
+                        <div style="font-size: 9px; font-weight: 700; color: #ef4444; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.35); border-radius: 4px; padding: 1px 3px; text-align: center;">
                             🔴 ${r===`ta`?`சந்திராஷ்டமம்`:`Chandrashtama`}
                         </div>
                     `:``}
                     ${A.map(e=>`
-                        <div style="font-size: 9px; font-weight: 600; color: #854d0e; background: rgba(234, 179, 8, 0.18); border: 1px solid rgba(234, 179, 8, 0.4); border-radius: 4px; padding: 1px 3px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${e}">
+                        <div style="font-size: 8.5px; font-weight: 600; color: #854d0e; background: rgba(234, 179, 8, 0.18); border: 1px solid rgba(234, 179, 8, 0.4); border-radius: 4px; padding: 1px 3px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${e}">
                             🪐 ${e}
                         </div>
                     `).join(``)}
                 </div>
             </div>
-        `}return`
+        `}let T=qt({name:`Gochara`,gender:`male`,dateStr:y,timeStr:X.transitTime||`12:00`,lat:X.transitLatitude||13.08,lon:X.transitLongitude||80.27,fatherName:``,motherName:``,ampm:`PM`,city:X.transitLocationName||`Chennai`}),E=r===`ta`?n.stars[T.panchang.starIdx]:e.en.stars[T.panchang.starIdx],D=`${E}-${T.panchang.pada}`,O=r===`ta`?n.signs[J[T.panchang.rasiIdx]]:e.en.signs[J[T.panchang.rasiIdx]],k=T.planets.find(e=>e.name===`Sun`),A=k?r===`ta`?n.signs[J[k.rasiIdx]]:e.en.signs[J[k.rasiIdx]]:``,j=T.panchang.rasiIdx===u,M=X.chartStyle===`north`?Pn(T.planets,!1,n):In(T.planets,!1,n,D,r===`ta`?`கோச்சாரம்`:`Kocharam`,`${y.split(`-`).reverse().join(`-`)} ${X.transitTime||`12:00`}`,(X.transitLatitude||13.08).toFixed(2),(X.transitLongitude||80.27).toFixed(2),X.transitLocationName||`Chennai`),N=y,P=y.split(`-`);if(P.length===3){let e=P[0],t=parseInt(P[1],10);N=`${parseInt(P[2],10)} ${(p[r]||p.en)[t-1]}, ${e}`}return`
         <div class="card" id="monthly-calendar-card" style="margin-top: 20px;">
             <div style="width: 100%;">
                 <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 14px;">
                     <div>
                         <h2 class="card-title" style="font-size: 20px; margin-bottom: 3px; text-align: left;">📅 ${r===`ta`?`மாதாந்திர ஜோதிட நாட்காட்டி (காலண்டர்)`:`Monthly Vedic Astrology Calendar`}</h2>
-                        <p style="font-size: 13px; color: var(--text-secondary); margin: 0; text-align: left;">${r===`ta`?`${l} ராசிக்கான சந்திராஷ்டம நாட்கள், தினசரி நட்சத்திரம், திதி மற்றும் கிரகப் பெயர்ச்சிகள்`:`Daily Nakshatra, Tithi, Chandrashtama highlights for ${l} & planetary ingress`}</p>
+                        <p style="font-size: 13px; color: var(--text-secondary); margin: 0; text-align: left;">${r===`ta`?`${l} ராசிக்கான சந்திராஷ்டம நாட்கள், தினசரி நட்சத்திரம், திதி மற்றும் கோச்சார இராசிக் கட்டம்`:`Daily Nakshatra, Tithi, Chandrashtama highlights for ${l} & Transit Chart`}</p>
                     </div>
                 </div>
 
-                <!-- Calendar Month/Year Controls -->
-                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; padding: 12px 16px; background: rgba(0,0,0,0.02); border: 1px solid var(--card-border); border-radius: 8px; margin-bottom: 14px;">
-                    <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 10px;">
-                        <button type="button" id="cal-prev-month-btn" style="white-space: nowrap; padding: 6px 14px; height: 36px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-weight: 600; font-size: 13px; cursor: pointer; border-radius: 6px; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text-primary); transition: all 0.2s;">
-                            <span>◀</span> <span>${r===`ta`?`முந்தைய மாதம்`:`Prev Month`}</span>
-                        </button>
-                        <select id="cal-month-select" style="height: 36px; padding: 4px 12px; font-weight: 600; font-size: 13.5px; border-radius: 6px; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text-primary); cursor: pointer;">
-                            ${b}
-                        </select>
-                        <select id="cal-year-select" style="height: 36px; padding: 4px 12px; font-weight: 600; font-size: 13.5px; border-radius: 6px; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text-primary); cursor: pointer;">
-                            ${x}
-                        </select>
-                        <button type="button" id="cal-next-month-btn" style="white-space: nowrap; padding: 6px 14px; height: 36px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-weight: 600; font-size: 13px; cursor: pointer; border-radius: 6px; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text-primary); transition: all 0.2s;">
-                            <span>${r===`ta`?`அடுத்த மாதம்`:`Next Month`}</span> <span>▶</span>
-                        </button>
-                    </div>
+                <!-- Calendar Layout with Side-by-Side Rasi Chart -->
+                <div class="calendar-layout-flex" style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start; width: 100%;">
+                    <!-- Left Section: Month Navigator, Legend & Calendar Grid -->
+                    <div style="flex: 1 1 540px; min-width: 0;">
+                        <!-- Calendar Month/Year Controls -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; padding: 10px 14px; background: rgba(0,0,0,0.02); border: 1px solid var(--card-border); border-radius: 8px; margin-bottom: 12px;">
+                            <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 8px;">
+                                <button type="button" id="cal-prev-month-btn" style="white-space: nowrap; padding: 5px 12px; height: 34px; display: inline-flex; align-items: center; justify-content: center; gap: 5px; font-weight: 600; font-size: 12.5px; cursor: pointer; border-radius: 6px; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text-primary); transition: all 0.2s;">
+                                    <span>◀</span> <span>${r===`ta`?`முந்தைய மாதம்`:`Prev`}</span>
+                                </button>
+                                <select id="cal-month-select" style="height: 34px; padding: 4px 10px; font-weight: 600; font-size: 13px; border-radius: 6px; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text-primary); cursor: pointer;">
+                                    ${b}
+                                </select>
+                                <select id="cal-year-select" style="height: 34px; padding: 4px 10px; font-weight: 600; font-size: 13px; border-radius: 6px; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text-primary); cursor: pointer;">
+                                    ${x}
+                                </select>
+                                <button type="button" id="cal-next-month-btn" style="white-space: nowrap; padding: 5px 12px; height: 34px; display: inline-flex; align-items: center; justify-content: center; gap: 5px; font-weight: 600; font-size: 12.5px; cursor: pointer; border-radius: 6px; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text-primary); transition: all 0.2s;">
+                                    <span>${r===`ta`?`அடுத்த மாதம்`:`Next`}</span> <span>▶</span>
+                                </button>
+                            </div>
 
-                    <div>
-                        <button type="button" id="cal-today-btn" style="white-space: nowrap; padding: 6px 16px; height: 36px; display: inline-flex; align-items: center; gap: 6px; font-weight: 600; font-size: 13px; border-radius: 6px; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--accent); cursor: pointer; transition: all 0.2s;">
-                            <span>📍</span> <span>${r===`ta`?`இன்றைய மாதம்`:`This Month`}</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Legend Bar -->
-                <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center; font-size: 12px; color: var(--text-secondary); margin-bottom: 14px;">
-                    <div style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 20px; font-weight: 600; color: #ef4444;">
-                        🔴 ${r===`ta`?`சந்திராஷ்டம நாட்கள்`:`Chandrashtama Days`} (${l})
-                    </div>
-                    <div style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; background: rgba(234, 179, 8, 0.12); border: 1px solid rgba(234, 179, 8, 0.3); border-radius: 20px; font-weight: 600; color: #854d0e;">
-                        🪐 ${r===`ta`?`கிரகப் பெயர்ச்சி`:`Planet Ingress`}
-                    </div>
-                    <div style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px;">
-                        🌕 பௌர்ணமி / 🌑 அமாவாசை / 🌿 ஏகாதசி
-                    </div>
-                    <div style="display: inline-flex; align-items: center; gap: 6px; margin-left: auto; color: var(--accent); font-weight: 600; font-size: 12px;">
-                        💡 ${r===`ta`?`தேதியை கிளிக் செய்து விரிவான நிலையை அறியலாம்`:`Click any day to inspect details`}
-                    </div>
-                </div>
-
-                <!-- Calendar Scroll/Responsive Wrapper -->
-                <div class="calendar-scroll-wrapper" style="width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch;">
-                    <div style="min-width: 720px; box-sizing: border-box;">
-                        <!-- 7-Day Header -->
-                        <div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; margin-bottom: 8px;">
-                            ${C}
+                            <div>
+                                <button type="button" id="cal-today-btn" style="white-space: nowrap; padding: 5px 14px; height: 34px; display: inline-flex; align-items: center; gap: 5px; font-weight: 600; font-size: 12.5px; border-radius: 6px; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--accent); cursor: pointer; transition: all 0.2s;">
+                                    <span>📍</span> <span>${r===`ta`?`இன்றைய மாதம்`:`This Month`}</span>
+                                </button>
+                            </div>
                         </div>
 
-                        <!-- Calendar Day Cells Grid -->
-                        <div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px;">
-                            ${w}
+                        <!-- Legend Bar -->
+                        <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: 11.5px; color: var(--text-secondary); margin-bottom: 12px;">
+                            <div style="display: inline-flex; align-items: center; gap: 5px; padding: 3px 8px; background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 16px; font-weight: 600; color: #ef4444;">
+                                🔴 ${r===`ta`?`சந்திராஷ்டம நாட்கள்`:`Chandrashtama`} (${l})
+                            </div>
+                            <div style="display: inline-flex; align-items: center; gap: 5px; padding: 3px 8px; background: rgba(234, 179, 8, 0.12); border: 1px solid rgba(234, 179, 8, 0.3); border-radius: 16px; font-weight: 600; color: #854d0e;">
+                                🪐 ${r===`ta`?`கிரகப் பெயர்ச்சி`:`Ingress`}
+                            </div>
+                            <div style="display: inline-flex; align-items: center; gap: 5px; padding: 3px 8px; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px;">
+                                🌕 பௌர்ணமி / 🌑 அமாவாசை / 🌿 ஏகாதசி
+                            </div>
+                            <div style="display: inline-flex; align-items: center; gap: 5px; margin-left: auto; color: var(--accent); font-weight: 600; font-size: 11.5px;">
+                                💡 ${r===`ta`?`தேதியை கிளிக் செய்து கட்டம் பார்க்கவும்`:`Click date to view chart`}
+                            </div>
                         </div>
+
+                        <!-- Calendar Scroll/Responsive Wrapper -->
+                        <div class="calendar-scroll-wrapper" style="width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch;">
+                            <div style="min-width: 580px; box-sizing: border-box;">
+                                <!-- 7-Day Header -->
+                                <div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; margin-bottom: 6px;">
+                                    ${C}
+                                </div>
+
+                                <!-- Calendar Day Cells Grid -->
+                                <div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px;">
+                                    ${w}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Section: Side-by-Side Gochara Rasi Chart Panel -->
+                    <div class="calendar-side-chart-panel" style="flex: 0 0 340px; max-width: 100%; width: 340px; box-sizing: border-box; background: var(--card-bg); border: 1.5px solid var(--card-border); border-radius: 10px; padding: 14px; box-shadow: var(--shadow); position: sticky; top: 15px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid var(--card-border); padding-bottom: 8px;">
+                            <div>
+                                <div style="font-size: 11px; color: var(--text-secondary); text-transform: uppercase; font-weight: 600;">
+                                    ${r===`ta`?`தேர்ந்தெடுக்கப்பட்ட நாள்`:`Selected Date`}
+                                </div>
+                                <div style="font-size: 16px; font-weight: 700; color: var(--accent); margin-top: 1px;">
+                                    📅 ${N}
+                                </div>
+                            </div>
+                            <span class="status-badge badge-primary" style="font-size: 11px; padding: 3px 8px;">
+                                ${r===`ta`?`இராசிக் கட்டம்`:`Rasi Chart`}
+                            </span>
+                        </div>
+
+                        <!-- The Rasi Chart -->
+                        <div class="chart-box" style="padding: 0; align-items: center; width: 100%; display: flex; flex-direction: column; justify-content: center; margin-bottom: 12px;">
+                            ${X.chartStyle===`north`?`
+                                <div class="north-chart-container" style="max-width: 310px; width: 100%;">
+                                    ${M}
+                                </div>
+                            `:`
+                                <div class="chart-grid" style="max-width: 310px; width: 100%; aspect-ratio: 1;">
+                                    ${M}
+                                </div>
+                            `}
+                        </div>
+
+                        <!-- Selected Date Panchangam & Transit Highlights -->
+                        <div style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; background: rgba(0,0,0,0.02); padding: 10px 12px; border-radius: 6px; border: 1px solid var(--card-border);">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="color: var(--text-secondary);">🌙 ${r===`ta`?`சந்திர ராசி & நட்சத்திரம்`:`Moon & Star`}:</span>
+                                <strong style="color: var(--accent);">${O} • ${E} (${T.panchang.pada})</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="color: var(--text-secondary);">☀️ ${r===`ta`?`சூரிய ராசி`:`Sun Sign`}:</span>
+                                <strong style="color: var(--text-primary);">${A}</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="color: var(--text-secondary);">🌿 ${r===`ta`?`திதி`:`Tithi`}:</span>
+                                <strong style="color: var(--text-primary);">${Ln(T.panchang.tithiIdx,r)}</strong>
+                            </div>
+                        </div>
+
+                        <!-- Chandrashtama Status for this day -->
+                        ${j?`
+                            <div style="margin-top: 10px; padding: 7px 10px; background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.35); border-radius: 6px; color: #ef4444; font-weight: 700; font-size: 11.5px; text-align: center;">
+                                🔴 ${l} ${r===`ta`?`ராசிக்கு இந்த நாளில் சந்திராஷ்டமம் உள்ளது!`:`Rasi has Chandrashtama on this day!`}
+                            </div>
+                        `:`
+                            <div style="margin-top: 10px; padding: 7px 10px; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 6px; color: #059669; font-weight: 600; font-size: 11.5px; text-align: center;">
+                                ✅ ${l} ${r===`ta`?`ராசிக்கு சந்திராஷ்டமம் இல்லை`:`No Chandrashtama on this day`}
+                            </div>
+                        `}
                     </div>
                 </div>
             </div>
