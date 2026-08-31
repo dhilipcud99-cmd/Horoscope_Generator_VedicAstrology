@@ -1258,40 +1258,137 @@ function renderChandrashtamaCardHtml(currentTransit, t) {
         return `${dateStr}, ${timeStr}`;
     };
     
-    // Stars in selected Rasi with peak mappings
+    // Calculate upcoming Chandrashtama periods for selected Rasi
+    const upcomingPeriods = calculateUpcomingChandrashtamaForRasi(selectedRasiIdx, state.transitDate, 75);
+    const activeOrNextPeriod = upcomingPeriods.length > 0 ? upcomingPeriods[0] : null;
+    const nowMs = new Date(`${state.transitDate}T${state.transitTime}:00`).getTime();
+    
+    // Stars in selected Rasi and 8th House Rasi
     const starsInSelected = getStarsInRasi(selectedRasiIdx);
     const starsIn8thHouse = getStarsInRasi(eighthHouseIdx);
     
-    // Detailed Star & Pada mapping table rows
+    const padaLength = 30 / 9; // 3.3333333333333335 deg
+    const eighthRasiStartLon = eighthHouseIdx * 30;
+    
+    // Build accurate Star & Pada rows with Dates
+    let currentRasiPadaOffset = 0;
     let starPadaRowsHtml = '';
-    starsInSelected.forEach(s => {
+    
+    starsInSelected.forEach((s) => {
         const sName = lang === 'ta' ? t.stars[s.starIdx] : translations['en'].stars[s.starIdx];
         const padasText = s.padas.map(p => `${p}${lang === 'ta' ? '-ம் பாதம்' : ' Pada'}`).join(', ');
         
-        const targetStarIndices = starChandrashtamaMap[s.starIdx] || [];
-        const targetNames = targetStarIndices.map(idx => {
-            const starObj = starsIn8thHouse.find(st => st.starIdx === idx);
-            const padaList = starObj ? `(${starObj.padas.map(p => `${p}${lang === 'ta' ? '-ம் பாதம்' : ' Pada'}`).join(', ')})` : '';
-            const tName = lang === 'ta' ? t.stars[idx] : translations['en'].stars[idx];
-            return `<strong>${tName}</strong> ${padaList}`;
-        }).join(' / ');
+        const numPadas = s.padas.length;
+        const pStart = currentRasiPadaOffset;
+        const pEnd = currentRasiPadaOffset + numPadas - 1;
+        currentRasiPadaOffset += numPadas;
+        
+        // Find which 8th-house stars and padas overlap with [pStart, pEnd]
+        const matched8thStars = [];
+        let offset8th = 0;
+        starsIn8thHouse.forEach((st8) => {
+            const st8PadasCount = st8.padas.length;
+            const st8Start = offset8th;
+            const st8End = offset8th + st8PadasCount - 1;
+            offset8th += st8PadasCount;
+            
+            // Check overlap between [pStart, pEnd] and [st8Start, st8End]
+            const overlapStart = Math.max(pStart, st8Start);
+            const overlapEnd = Math.min(pEnd, st8End);
+            
+            if (overlapStart <= overlapEnd) {
+                // Map to actual pada numbers in this 8th star
+                const matchedPadas = [];
+                for (let k = overlapStart; k <= overlapEnd; k++) {
+                    const localIdx = k - st8Start;
+                    matchedPadas.push(st8.padas[localIdx]);
+                }
+                const st8Name = lang === 'ta' ? t.stars[st8.starIdx] : translations['en'].stars[st8.starIdx];
+                const matchedPadasStr = matchedPadas.map(p => `${p}${lang === 'ta' ? '-ம் பாதம்' : ' Pada'}`).join(', ');
+                matched8thStars.push(`<strong>${st8Name}</strong> <span style="font-size: 11.5px; color: var(--text-secondary); font-weight: normal;">(${matchedPadasStr})</span>`);
+            }
+        });
+        
+        const targetStarsHtml = matched8thStars.join(' / ');
+        
+        // Calculate exact start and end dates for this Janma Star's Chandrashtama window
+        let timingHtml = '';
+        if (activeOrNextPeriod) {
+            const targetLonStart = eighthRasiStartLon + pStart * padaLength;
+            const targetLonEnd = eighthRasiStartLon + (pEnd + 1) * padaLength;
+            
+            let sStart = activeOrNextPeriod.start;
+            if (pStart > 0) {
+                sStart = findMoonLongitudeTime(activeOrNextPeriod.start, activeOrNextPeriod.end, targetLonStart);
+            }
+            
+            let sEnd = activeOrNextPeriod.end;
+            if (pEnd < 8) {
+                sEnd = findMoonLongitudeTime(activeOrNextPeriod.start, activeOrNextPeriod.end, targetLonEnd);
+            }
+            
+            const isStActive = nowMs >= sStart.getTime() && nowMs <= sEnd.getTime();
+            const durHours = ((sEnd - sStart) / (3600 * 1000)).toFixed(1);
+            
+            timingHtml = `
+                <div style="font-size: 13px; font-weight: 600; color: ${isStActive ? '#ef4444' : 'var(--text-primary)'};">
+                    ${formatDateTimeReadable(sStart)}
+                </div>
+                <div style="font-size: 12px; color: var(--text-secondary); margin-top: 1px;">
+                    ${lang === 'ta' ? 'முதல்' : 'to'} <strong style="color: var(--text-primary);">${formatDateTimeReadable(sEnd)}</strong> ${lang === 'ta' ? 'வரை' : ''}
+                </div>
+                <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 3px; display: flex; align-items: center; gap: 6px;">
+                    <span>⏱️ ${durHours} hrs</span>
+                    ${isStActive ? `<span class="status-badge badge-danger" style="font-size: 10px; padding: 2px 6px;">🔴 ${lang === 'ta' ? 'நடப்பில்' : 'Active'}</span>` : ''}
+                </div>
+            `;
+        } else {
+            timingHtml = `<span style="color: var(--text-secondary); font-size: 12px;">-</span>`;
+        }
         
         starPadaRowsHtml += `
             <tr style="border-bottom: 1px solid var(--card-border);">
-                <td style="padding: 10px 14px; font-weight: 600; color: var(--accent); vertical-align: middle;">
+                <td style="padding: 12px 14px; font-weight: 600; color: var(--accent); vertical-align: middle;">
                     <div>${sName}</div>
                     <div style="font-size: 11.5px; color: var(--text-secondary); font-weight: normal; margin-top: 2px;">${padasText}</div>
                 </td>
-                <td style="padding: 10px 14px; color: #ef4444; vertical-align: middle; line-height: 1.5;">
-                    ${targetNames || '-'}
+                <td style="padding: 12px 14px; color: #ef4444; vertical-align: middle; line-height: 1.5;">
+                    ${targetStarsHtml || '-'}
                 </td>
-                <td style="padding: 10px 14px; color: var(--text-primary); font-weight: 600; vertical-align: middle;">
+                <td style="padding: 12px 14px; color: var(--text-primary); font-weight: 600; vertical-align: middle;">
                     ${eighthHouseName}
+                </td>
+                <td style="padding: 12px 14px; vertical-align: middle;">
+                    ${timingHtml}
                 </td>
             </tr>
         `;
     });
     
+    // Overall period banner text
+    let overallPeriodBannerHtml = '';
+    if (activeOrNextPeriod) {
+        const isOverallActive = nowMs >= activeOrNextPeriod.start.getTime() && nowMs <= activeOrNextPeriod.end.getTime();
+        const overallStartStr = formatDateTimeReadable(activeOrNextPeriod.start);
+        const overallEndStr = formatDateTimeReadable(activeOrNextPeriod.end);
+        const totalHours = ((activeOrNextPeriod.end - activeOrNextPeriod.start) / (3600 * 1000)).toFixed(1);
+        
+        overallPeriodBannerHtml = `
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; padding: 10px 14px; background: ${isOverallActive ? 'rgba(239, 68, 68, 0.08)' : 'rgba(0,0,0,0.03)'}; border: 1px solid ${isOverallActive ? 'rgba(239, 68, 68, 0.3)' : 'var(--card-border)'}; border-radius: 8px; font-size: 13px; margin-bottom: 12px;">
+                <div>
+                    <strong style="color: ${isOverallActive ? '#ef4444' : 'var(--accent)'};">📅 ${lang === 'ta' ? 'அடுத்த சந்திராஷ்டம முழு கால அளவு' : 'Upcoming Chandrashtama Total Window'}:</strong>
+                    <span style="margin-left: 6px; color: var(--text-primary); font-weight: 600;">${overallStartStr}</span>
+                    <span style="margin: 0 4px; color: var(--text-secondary);">${lang === 'ta' ? 'முதல்' : 'to'}</span>
+                    <span style="color: var(--text-primary); font-weight: 600;">${overallEndStr}</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 6px; color: var(--text-secondary);">
+                    <span>⏱️ <strong>${totalHours} hrs</strong> (~2.25 ${lang === 'ta' ? 'நாட்கள்' : 'days'})</span>
+                    ${isOverallActive ? `<span class="status-badge badge-danger" style="font-size: 10.5px;">🔴 ${lang === 'ta' ? 'நடப்பில் உள்ளது' : 'Active Now'}</span>` : ''}
+                </div>
+            </div>
+        `;
+    }
+
     // Rasi Selector Pills
     let rasiPillsHtml = '<div class="rasi-selector-container" style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; margin-bottom: 16px;">';
     for (let i = 0; i < 12; i++) {
@@ -1309,7 +1406,7 @@ function renderChandrashtamaCardHtml(currentTransit, t) {
     rasiPillsHtml += '</div>';
 
     const title = lang === 'ta' ? 'சந்திராஷ்டம விவரங்கள் (நட்சத்திர & பாத வாரியாக)' : 'Chandrashtama Details (Star & Pada-wise)';
-    const subtitle = lang === 'ta' ? 'ராசியைத் தேர்ந்தெடுத்து நட்சத்திர & பாத வாரியான சந்திராஷ்டம நட்சத்திரங்களை அறியவும்' : 'Select your Rasi to view star & pada-wise Chandrashtama details';
+    const subtitle = lang === 'ta' ? 'ராசியைத் தேர்ந்தெடுத்து நட்சத்திர & பாத வாரியான சந்திராஷ்டம ஆரம்பம்/முடிவு தேதிகளை அறியவும்' : 'Select your Rasi to view star & pada-wise Chandrashtama dates and timings';
 
     return `
         <div class="card" id="chandrashtama-card">
@@ -1327,7 +1424,7 @@ function renderChandrashtamaCardHtml(currentTransit, t) {
                 <!-- 12 Rasi Selector -->
                 ${rasiPillsHtml}
 
-                <!-- Selected Sign Overview Card with Star & Pada Mapping -->
+                <!-- Selected Sign Overview Card with Star & Pada Mapping and Dates -->
                 <div style="display: flex; flex-direction: column; gap: 14px; padding: 16px 18px; background: rgba(0,0,0,0.02); border: 1px solid var(--card-border); border-radius: 10px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
                         <div>
@@ -1347,19 +1444,23 @@ function renderChandrashtamaCardHtml(currentTransit, t) {
                             </div>
                         </div>
                     </div>
+
+                    <!-- Overall Period Banner -->
+                    ${overallPeriodBannerHtml}
                     
-                    <!-- Star & Pada Mapping Table -->
+                    <!-- Star & Pada Mapping Table with Dates -->
                     <div>
                         <div style="font-size: 13px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px;">
-                            ⭐ ${lang === 'ta' ? 'நட்சத்திர & பாத வாரியான சந்திராஷ்டம நட்சத்திரங்கள்' : 'Star & Pada-wise Chandrashtama Mapping'}:
+                            ⭐ ${lang === 'ta' ? 'நட்சத்திர & பாத வாரியான சந்திராஷ்டம தேதிகள் மற்றும் நேரங்கள்' : 'Star & Pada-wise Chandrashtama Dates and Timings'}:
                         </div>
                         <div class="table-container" style="margin: 0;">
                             <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
                                 <thead>
                                     <tr style="background: rgba(0,0,0,0.03); border-bottom: 2px solid var(--card-border);">
-                                        <th style="padding: 8px 14px; text-align: left;">${lang === 'ta' ? 'ஜென்ம நட்சத்திரம் & பாதம்' : 'Birth Star & Padas'}</th>
-                                        <th style="padding: 8px 14px; text-align: left;">${lang === 'ta' ? 'சந்திராஷ்டம நட்சத்திரம் & பாதம்' : 'Chandrashtama Star & Padas'}</th>
-                                        <th style="padding: 8px 14px; text-align: left;">${lang === 'ta' ? '8-ம் ராசி' : '8th Sign'}</th>
+                                        <th style="padding: 10px 14px; text-align: left;">${lang === 'ta' ? 'ஜென்ம நட்சத்திரம் & பாதம்' : 'Birth Star & Padas'}</th>
+                                        <th style="padding: 10px 14px; text-align: left;">${lang === 'ta' ? 'சந்திராஷ்டம நட்சத்திரம் & பாதம்' : 'Chandrashtama Star & Padas'}</th>
+                                        <th style="padding: 10px 14px; text-align: left;">${lang === 'ta' ? '8-ம் ராசி' : '8th Sign'}</th>
+                                        <th style="padding: 10px 14px; text-align: left;">${lang === 'ta' ? 'சந்திராஷ்டம ஆரம்பம் & முடிவு தேதிகள்' : 'Chandrashtama Dates & Timings'}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
