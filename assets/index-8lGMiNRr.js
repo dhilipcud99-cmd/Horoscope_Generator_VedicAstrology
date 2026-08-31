@@ -318,28 +318,29 @@
                 </table>
             </div>
         </div>
-    `,O=En(m,t);return c+D+O}function En(t,n){let r=X.lang,i=t.planets.find(e=>e.name===`Moon`),a=i?i.longitude:0,o=q(a),s=Wt(a),c=Qt(o),l=X.chandrashtamaSelectedRasi===void 0?c:X.chandrashtamaSelectedRasi,u=J[l],d=r===`ta`?n.signs[u]:e.en.signs[u],f=e.en.signs[u],p=Zt(l),m=J[p],h=r===`ta`?n.signs[m]:e.en.signs[m],g=e.en.signs[m],_=r===`ta`?n.signs[J[o]]:e.en.signs[J[o]],v=r===`ta`?n.stars[s.starIdx]:e.en.stars[s.starIdx],y=e=>`${e.toLocaleDateString(r===`ta`?`ta-IN`:`en-US`,{day:`numeric`,month:`short`,year:`numeric`})}, ${e.toLocaleTimeString([],{hour:`2-digit`,minute:`2-digit`})}`,b=rn(l,X.transitDate,75),x=b.length>0?b[0]:null,S=new Date(`${X.transitDate}T${X.transitTime}:00`).getTime(),C=$t(l),w=$t(p),T=30/9,E=p*30,D=0,O=``;C.forEach(t=>{let i=r===`ta`?n.stars[t.starIdx]:e.en.stars[t.starIdx],a=t.padas.map(e=>`${e}${r===`ta`?`-ம் பாதம்`:` Pada`}`).join(`, `),o=t.padas.length,s=D,c=D+o-1;D+=o;let l=[],u=0;w.forEach(t=>{let i=t.padas.length,a=u,o=u+i-1;u+=i;let d=Math.max(s,a),f=Math.min(c,o);if(d<=f){let i=[];for(let e=d;e<=f;e++){let n=e-a;i.push(t.padas[n])}let o=r===`ta`?n.stars[t.starIdx]:e.en.stars[t.starIdx],s=i.map(e=>`${e}${r===`ta`?`-ம் பாதம்`:` Pada`}`).join(`, `);l.push(`<strong>${o}</strong> <span style="font-size: 11.5px; color: var(--text-secondary); font-weight: normal;">(${s})</span>`)}}),l.join(` / `);let d=``;if(x){let e=E+s*T,t=E+(c+1)*T,n=x.start;s>0&&(n=tn(x.start,x.end,e));let i=x.end;c<8&&(i=tn(x.start,x.end,t));let a=S>=n.getTime()&&S<=i.getTime(),o=((i-n)/(3600*1e3)).toFixed(1);d=`
-                <div style="font-size: 13px; font-weight: 600; color: ${a?`#ef4444`:`var(--text-primary)`};">
-                    ${y(n)}
-                </div>
-                <div style="font-size: 12px; color: var(--text-secondary); margin-top: 1px;">
-                    ${r===`ta`?`முதல்`:`to`} <strong style="color: var(--text-primary);">${y(i)}</strong> ${r===`ta`?`வரை`:``}
-                </div>
-                <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 3px; display: flex; align-items: center; gap: 6px;">
-                    <span>⏱️ ${o} hrs</span>
-                    ${a?`<span class="status-badge badge-danger" style="font-size: 10px; padding: 2px 6px;">🔴 ${r===`ta`?`நடப்பில்`:`Active`}</span>`:``}
-                </div>
-            `}else d=`<span style="color: var(--text-secondary); font-size: 12px;">-</span>`;O+=`
-            <tr style="border-bottom: 1px solid var(--card-border);">
-                <td style="padding: 12px 14px; font-weight: 600; color: var(--accent); vertical-align: middle; width: 35%;">
-                    <div style="font-size: 14.5px;">${i}</div>
-                    <div style="font-size: 12px; color: var(--text-secondary); font-weight: normal; margin-top: 2px;">${a}</div>
-                </td>
-                <td style="padding: 12px 14px; vertical-align: middle;">
-                    ${d}
-                </td>
-            </tr>
-        `});let k=``;if(x){let e=S>=x.start.getTime()&&S<=x.end.getTime(),t=y(x.start),n=y(x.end),i=((x.end-x.start)/(3600*1e3)).toFixed(1);k=`
+    `,O=En(m,t);return c+D+O}function En(t,n){let r=X.lang,i=t.planets.find(e=>e.name===`Moon`),a=i?i.longitude:0,o=q(a),s=Wt(a),c=Qt(o),l=X.chandrashtamaSelectedRasi===void 0?c:X.chandrashtamaSelectedRasi,u=J[l],d=r===`ta`?n.signs[u]:e.en.signs[u],f=e.en.signs[u],p=Zt(l),m=J[p],h=r===`ta`?n.signs[m]:e.en.signs[m],g=e.en.signs[m],_=r===`ta`?n.signs[J[o]]:e.en.signs[J[o]],v=r===`ta`?n.stars[s.starIdx]:e.en.stars[s.starIdx],y=e=>`${e.toLocaleDateString(r===`ta`?`ta-IN`:`en-US`,{day:`numeric`,month:`short`,year:`numeric`})}, ${e.toLocaleTimeString([],{hour:`2-digit`,minute:`2-digit`})}`,b=rn(l,X.transitDate,75),x=b.length>0?b[0]:null,S=new Date(`${X.transitDate}T${X.transitTime}:00`).getTime(),C=$t(l),w=30/9,T=p*30,E=0,D=``;C.forEach(t=>{let i=r===`ta`?n.stars[t.starIdx]:e.en.stars[t.starIdx];t.padas.forEach(e=>{let t=E;E++;let n=``,a=!1;if(x){let e=T+t*w,i=T+(t+1)*w,o=x.start;t>0&&(o=tn(x.start,x.end,e));let s=x.end;t<8&&(s=tn(x.start,x.end,i)),a=S>=o.getTime()&&S<=s.getTime();let c=((s-o)/(3600*1e3)).toFixed(1);n=`
+                    <div style="font-size: 13px; font-weight: 600; color: ${a?`#ef4444`:`var(--text-primary)`};">
+                        ${y(o)}
+                    </div>
+                    <div style="font-size: 12px; color: var(--text-secondary); margin-top: 1px;">
+                        ${r===`ta`?`முதல்`:`to`} <strong style="color: var(--text-primary);">${y(s)}</strong> ${r===`ta`?`வரை`:``}
+                    </div>
+                    <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 2px; display: flex; align-items: center; gap: 6px;">
+                        <span>⏱️ ${c} hrs</span>
+                        ${a?`<span class="status-badge badge-danger" style="font-size: 10px; padding: 1px 6px;">🔴 ${r===`ta`?`நடப்பில் உள்ளது`:`Active Now`}</span>`:``}
+                    </div>
+                `}else n=`<span style="color: var(--text-secondary); font-size: 12px;">-</span>`;D+=`
+                <tr style="border-bottom: 1px solid var(--card-border); ${a?`background: rgba(239, 68, 68, 0.06);`:``}">
+                    <td style="padding: 11px 14px; vertical-align: middle; width: 38%;">
+                        <div style="font-size: 14.5px; font-weight: 700; color: ${a?`#ef4444`:`var(--accent)`};">
+                            ${i} <span style="font-size: 13px; font-weight: 600; color: var(--text-primary); margin-left: 3px;">- ${e}${r===`ta`?`-ம் பாதம்`:` Pada`}</span>
+                        </div>
+                    </td>
+                    <td style="padding: 11px 14px; vertical-align: middle;">
+                        ${n}
+                    </td>
+                </tr>
+            `})});let O=``;if(x){let e=S>=x.start.getTime()&&S<=x.end.getTime(),t=y(x.start),n=y(x.end),i=((x.end-x.start)/(3600*1e3)).toFixed(1);O=`
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; padding: 10px 14px; background: ${e?`rgba(239, 68, 68, 0.08)`:`rgba(0,0,0,0.03)`}; border: 1px solid ${e?`rgba(239, 68, 68, 0.3)`:`var(--card-border)`}; border-radius: 8px; font-size: 13px; margin-bottom: 12px;">
                 <div>
                     <strong style="color: ${e?`#ef4444`:`var(--accent)`};">📅 ${r===`ta`?`அடுத்த சந்திராஷ்டம முழு கால அளவு`:`Upcoming Chandrashtama Total Window`}:</strong>
@@ -352,11 +353,11 @@
                     ${e?`<span class="status-badge badge-danger" style="font-size: 10.5px;">🔴 ${r===`ta`?`நடப்பில் உள்ளது`:`Active Now`}</span>`:``}
                 </div>
             </div>
-        `}let A=`<div class="rasi-selector-container" style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; margin-bottom: 16px;">`;for(let t=0;t<12;t++){let i=J[t],a=r===`ta`?n.signs[i]:e.en.signs[i];A+=`
+        `}let k=`<div class="rasi-selector-container" style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; margin-bottom: 16px;">`;for(let t=0;t<12;t++){let i=J[t],a=r===`ta`?n.signs[i]:e.en.signs[i];k+=`
             <button type="button" class="rasi-select-pill ${t===l?`selected`:``}" data-rasi="${t}">
                 ${t===c?`🔴 `:``}${a}
             </button>
-        `}return A+=`</div>`,`
+        `}return k+=`</div>`,`
         <div class="card" id="chandrashtama-card">
             <div style="width: 100%;">
                 <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 8px;">
@@ -370,7 +371,7 @@
                 </div>
 
                 <!-- 12 Rasi Selector -->
-                ${A}
+                ${k}
 
                 <!-- Selected Sign Overview Card with Star & Pada Mapping and Dates -->
                 <div style="display: flex; flex-direction: column; gap: 14px; padding: 16px 18px; background: rgba(0,0,0,0.02); border: 1px solid var(--card-border); border-radius: 10px;">
@@ -394,7 +395,7 @@
                     </div>
 
                     <!-- Overall Period Banner -->
-                    ${k}
+                    ${O}
                     
                     <!-- Star & Pada Mapping Table with Dates -->
                     <div>
@@ -410,7 +411,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    ${O}
+                                    ${D}
                                 </tbody>
                             </table>
                         </div>

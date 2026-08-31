@@ -1266,98 +1266,70 @@ function renderChandrashtamaCardHtml(currentTransit, t) {
     
     // Stars in selected Rasi and 8th House Rasi
     const starsInSelected = getStarsInRasi(selectedRasiIdx);
-    const starsIn8thHouse = getStarsInRasi(eighthHouseIdx);
     
     const padaLength = 30 / 9; // 3.3333333333333335 deg
     const eighthRasiStartLon = eighthHouseIdx * 30;
     
-    // Build accurate Star & Pada rows with Dates
-    let currentRasiPadaOffset = 0;
+    // Build accurate per-pada rows with exact timings
+    let padaRasiIndex = 0;
     let starPadaRowsHtml = '';
     
     starsInSelected.forEach((s) => {
         const sName = lang === 'ta' ? t.stars[s.starIdx] : translations['en'].stars[s.starIdx];
-        const padasText = s.padas.map(p => `${p}${lang === 'ta' ? '-ம் பாதம்' : ' Pada'}`).join(', ');
         
-        const numPadas = s.padas.length;
-        const pStart = currentRasiPadaOffset;
-        const pEnd = currentRasiPadaOffset + numPadas - 1;
-        currentRasiPadaOffset += numPadas;
-        
-        // Find which 8th-house stars and padas overlap with [pStart, pEnd]
-        const matched8thStars = [];
-        let offset8th = 0;
-        starsIn8thHouse.forEach((st8) => {
-            const st8PadasCount = st8.padas.length;
-            const st8Start = offset8th;
-            const st8End = offset8th + st8PadasCount - 1;
-            offset8th += st8PadasCount;
+        s.padas.forEach((padaNum) => {
+            const currentPadaIdx = padaRasiIndex;
+            padaRasiIndex++;
             
-            // Check overlap between [pStart, pEnd] and [st8Start, st8End]
-            const overlapStart = Math.max(pStart, st8Start);
-            const overlapEnd = Math.min(pEnd, st8End);
+            let timingHtml = '';
+            let isPadaActive = false;
             
-            if (overlapStart <= overlapEnd) {
-                // Map to actual pada numbers in this 8th star
-                const matchedPadas = [];
-                for (let k = overlapStart; k <= overlapEnd; k++) {
-                    const localIdx = k - st8Start;
-                    matchedPadas.push(st8.padas[localIdx]);
+            if (activeOrNextPeriod) {
+                const targetLonStart = eighthRasiStartLon + currentPadaIdx * padaLength;
+                const targetLonEnd = eighthRasiStartLon + (currentPadaIdx + 1) * padaLength;
+                
+                let pStart = activeOrNextPeriod.start;
+                if (currentPadaIdx > 0) {
+                    pStart = findMoonLongitudeTime(activeOrNextPeriod.start, activeOrNextPeriod.end, targetLonStart);
                 }
-                const st8Name = lang === 'ta' ? t.stars[st8.starIdx] : translations['en'].stars[st8.starIdx];
-                const matchedPadasStr = matchedPadas.map(p => `${p}${lang === 'ta' ? '-ம் பாதம்' : ' Pada'}`).join(', ');
-                matched8thStars.push(`<strong>${st8Name}</strong> <span style="font-size: 11.5px; color: var(--text-secondary); font-weight: normal;">(${matchedPadasStr})</span>`);
+                
+                let pEnd = activeOrNextPeriod.end;
+                if (currentPadaIdx < 8) {
+                    pEnd = findMoonLongitudeTime(activeOrNextPeriod.start, activeOrNextPeriod.end, targetLonEnd);
+                }
+                
+                isPadaActive = nowMs >= pStart.getTime() && nowMs <= pEnd.getTime();
+                const durHours = ((pEnd - pStart) / (3600 * 1000)).toFixed(1);
+                
+                timingHtml = `
+                    <div style="font-size: 13px; font-weight: 600; color: ${isPadaActive ? '#ef4444' : 'var(--text-primary)'};">
+                        ${formatDateTimeReadable(pStart)}
+                    </div>
+                    <div style="font-size: 12px; color: var(--text-secondary); margin-top: 1px;">
+                        ${lang === 'ta' ? 'முதல்' : 'to'} <strong style="color: var(--text-primary);">${formatDateTimeReadable(pEnd)}</strong> ${lang === 'ta' ? 'வரை' : ''}
+                    </div>
+                    <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 2px; display: flex; align-items: center; gap: 6px;">
+                        <span>⏱️ ${durHours} hrs</span>
+                        ${isPadaActive ? `<span class="status-badge badge-danger" style="font-size: 10px; padding: 1px 6px;">🔴 ${lang === 'ta' ? 'நடப்பில் உள்ளது' : 'Active Now'}</span>` : ''}
+                    </div>
+                `;
+            } else {
+                timingHtml = `<span style="color: var(--text-secondary); font-size: 12px;">-</span>`;
             }
-        });
-        
-        const targetStarsHtml = matched8thStars.join(' / ');
-        
-        // Calculate exact start and end dates for this Janma Star's Chandrashtama window
-        let timingHtml = '';
-        if (activeOrNextPeriod) {
-            const targetLonStart = eighthRasiStartLon + pStart * padaLength;
-            const targetLonEnd = eighthRasiStartLon + (pEnd + 1) * padaLength;
             
-            let sStart = activeOrNextPeriod.start;
-            if (pStart > 0) {
-                sStart = findMoonLongitudeTime(activeOrNextPeriod.start, activeOrNextPeriod.end, targetLonStart);
-            }
-            
-            let sEnd = activeOrNextPeriod.end;
-            if (pEnd < 8) {
-                sEnd = findMoonLongitudeTime(activeOrNextPeriod.start, activeOrNextPeriod.end, targetLonEnd);
-            }
-            
-            const isStActive = nowMs >= sStart.getTime() && nowMs <= sEnd.getTime();
-            const durHours = ((sEnd - sStart) / (3600 * 1000)).toFixed(1);
-            
-            timingHtml = `
-                <div style="font-size: 13px; font-weight: 600; color: ${isStActive ? '#ef4444' : 'var(--text-primary)'};">
-                    ${formatDateTimeReadable(sStart)}
-                </div>
-                <div style="font-size: 12px; color: var(--text-secondary); margin-top: 1px;">
-                    ${lang === 'ta' ? 'முதல்' : 'to'} <strong style="color: var(--text-primary);">${formatDateTimeReadable(sEnd)}</strong> ${lang === 'ta' ? 'வரை' : ''}
-                </div>
-                <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 3px; display: flex; align-items: center; gap: 6px;">
-                    <span>⏱️ ${durHours} hrs</span>
-                    ${isStActive ? `<span class="status-badge badge-danger" style="font-size: 10px; padding: 2px 6px;">🔴 ${lang === 'ta' ? 'நடப்பில்' : 'Active'}</span>` : ''}
-                </div>
+            starPadaRowsHtml += `
+                <tr style="border-bottom: 1px solid var(--card-border); ${isPadaActive ? 'background: rgba(239, 68, 68, 0.06);' : ''}">
+                    <td style="padding: 11px 14px; vertical-align: middle; width: 38%;">
+                        <div style="font-size: 14.5px; font-weight: 700; color: ${isPadaActive ? '#ef4444' : 'var(--accent)'};">
+                            ${sName} <span style="font-size: 13px; font-weight: 600; color: var(--text-primary); margin-left: 3px;">- ${padaNum}${lang === 'ta' ? '-ம் பாதம்' : ' Pada'}</span>
+                        </div>
+                    </td>
+                    <td style="padding: 11px 14px; vertical-align: middle;">
+                        ${timingHtml}
+                    </td>
+                </tr>
             `;
-        } else {
-            timingHtml = `<span style="color: var(--text-secondary); font-size: 12px;">-</span>`;
-        }
-        
-        starPadaRowsHtml += `
-            <tr style="border-bottom: 1px solid var(--card-border);">
-                <td style="padding: 12px 14px; font-weight: 600; color: var(--accent); vertical-align: middle; width: 35%;">
-                    <div style="font-size: 14.5px;">${sName}</div>
-                    <div style="font-size: 12px; color: var(--text-secondary); font-weight: normal; margin-top: 2px;">${padasText}</div>
-                </td>
-                <td style="padding: 12px 14px; vertical-align: middle;">
-                    ${timingHtml}
-                </td>
-            </tr>
-        `;
+        });
     });
     
     // Overall period banner text
