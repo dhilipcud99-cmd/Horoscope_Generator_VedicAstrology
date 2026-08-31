@@ -1842,7 +1842,7 @@ function renderMonthlyCalendarCardHtml(currentTransit, t) {
         if (isEkadashi) tithiBadgeColor = '#16a34a; font-weight: 700;';
 
         calendarCellsHtml += `
-            <div class="cal-day-cell" data-date="${dayStr}" style="background: ${cellBg}; border: ${cellBorder}; border-radius: 8px; padding: 8px; min-height: 94px; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer; transition: transform 0.15s ease, box-shadow 0.15s ease; position: relative;">
+            <div class="cal-day-cell" data-date="${dayStr}" style="box-sizing: border-box; width: 100%; background: ${cellBg}; border: ${cellBorder}; border-radius: 8px; padding: 8px 10px; min-height: 96px; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer; transition: transform 0.15s ease, box-shadow 0.15s ease; position: relative; overflow: hidden;">
                 <!-- Date Number Header -->
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <span style="font-size: 15px; font-weight: 700; color: ${isToday ? 'var(--accent)' : 'var(--text-primary)'}; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; ${isToday ? 'background: rgba(202, 138, 4, 0.18); border-radius: 50%; border: 1.5px solid var(--accent);' : ''}">
@@ -1897,55 +1897,58 @@ function renderMonthlyCalendarCardHtml(currentTransit, t) {
                 </div>
 
                 <!-- Calendar Month/Year Controls -->
-                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; padding: 10px 14px; background: rgba(0,0,0,0.02); border: 1px solid var(--card-border); border-radius: 8px; margin-bottom: 14px;">
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <button type="button" id="cal-prev-month-btn" class="lang-btn" style="padding: 4px 10px; height: 32px; font-weight: bold;" title="Previous Month">
-                            ◀ ${lang === 'ta' ? 'முந்தைய மாதம்' : 'Prev'}
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; padding: 12px 16px; background: rgba(0,0,0,0.02); border: 1px solid var(--card-border); border-radius: 8px; margin-bottom: 14px;">
+                    <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 10px;">
+                        <button type="button" id="cal-prev-month-btn" style="white-space: nowrap; padding: 6px 14px; height: 36px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-weight: 600; font-size: 13px; cursor: pointer; border-radius: 6px; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text-primary); transition: all 0.2s;">
+                            <span>◀</span> <span>${lang === 'ta' ? 'முந்தைய மாதம்' : 'Prev Month'}</span>
                         </button>
-                        <select id="cal-month-select" class="lang-btn" style="padding: 4px 8px; height: 32px; font-weight: 600; font-size: 13px;">
+                        <select id="cal-month-select" style="height: 36px; padding: 4px 12px; font-weight: 600; font-size: 13.5px; border-radius: 6px; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text-primary); cursor: pointer;">
                             ${monthOptionsHtml}
                         </select>
-                        <select id="cal-year-select" class="lang-btn" style="padding: 4px 8px; height: 32px; font-weight: 600; font-size: 13px;">
+                        <select id="cal-year-select" style="height: 36px; padding: 4px 12px; font-weight: 600; font-size: 13.5px; border-radius: 6px; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text-primary); cursor: pointer;">
                             ${yearOptionsHtml}
                         </select>
-                        <button type="button" id="cal-next-month-btn" class="lang-btn" style="padding: 4px 10px; height: 32px; font-weight: bold;" title="Next Month">
-                            ${lang === 'ta' ? 'அடுத்த மாதம்' : 'Next'} ▶
+                        <button type="button" id="cal-next-month-btn" style="white-space: nowrap; padding: 6px 14px; height: 36px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-weight: 600; font-size: 13px; cursor: pointer; border-radius: 6px; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text-primary); transition: all 0.2s;">
+                            <span>${lang === 'ta' ? 'அடுத்த மாதம்' : 'Next Month'}</span> <span>▶</span>
                         </button>
                     </div>
 
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <button type="button" id="cal-today-btn" class="lang-btn" style="padding: 4px 12px; height: 32px; font-weight: 600;">
-                            📍 ${lang === 'ta' ? 'இன்றைய மாதம்' : 'This Month'}
+                    <div>
+                        <button type="button" id="cal-today-btn" style="white-space: nowrap; padding: 6px 16px; height: 36px; display: inline-flex; align-items: center; gap: 6px; font-weight: 600; font-size: 13px; border-radius: 6px; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--accent); cursor: pointer; transition: all 0.2s;">
+                            <span>📍</span> <span>${lang === 'ta' ? 'இன்றைய மாதம்' : 'This Month'}</span>
                         </button>
                     </div>
                 </div>
 
                 <!-- Legend Bar -->
-                <div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center; font-size: 12px; color: var(--text-secondary); margin-bottom: 12px; padding: 6px 10px; background: rgba(0,0,0,0.015); border-radius: 6px;">
-                    <div style="display: flex; align-items: center; gap: 4px;">
-                        <span style="display: inline-block; width: 10px; height: 10px; background: #ef4444; border-radius: 2px;"></span>
-                        <span>🔴 ${lang === 'ta' ? 'சந்திராஷ்டம நாட்கள்' : 'Chandrashtama Days'} (${selectedRasiName})</span>
+                <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center; font-size: 12px; color: var(--text-secondary); margin-bottom: 14px;">
+                    <div style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 20px; font-weight: 600; color: #ef4444;">
+                        🔴 ${lang === 'ta' ? 'சந்திராஷ்டம நாட்கள்' : 'Chandrashtama Days'} (${selectedRasiName})
                     </div>
-                    <div style="display: flex; align-items: center; gap: 4px;">
-                        <span style="display: inline-block; width: 10px; height: 10px; background: #ca8a04; border-radius: 2px;"></span>
-                        <span>🪐 ${lang === 'ta' ? 'கிரகப் பெயர்ச்சி' : 'Planet Ingress'}</span>
+                    <div style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; background: rgba(234, 179, 8, 0.12); border: 1px solid rgba(234, 179, 8, 0.3); border-radius: 20px; font-weight: 600; color: #854d0e;">
+                        🪐 ${lang === 'ta' ? 'கிரகப் பெயர்ச்சி' : 'Planet Ingress'}
                     </div>
-                    <div style="display: flex; align-items: center; gap: 4px;">
-                        <span>🌕 பௌர்ணமி / 🌑 அமாவாசை / 🌿 ஏகாதசி</span>
+                    <div style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px;">
+                        🌕 பௌர்ணமி / 🌑 அமாவாசை / 🌿 ஏகாதசி
                     </div>
-                    <div style="display: flex; align-items: center; gap: 4px;">
-                        <span style="color: var(--accent); font-weight: 600;">💡 ${lang === 'ta' ? 'தேதியை கிளிக் செய்து விரிவான கோச்சார நிலையை அறியலாம்' : 'Click any day to inspect its astrological transit'}</span>
+                    <div style="display: inline-flex; align-items: center; gap: 6px; margin-left: auto; color: var(--accent); font-weight: 600; font-size: 12px;">
+                        💡 ${lang === 'ta' ? 'தேதியை கிளிக் செய்து விரிவான நிலையை அறியலாம்' : 'Click any day to inspect details'}
                     </div>
                 </div>
 
-                <!-- 7-Day Header -->
-                <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-bottom: 6px;">
-                    ${weekDaysHtml}
-                </div>
+                <!-- Calendar Scroll/Responsive Wrapper -->
+                <div class="calendar-scroll-wrapper" style="width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch;">
+                    <div style="min-width: 720px; box-sizing: border-box;">
+                        <!-- 7-Day Header -->
+                        <div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; margin-bottom: 8px;">
+                            ${weekDaysHtml}
+                        </div>
 
-                <!-- Calendar Day Cells Grid -->
-                <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px;">
-                    ${calendarCellsHtml}
+                        <!-- Calendar Day Cells Grid -->
+                        <div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px;">
+                            ${calendarCellsHtml}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
