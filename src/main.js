@@ -669,6 +669,7 @@ if (savedState) {
         console.error("Failed to parse saved state", e);
     }
 }
+state.globalZoom = parseInt(state.globalZoom, 10) || 100;
 state.selectedCity = null; // Ensure birth place is blank on initial load/refresh
 
 // Initialize separate calendar and location state for current planetary positions (transits)
@@ -703,7 +704,7 @@ if (savedProfilesJson) {
     }
 }
 state.savedProfiles = savedProfiles;
-state.leftSidebarOpen = localStorage.getItem('horoscope_left_sidebar_open') === 'true';
+state.leftSidebarOpen = localStorage.getItem('horoscope_left_sidebar_open') !== null ? localStorage.getItem('horoscope_left_sidebar_open') === 'true' : true;
 state.leftSidebarMini = localStorage.getItem('horoscope_left_sidebar_mini') === 'true';
 
 // Localized strings for Left Navigation & Tools Sidebar
@@ -734,7 +735,10 @@ const leftSidebarTranslations = {
         profileSaved: "ஜாதகம் வெற்றிகரமாக சேமிக்கப்பட்டது!",
         profileDeleted: "ஜாதகம் நீக்கப்பட்டது!",
         loadProfile: "ஏற்று",
-        deleteProfile: "நீக்கு"
+        deleteProfile: "நீக்கு",
+        zoom: "பக்க அளவு (Zoom)",
+        expandSidebar: "பக்கப்பட்டையை விரித்து உரையை காட்டு",
+        collapseSidebar: "பக்கப்பட்டையை சுருக்கு"
     },
     en: {
         title: "Vedic Astro Dashboard",
@@ -762,7 +766,10 @@ const leftSidebarTranslations = {
         profileSaved: "Profile saved successfully!",
         profileDeleted: "Profile deleted!",
         loadProfile: "Load",
-        deleteProfile: "Delete"
+        deleteProfile: "Delete",
+        zoom: "Page Zoom",
+        expandSidebar: "Expand Sidebar to Show Text",
+        collapseSidebar: "Collapse to Mini"
     },
     hi: {
         title: "वैदिक ज्योतिष डैशबोर्ड",
@@ -790,7 +797,10 @@ const leftSidebarTranslations = {
         profileSaved: "प्रोफाइल सफलतापूर्वक सहेजा गया!",
         profileDeleted: "प्रोफाइल हटाया गया!",
         loadProfile: "लोड करें",
-        deleteProfile: "हटाएं"
+        deleteProfile: "हटाएं",
+        zoom: "पृष्ठ ज़ूम",
+        expandSidebar: "टेक्स्ट देखने के लिए साइडबार फैलाएं",
+        collapseSidebar: "छोटा करें"
     },
     te: {
         title: "వేద జ్యోతిష్య డాష్‌బోర్డ్",
@@ -818,7 +828,10 @@ const leftSidebarTranslations = {
         profileSaved: "ప్రొఫైల్ సేవ్ చేయబడింది!",
         profileDeleted: "ప్రొఫైల్ తొలగించబడింది!",
         loadProfile: "లోడ్",
-        deleteProfile: "తొలగించు"
+        deleteProfile: "తొలగించు",
+        zoom: "పేజీ జూమ్",
+        expandSidebar: "టెక్స్ట్ చూపడానికి సైడ్‌బార్ విస్తరించండి",
+        collapseSidebar: "కుదించండి"
     },
     kn: {
         title: "ವೈದಿಕ ಜ್ಯೋತಿಷ್ಯ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್",
@@ -846,7 +859,10 @@ const leftSidebarTranslations = {
         profileSaved: "ಪ್ರೊಫೈಲ್ ಉಳಿಸಲಾಗಿದೆ!",
         profileDeleted: "ಪ್ರೊಫೈಲ್ ಅಳಿಸಲಾಗಿದೆ!",
         loadProfile: "ಲೋಡ್",
-        deleteProfile: "ಅಳಿಸಿ"
+        deleteProfile: "ಅಳಿಸಿ",
+        zoom: "ಪುಟ ಜೂಮ್",
+        expandSidebar: "ಪಠ್ಯವನ್ನು ತೋರಿಸಲು ಸೈಡ್‌ಬಾರ್ ವಿಸ್ತರಿಸಿ",
+        collapseSidebar: "ಕುಗ್ಗಿಸಿ"
     },
     ml: {
         title: "വേദ ജ്യോതിഷ ഡാഷ്‌ബോർഡ്",
@@ -979,22 +995,30 @@ function renderLeftNavSidebarHtml(t, currentAccent, isLight) {
     return `
         <!-- Sidebar Header -->
         <div class="left-sidebar-header">
-            <div class="left-sidebar-brand hide-in-mini">
+            <div class="left-sidebar-brand" style="${state.leftSidebarMini ? 'justify-content: center; width: 100%; cursor: pointer;' : ''}" title="${state.leftSidebarMini ? (ls.expandSidebar || 'Click to show text') : ''}">
                 <span style="font-size: 20px;">🪐</span>
-                <div>
+                <div class="hide-in-mini">
                     <div style="line-height: 1.1; font-size: 13.5px;">${ls.title}</div>
                     <div style="font-size: 10px; font-weight: normal; color: var(--text-secondary);">${ls.subtitle}</div>
                 </div>
             </div>
-            <div style="display: flex; gap: 4px; align-items: center;">
-                <button type="button" id="toggle-left-sidebar-mini-btn" class="left-sidebar-toggle-btn" title="${state.leftSidebarMini ? 'Expand Sidebar' : 'Collapse Sidebar'}">
-                    ${state.leftSidebarMini ? '▶' : '◀'}
+            <div style="display: flex; gap: 4px; align-items: center; ${state.leftSidebarMini ? 'display: none;' : ''}">
+                <button type="button" id="toggle-left-sidebar-mini-btn" class="left-sidebar-toggle-btn" title="${ls.collapseSidebar || 'Collapse to Mini'}">
+                    ◀
                 </button>
-                <button type="button" id="close-left-sidebar-btn" class="left-sidebar-toggle-btn hide-in-desktop" style="display: none;" title="Close">
+                <button type="button" id="close-left-sidebar-btn" class="left-sidebar-toggle-btn" title="${state.lang === 'ta' ? 'பக்கப்பட்டையை மூடு' : 'Close Sidebar'}">
                     ✕
                 </button>
             </div>
         </div>
+
+        ${state.leftSidebarMini ? `
+        <div style="display: flex; justify-content: center; width: 100%; margin-top: -6px;">
+            <button type="button" id="toggle-left-sidebar-mini-btn" class="left-sidebar-toggle-btn" style="width: 100%; height: 26px; font-size: 12px; font-weight: bold; background: var(--accent); color: #fff; border-color: var(--accent);" title="${ls.expandSidebar || 'Click to show text'}">
+                ▶
+            </button>
+        </div>
+        ` : ''}
 
         <!-- Section 1: Navigation -->
         <div>
@@ -1002,27 +1026,27 @@ function renderLeftNavSidebarHtml(t, currentAccent, isLight) {
                 <span>📍 <span class="hide-in-mini">${ls.navigation}</span></span>
             </div>
             <div class="sidebar-nav-list">
-                <a class="sidebar-nav-item ${state.view === 'form' ? 'active' : ''}" id="nav-link-horoscope" title="${ls.navHoroscope}">
+                <a class="sidebar-nav-item ${state.view === 'form' ? 'active' : ''}" id="nav-link-horoscope" title="${ls.navHoroscope}" data-tooltip="${ls.navHoroscope}">
                     <span class="nav-icon">📝</span>
                     <span class="hide-in-mini">${ls.navHoroscope}</span>
                 </a>
-                <a class="sidebar-nav-item" id="nav-link-transits" title="${ls.navTransits}">
+                <a class="sidebar-nav-item" id="nav-link-transits" title="${ls.navTransits}" data-tooltip="${ls.navTransits}">
                     <span class="nav-icon">🪐</span>
                     <span class="hide-in-mini">${ls.navTransits}</span>
                 </a>
-                <a class="sidebar-nav-item" id="nav-link-chandrashtama" title="${ls.navChandrashtama}">
+                <a class="sidebar-nav-item" id="nav-link-chandrashtama" title="${ls.navChandrashtama}" data-tooltip="${ls.navChandrashtama}">
                     <span class="nav-icon">🌑</span>
                     <span class="hide-in-mini">${ls.navChandrashtama}</span>
                 </a>
-                <a class="sidebar-nav-item" id="nav-link-transitions" title="${ls.navTransitions}">
+                <a class="sidebar-nav-item" id="nav-link-transitions" title="${ls.navTransitions}" data-tooltip="${ls.navTransitions}">
                     <span class="nav-icon">🔄</span>
                     <span class="hide-in-mini">${ls.navTransitions}</span>
                 </a>
-                <a class="sidebar-nav-item" id="nav-link-calendar" title="${ls.navCalendar}">
+                <a class="sidebar-nav-item" id="nav-link-calendar" title="${ls.navCalendar}" data-tooltip="${ls.navCalendar}">
                     <span class="nav-icon">📅</span>
                     <span class="hide-in-mini">${ls.navCalendar}</span>
                 </a>
-                <a class="sidebar-nav-item" id="nav-link-matching" title="${ls.navMatching}">
+                <a class="sidebar-nav-item" id="nav-link-matching" title="${ls.navMatching}" data-tooltip="${ls.navMatching}">
                     <span class="nav-icon">💖</span>
                     <span class="hide-in-mini">${ls.navMatching}</span>
                 </a>
@@ -1056,6 +1080,20 @@ function renderLeftNavSidebarHtml(t, currentAccent, isLight) {
                     <button type="button" id="sidebar-theme-toggle-btn" style="padding: 3px 8px; font-size: 11px; font-weight: 600; border-radius: 4px; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--accent); cursor: pointer;">
                         ${isLight ? `☀️ ${ls.light}` : `🌙 ${ls.dark}`}
                     </button>
+                </div>
+
+                <!-- Page Zoom Control -->
+                <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 4px; border-top: 1px solid var(--card-border);">
+                    <span style="font-size: 11.5px; color: var(--text-secondary); font-weight: 600;">🔍 ${ls.zoom || 'Zoom'}</span>
+                    <div style="display: inline-flex; align-items: center; gap: 4px; border: 1px solid var(--card-border); padding: 1px 4px; background: var(--card-bg); border-radius: 4px;">
+                        <button type="button" id="sidebar-zoom-out-btn" style="width: 18px; height: 18px; border-radius: 4px; border: 1px solid var(--card-border); background: var(--input-bg); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; color: var(--text-primary); padding: 0;" title="Zoom Out" ${state.globalZoom <= 70 ? 'disabled style="opacity:0.4; cursor:default;"' : ''}>
+                            &minus;
+                        </button>
+                        <span style="font-size: 11px; font-weight: 600; min-width: 28px; text-align: center; color: var(--accent);">${state.globalZoom}%</span>
+                        <button type="button" id="sidebar-zoom-in-btn" style="width: 18px; height: 18px; border-radius: 4px; border: 1px solid var(--card-border); background: var(--input-bg); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; color: var(--text-primary); padding: 0;" title="Zoom In" ${state.globalZoom >= 130 ? 'disabled style="opacity:0.4; cursor:default;"' : ''}>
+                            +
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Accent Color Dots -->
@@ -1098,7 +1136,8 @@ function render() {
     // Save only language and chart style preferences (not birth details history) to protect privacy
     const stateToSave = {
         lang: state.lang,
-        chartStyle: state.chartStyle
+        chartStyle: state.chartStyle,
+        globalZoom: state.globalZoom
     };
     localStorage.setItem('horoscope_app_state', JSON.stringify(stateToSave));
     const isLight = document.body.classList.contains('light-mode');
@@ -1155,7 +1194,7 @@ function render() {
     root.innerHTML = `
         <div class="app-dashboard-wrapper">
             <!-- Left Navigation & Tools Sidebar -->
-            <aside class="app-left-sidebar ${state.leftSidebarOpen ? 'is-open' : ''} ${state.leftSidebarMini ? 'is-mini' : ''}" id="app-left-sidebar">
+            <aside class="app-left-sidebar ${state.leftSidebarOpen ? 'is-open' : 'is-closed'} ${state.leftSidebarMini ? 'is-mini' : ''}" id="app-left-sidebar">
                 ${leftSidebarHtml}
             </aside>
 
@@ -1164,7 +1203,7 @@ function render() {
                 <header>
                     <div style="display: flex; align-items: center; gap: 12px;">
                         <!-- Hamburger / Left Sidebar Toggle Button -->
-                        <button class="lang-btn" id="header-toggle-left-sidebar-btn" style="height: 28px; width: 28px; padding: 0; display: inline-flex; align-items: center; justify-content: center; font-size: 15px; cursor: pointer;" title="${state.lang === 'ta' ? 'பக்கப்பட்டை' : 'Toggle Left Sidebar'}">
+                        <button class="lang-btn" id="header-toggle-left-sidebar-btn" style="height: 28px; width: 28px; padding: 0; display: inline-flex; align-items: center; justify-content: center; font-size: 15px; cursor: pointer; color: ${state.leftSidebarOpen ? 'var(--accent)' : 'var(--text-primary)'}; border-color: ${state.leftSidebarOpen ? 'var(--accent)' : 'var(--btn-secondary-border)'};" title="${state.lang === 'ta' ? 'பக்கப்பட்டை' : 'Toggle Left Sidebar'}">
                             ☰
                         </button>
                         <div class="logo-container" id="header-logo" style="cursor: pointer; display: flex; align-items: center; gap: 12px;">
@@ -1176,26 +1215,16 @@ function render() {
                         </div>
                     </div>
                     <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-                        <!-- Global Page Zoom Widget (Only visible on Results page) -->
-                        ${state.view === 'results' ? `
-                        <div style="display: inline-flex; align-items: center; gap: 4px; border: 1px solid var(--card-border); padding: 0 4px; background: var(--input-bg); height: 24px; box-sizing: border-box; font-family: inherit;">
-                            <button id="global-zoom-out-btn" style="width: 16px; height: 16px; border-radius: 50%; border: none; background: rgba(0,0,0,0.06); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; color: var(--text-primary); transition: background 0.2s; padding: 0;" title="Zoom Out" ${state.globalZoom <= 70 ? 'disabled style="opacity:0.4; cursor:default;"' : ''}>
+                        <!-- Global Page Zoom Widget (Visible on all pages) -->
+                        <div style="display: inline-flex; align-items: center; gap: 4px; border: 1px solid var(--card-border); padding: 0 4px; background: var(--input-bg); height: 24px; box-sizing: border-box; font-family: inherit; border-radius: 4px;">
+                            <button id="global-zoom-out-btn" style="width: 16px; height: 16px; border-radius: 50%; border: none; background: rgba(0,0,0,0.06); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; color: var(--text-primary); transition: background 0.2s; padding: 0;" title="${state.lang === 'ta' ? 'அளவை குறை' : 'Zoom Out'}" ${state.globalZoom <= 70 ? 'disabled style="opacity:0.4; cursor:default;"' : ''}>
                                 &minus;
                             </button>
                             <span style="font-size: 11px; font-weight: 600; min-width: 28px; text-align: center; color: var(--text-primary);">${state.globalZoom}%</span>
-                            <button id="global-zoom-in-btn" style="width: 16px; height: 16px; border-radius: 50%; border: none; background: rgba(0,0,0,0.06); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; color: var(--text-primary); transition: background 0.2s; padding: 0;" title="Zoom In" ${state.globalZoom >= 130 ? 'disabled style="opacity:0.4; cursor:default;"' : ''}>
+                            <button id="global-zoom-in-btn" style="width: 16px; height: 16px; border-radius: 50%; border: none; background: rgba(0,0,0,0.06); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; color: var(--text-primary); transition: background 0.2s; padding: 0;" title="${state.lang === 'ta' ? 'அளவை பெருக்கு' : 'Zoom In'}" ${state.globalZoom >= 130 ? 'disabled style="opacity:0.4; cursor:default;"' : ''}>
                                 +
                             </button>
                         </div>
-                        ` : ''}
-
-                        <!-- Calendar Sidebar Header Toggle (Only on Form page) -->
-                        ${state.view === 'form' ? `
-                        <button class="lang-btn" id="header-toggle-cal-btn" style="height: 24px; padding: 0 8px; font-size: 11px; display: inline-flex; align-items: center; gap: 4px; font-weight: 600; color: ${state.calendarSidebarOpen ? 'var(--accent)' : 'var(--text-primary)'}; border-color: ${state.calendarSidebarOpen ? 'var(--accent)' : 'var(--btn-secondary-border)'};" title="${state.lang === 'ta' ? 'நாட்காட்டி பக்கப்பட்டை' : 'Toggle Calendar Sidebar'}">
-                            <span>📅</span>
-                            <span>${state.lang === 'ta' ? 'நாட்காட்டி' : 'Calendar'}</span>
-                        </button>
-                        ` : ''}
 
                         <button class="lang-btn" id="toggle-theme-btn" style="width: 24px; height: 24px; border-radius: 0; padding: 0; display: inline-flex; align-items: center; justify-content: center;" title="${isLight ? 'Dark Mode' : 'Light Mode'}">
                             ${isLight ? 
@@ -1617,32 +1646,16 @@ function renderFormView(t) {
     
     const chandrashtamaCardHtml = renderChandrashtamaCardHtml(currentTransit, t);
     const planetTransitionsCardHtml = renderPlanetTransitionsCardHtml(currentTransit, t);
-    const calendarSidebarHtml = renderMonthlyCalendarSidebarHtml(currentTransit, t);
+    const monthlyCalendarCardHtml = renderMonthlyCalendarCardHtml(currentTransit, t);
     
     return `
-        <div class="app-main-layout ${state.calendarSidebarOpen ? 'sidebar-open' : 'sidebar-closed'}">
-            <!-- Main Content Column -->
-            <div class="main-content-column">
-                ${formHtml}
-                ${transitCardHtml}
-                ${chandrashtamaCardHtml}
-                ${planetTransitionsCardHtml}
-            </div>
-            
-            <!-- Calendar Sidebar Column -->
-            <aside class="calendar-sidebar-column ${state.calendarSidebarOpen ? 'is-open' : 'is-closed'}" id="calendar-sidebar">
-                ${calendarSidebarHtml}
-            </aside>
+        <div style="display: flex; flex-direction: column; gap: var(--space-xl); width: 100%;">
+            ${formHtml}
+            ${transitCardHtml}
+            ${chandrashtamaCardHtml}
+            ${planetTransitionsCardHtml}
+            ${monthlyCalendarCardHtml}
         </div>
-        
-        <!-- Floating Toggle Button -->
-        <button type="button" id="floating-cal-toggle-btn" class="floating-cal-toggle-btn ${state.calendarSidebarOpen ? 'sidebar-active' : ''}" title="${state.lang === 'ta' ? 'நாட்காட்டி' : 'Vedic Calendar'}">
-            <span class="cal-icon">📅</span>
-            <span class="cal-text">${state.lang === 'ta' ? (state.calendarSidebarOpen ? 'நாட்காட்டி மூடு' : 'நாட்காட்டி') : (state.calendarSidebarOpen ? 'Hide Calendar' : 'Calendar')}</span>
-        </button>
-        
-        <!-- Mobile Drawer Backdrop -->
-        <div id="sidebar-backdrop" class="sidebar-backdrop ${state.calendarSidebarOpen ? 'active' : ''}"></div>
     `;
 }
 
@@ -2076,7 +2089,7 @@ function renderPlanetTransitionsCardHtml(currentTransit, t) {
 }
 
 // Render Monthly Vedic Astrology Calendar for Global Sidebar
-function renderMonthlyCalendarSidebarHtml(currentTransit, t) {
+function renderMonthlyCalendarCardHtml(currentTransit, t) {
     const lang = state.lang;
     
     const year = state.chandrashtamaCalendarYear || new Date().getFullYear();
@@ -2282,99 +2295,102 @@ function renderMonthlyCalendarSidebarHtml(currentTransit, t) {
     const subtitle = subtitles[lang] || subtitles['en'];
 
     return `
-        <div class="calendar-sidebar-card card" id="monthly-calendar-card">
-            <!-- Sidebar Header with Close button -->
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--card-border); padding-bottom: 10px;">
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <span style="font-size: 20px;">📅</span>
+        <div class="card" id="monthly-calendar-card" style="padding: var(--space-lg); display: flex; flex-direction: column; gap: 16px;">
+            <!-- Header -->
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; border-bottom: 1px solid var(--card-border); padding-bottom: 12px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div class="step-badge" style="width: 32px; height: 32px; font-size: 14px;">📅</div>
                     <div>
-                        <h3 class="card-title" style="font-size: 17px; margin: 0; line-height: 1.2;">${title}</h3>
-                        <p style="font-size: 11.5px; color: var(--text-secondary); margin: 2px 0 0 0;">${subtitle}</p>
+                        <h3 style="margin: 0; font-size: 17px; font-weight: 700; color: var(--text-primary);">${title}</h3>
+                        <p style="font-size: 12.5px; color: var(--text-secondary); margin: 2px 0 0 0;">${subtitle}</p>
                     </div>
                 </div>
-                <button type="button" id="close-calendar-sidebar-btn" style="background: none; border: 1px solid var(--card-border); border-radius: 6px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-secondary); transition: all 0.2s; font-size: 12px; font-weight: bold;" title="${lang === 'ta' ? 'பக்கப்பட்டையை மூடு' : 'Close Sidebar'}">
-                    ✕
-                </button>
-            </div>
 
-            <!-- Month & Year Controls -->
-            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; padding: 8px 10px; background: rgba(0,0,0,0.02); border: 1px solid var(--card-border); border-radius: 6px;">
-                <div style="display: flex; align-items: center; gap: 4px;">
-                    <button type="button" id="cal-prev-month-btn" style="padding: 4px 8px; height: 28px; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; cursor: pointer; border-radius: 4px; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text-primary);" title="${lang === 'ta' ? 'முந்தைய மாதம்' : 'Prev Month'}">
-                        ◀
+                <!-- Month & Year Controls -->
+                <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 8px;">
+                    <div style="display: flex; align-items: center; gap: 4px;">
+                        <button type="button" id="cal-prev-month-btn" style="padding: 5px 10px; height: 30px; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; cursor: pointer; border-radius: 4px; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text-primary);" title="${lang === 'ta' ? 'முந்தைய மாதம்' : 'Prev Month'}">
+                            ◀
+                        </button>
+                        <select id="cal-month-select" style="height: 30px; padding: 2px 8px; font-weight: 600; font-size: 13px; border-radius: 4px; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text-primary); cursor: pointer;">
+                            ${monthOptionsHtml}
+                        </select>
+                        <select id="cal-year-select" style="height: 30px; padding: 2px 8px; font-weight: 600; font-size: 13px; border-radius: 4px; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text-primary); cursor: pointer;">
+                            ${yearOptionsHtml}
+                        </select>
+                        <button type="button" id="cal-next-month-btn" style="padding: 5px 10px; height: 30px; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; cursor: pointer; border-radius: 4px; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text-primary);" title="${lang === 'ta' ? 'அடுத்த மாதம்' : 'Next Month'}">
+                            ▶
+                        </button>
+                    </div>
+                    <button type="button" id="cal-today-btn" style="padding: 5px 10px; height: 30px; display: inline-flex; align-items: center; gap: 4px; font-weight: 600; font-size: 12px; border-radius: 4px; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--accent); cursor: pointer;" title="${lang === 'ta' ? 'இன்றைய மாதம்' : 'Today'}">
+                        📍 ${lang === 'ta' ? 'இன்று' : 'Today'}
                     </button>
-                    <select id="cal-month-select" style="height: 28px; padding: 2px 6px; font-weight: 600; font-size: 12px; border-radius: 4px; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text-primary); cursor: pointer;">
-                        ${monthOptionsHtml}
-                    </select>
-                    <select id="cal-year-select" style="height: 28px; padding: 2px 6px; font-weight: 600; font-size: 12px; border-radius: 4px; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text-primary); cursor: pointer;">
-                        ${yearOptionsHtml}
-                    </select>
-                    <button type="button" id="cal-next-month-btn" style="padding: 4px 8px; height: 28px; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; cursor: pointer; border-radius: 4px; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text-primary);" title="${lang === 'ta' ? 'அடுத்த மாதம்' : 'Next Month'}">
-                        ▶
-                    </button>
                 </div>
-                <button type="button" id="cal-today-btn" style="padding: 4px 8px; height: 28px; display: inline-flex; align-items: center; gap: 3px; font-weight: 600; font-size: 11px; border-radius: 4px; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--accent); cursor: pointer;" title="${lang === 'ta' ? 'இன்றைய மாதம்' : 'Today'}">
-                    📍 ${lang === 'ta' ? 'இன்று' : 'Today'}
-                </button>
             </div>
 
-            <!-- Legend Bar -->
-            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 10.5px; color: var(--text-secondary); padding: 0 2px;">
-                <span>🌕 பௌர்ணமி / 🌑 அமாவாசை / 🌿 ஏகாதசி</span>
-            </div>
-
-            <!-- 7-Day Header -->
-            <div class="sidebar-cal-grid" style="margin-bottom: -6px;">
-                ${weekDaysHtml}
-            </div>
-
-            <!-- Calendar Day Cells Grid -->
-            <div class="sidebar-cal-grid">
-                ${calendarCellsHtml}
-            </div>
-
-            <!-- Selected Date Gochara Rasi Chart & Daily Details -->
-            <div style="margin-top: 8px; border-top: 1px solid var(--card-border); padding-top: 12px; display: flex; flex-direction: column; gap: 10px;">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <div>
-                        <div style="font-size: 10.5px; color: var(--text-secondary); text-transform: uppercase; font-weight: 600;">
-                            ${lang === 'ta' ? 'தேர்ந்தெடுக்கப்பட்ட நாள்' : 'Selected Date'}
-                        </div>
-                        <div style="font-size: 14.5px; font-weight: 700; color: var(--accent); margin-top: 1px;">
-                            📅 ${displaySelectedDate}
-                        </div>
+            <!-- 2-Column Responsive Body -->
+            <div class="calendar-card-container">
+                <!-- Left: Calendar Grid -->
+                <div class="calendar-main-grid-column">
+                    <!-- Legend Bar -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--text-secondary); margin-bottom: 4px;">
+                        <span>🌕 பௌர்ணமி (Full Moon) / 🌑 அமாவாசை (New Moon) / 🌿 ஏகாதசி (Ekadashi)</span>
                     </div>
-                    <span class="status-badge badge-primary" style="font-size: 10.5px; padding: 2px 7px;">
-                        ${lang === 'ta' ? 'கோச்சாரக் கட்டம்' : 'Gochara Chart'}
-                    </span>
+
+                    <!-- 7-Day Header -->
+                    <div class="sidebar-cal-grid" style="margin-bottom: -4px;">
+                        ${weekDaysHtml}
+                    </div>
+
+                    <!-- Calendar Day Cells Grid -->
+                    <div class="sidebar-cal-grid">
+                        ${calendarCellsHtml}
+                    </div>
                 </div>
 
-                <!-- Rasi Chart -->
-                <div class="chart-box" style="padding: 0; align-items: center; width: 100%; display: flex; flex-direction: column; justify-content: center;">
-                    ${state.chartStyle === 'north' ? `
-                        <div class="north-chart-container" style="max-width: 270px; width: 100%;">
-                            ${sideRasiGridHtml}
+                <!-- Right: Selected Date Gochara Chart & Highlights -->
+                <div class="calendar-chart-column">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--card-border); padding-bottom: 8px;">
+                        <div>
+                            <div style="font-size: 11px; color: var(--text-secondary); text-transform: uppercase; font-weight: 600;">
+                                ${lang === 'ta' ? 'தேர்ந்தெடுக்கப்பட்ட நாள்' : 'Selected Date'}
+                            </div>
+                            <div style="font-size: 15px; font-weight: 700; color: var(--accent); margin-top: 1px;">
+                                📅 ${displaySelectedDate}
+                            </div>
                         </div>
-                    ` : `
-                        <div class="chart-grid rasi-theme" style="max-width: 270px; width: 100%; aspect-ratio: 1; --chart-font-size: 10px;">
-                            ${sideRasiGridHtml}
-                        </div>
-                    `}
-                </div>
+                        <span class="status-badge badge-primary" style="font-size: 11px; padding: 2px 7px;">
+                            ${lang === 'ta' ? 'கோச்சாரக் கட்டம்' : 'Gochara Chart'}
+                        </span>
+                    </div>
 
-                <!-- Selected Date Panchangam Highlights -->
-                <div style="display: flex; flex-direction: column; gap: 5px; font-size: 11.5px; background: rgba(0,0,0,0.02); padding: 8px 10px; border-radius: 6px; border: 1px solid var(--card-border);">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span style="color: var(--text-secondary);">🌙 ${lang === 'ta' ? 'சந்திர ராசி & நட்சத்திரம்' : 'Moon & Star'}:</span>
-                        <strong style="color: var(--accent); font-size: 11.5px;">${sideMoonRasiName} • ${sideMoonStarName} (${selectedTransit.panchang.pada})</strong>
+                    <!-- Rasi Chart -->
+                    <div class="chart-box" style="padding: 0; align-items: center; width: 100%; display: flex; flex-direction: column; justify-content: center;">
+                        ${state.chartStyle === 'north' ? `
+                            <div class="north-chart-container" style="max-width: 290px; width: 100%;">
+                                ${sideRasiGridHtml}
+                            </div>
+                        ` : `
+                            <div class="chart-grid rasi-theme" style="max-width: 290px; width: 100%; aspect-ratio: 1; --chart-font-size: 10.5px;">
+                                ${sideRasiGridHtml}
+                            </div>
+                        `}
                     </div>
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span style="color: var(--text-secondary);">☀️ ${lang === 'ta' ? 'சூரிய ராசி' : 'Sun Sign'}:</span>
-                        <strong style="color: var(--text-primary); font-size: 11.5px;">${sideSunRasiName}</strong>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span style="color: var(--text-secondary);">🌿 ${lang === 'ta' ? 'திதி' : 'Tithi'}:</span>
-                        <strong style="color: var(--text-primary); font-size: 11.5px;">${getTithiName(selectedTransit.panchang.tithiIdx, lang)}</strong>
+
+                    <!-- Selected Date Panchangam Highlights -->
+                    <div style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; background: rgba(0,0,0,0.02); padding: 10px 12px; border-radius: 6px; border: 1px solid var(--card-border);">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="color: var(--text-secondary);">🌙 ${lang === 'ta' ? 'சந்திர ராசி & நட்சத்திரம்' : 'Moon & Star'}:</span>
+                            <strong style="color: var(--accent); font-size: 12px;">${sideMoonRasiName} • ${sideMoonStarName} (${selectedTransit.panchang.pada})</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="color: var(--text-secondary);">☀️ ${lang === 'ta' ? 'சூரிய ராசி' : 'Sun Sign'}:</span>
+                            <strong style="color: var(--text-primary); font-size: 12px;">${sideSunRasiName}</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="color: var(--text-secondary);">🌿 ${lang === 'ta' ? 'திதி' : 'Tithi'}:</span>
+                            <strong style="color: var(--text-primary); font-size: 12px;">${getTithiName(selectedTransit.panchang.tithiIdx, lang)}</strong>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -3769,6 +3785,48 @@ function bindEvents() {
         });
     }
 
+    // Global Page Zoom Buttons (Header & Left Sidebar - Active on ALL pages)
+    const handleZoomStep = (delta) => {
+        const currentZoom = parseInt(state.globalZoom, 10) || 100;
+        const nextZoom = currentZoom + delta;
+        if (nextZoom >= 70 && nextZoom <= 130) {
+            state.globalZoom = nextZoom;
+            render();
+        }
+    };
+
+    const globalZoomOutBtn = document.querySelector('#global-zoom-out-btn');
+    if (globalZoomOutBtn) {
+        globalZoomOutBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            handleZoomStep(-10);
+        });
+    }
+
+    const globalZoomInBtn = document.querySelector('#global-zoom-in-btn');
+    if (globalZoomInBtn) {
+        globalZoomInBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            handleZoomStep(10);
+        });
+    }
+
+    const sidebarZoomOutBtn = document.querySelector('#sidebar-zoom-out-btn');
+    if (sidebarZoomOutBtn) {
+        sidebarZoomOutBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            handleZoomStep(-10);
+        });
+    }
+
+    const sidebarZoomInBtn = document.querySelector('#sidebar-zoom-in-btn');
+    if (sidebarZoomInBtn) {
+        sidebarZoomInBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            handleZoomStep(10);
+        });
+    }
+
     // Accent Color Selection
     const accentMenuBtn = document.querySelector('#accent-menu-btn');
     const accentDropdown = document.querySelector('#accent-dropdown');
@@ -4508,9 +4566,29 @@ function bindEvents() {
         const headerToggleLeftSidebarBtn = document.querySelector('#header-toggle-left-sidebar-btn');
         if (headerToggleLeftSidebarBtn) {
             headerToggleLeftSidebarBtn.addEventListener('click', () => {
-                state.leftSidebarOpen = !state.leftSidebarOpen;
+                if (!state.leftSidebarOpen) {
+                    state.leftSidebarOpen = true;
+                    state.leftSidebarMini = false; // Always show full text when opening
+                } else if (state.leftSidebarMini) {
+                    state.leftSidebarMini = false; // Expand to show text
+                } else {
+                    state.leftSidebarOpen = false; // Close
+                }
                 localStorage.setItem('horoscope_left_sidebar_open', state.leftSidebarOpen ? 'true' : 'false');
+                localStorage.setItem('horoscope_left_sidebar_mini', state.leftSidebarMini ? 'true' : 'false');
                 render();
+            });
+        }
+
+        // Clicking anywhere on mini sidebar header/brand expands sidebar to show text
+        const appLeftSidebar = document.querySelector('#app-left-sidebar');
+        if (appLeftSidebar) {
+            appLeftSidebar.addEventListener('click', (e) => {
+                if (state.leftSidebarMini && !e.target.closest('.sidebar-nav-item')) {
+                    state.leftSidebarMini = false;
+                    localStorage.setItem('horoscope_left_sidebar_mini', 'false');
+                    render();
+                }
             });
         }
 
@@ -4546,6 +4624,11 @@ function bindEvents() {
             const el = document.querySelector(selector);
             if (el) {
                 el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+            if (window.innerWidth <= 1120 && state.leftSidebarOpen) {
+                state.leftSidebarOpen = false;
+                localStorage.setItem('horoscope_left_sidebar_open', 'false');
+                render();
             }
         };
 
@@ -4598,10 +4681,9 @@ function bindEvents() {
             navCalendar.addEventListener('click', () => {
                 if (state.view !== 'form') {
                     state.view = 'form';
+                    render();
                 }
-                state.calendarSidebarOpen = true;
-                render();
-                setTimeout(() => scrollToElement('#calendar-sidebar'), 50);
+                setTimeout(() => scrollToElement('#monthly-calendar-card'), 50);
             });
         }
 
@@ -4781,38 +4863,6 @@ function bindEvents() {
             });
         });
 
-        // Calendar Sidebar Toggle Listeners
-        const closeSidebarBtn = document.querySelector('#close-calendar-sidebar-btn');
-        if (closeSidebarBtn) {
-            closeSidebarBtn.addEventListener('click', () => {
-                state.calendarSidebarOpen = false;
-                render();
-            });
-        }
-
-        const floatingCalToggleBtn = document.querySelector('#floating-cal-toggle-btn');
-        if (floatingCalToggleBtn) {
-            floatingCalToggleBtn.addEventListener('click', () => {
-                state.calendarSidebarOpen = !state.calendarSidebarOpen;
-                render();
-            });
-        }
-
-        const headerToggleCalBtn = document.querySelector('#header-toggle-cal-btn');
-        if (headerToggleCalBtn) {
-            headerToggleCalBtn.addEventListener('click', () => {
-                state.calendarSidebarOpen = !state.calendarSidebarOpen;
-                render();
-            });
-        }
-
-        const sidebarBackdrop = document.querySelector('#sidebar-backdrop');
-        if (sidebarBackdrop) {
-            sidebarBackdrop.addEventListener('click', () => {
-                state.calendarSidebarOpen = false;
-                render();
-            });
-        }
 
         // Monthly Calendar Navigation Listeners
         const calPrevBtn = document.querySelector('#cal-prev-month-btn');
@@ -4923,26 +4973,6 @@ function bindEvents() {
             });
         }
 
-        // Global Zoom Buttons
-        const globalZoomOutBtn = document.querySelector('#global-zoom-out-btn');
-        if (globalZoomOutBtn) {
-            globalZoomOutBtn.addEventListener('click', () => {
-                if (state.globalZoom > 70) {
-                    state.globalZoom -= 10;
-                    render();
-                }
-            });
-        }
-
-        const globalZoomInBtn = document.querySelector('#global-zoom-in-btn');
-        if (globalZoomInBtn) {
-            globalZoomInBtn.addEventListener('click', () => {
-                if (state.globalZoom < 130) {
-                    state.globalZoom += 10;
-                    render();
-                }
-            });
-        }
 
         // Dasa sub-period expand/collapse click handler (Event Delegation)
         const dasaTbody = document.querySelector('#dasa-tbody');
