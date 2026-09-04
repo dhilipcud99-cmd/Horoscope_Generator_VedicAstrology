@@ -150,13 +150,13 @@ body {
 
 #app {
     width: 100%;
-    max-width: 1420px;
-    margin: 30px auto;
-    padding: 0 20px;
+    max-width: 1680px;
+    margin: 20px auto;
+    padding: 0 16px;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    gap: 25px;
+    gap: 20px;
     animation: fadeIn 0.6s ease-out;
 }
 
@@ -2307,4 +2307,218 @@ body.light-mode .remedy-card {
         display: block;
         opacity: 1;
     }
-}
+}
+
+/* ==========================================================================
+   Left Navigation & Tools Dashboard Sidebar Styles
+   ========================================================================== */
+.app-dashboard-wrapper {
+    display: flex;
+    gap: 20px;
+    width: 100%;
+    align-items: flex-start;
+    position: relative;
+}
+
+.app-left-sidebar {
+    width: 260px;
+    flex-shrink: 0;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    box-shadow: var(--shadow);
+    padding: 16px 14px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    position: sticky;
+    top: 20px;
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: var(--card-border) transparent;
+    transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1), transform 0.25s ease;
+    z-index: 100;
+}
+
+.app-left-sidebar.is-mini {
+    width: 68px;
+    padding: 16px 8px;
+}
+
+.app-left-sidebar.is-mini .hide-in-mini {
+    display: none !important;
+}
+
+.app-left-sidebar.is-mini .sidebar-nav-item {
+    justify-content: center;
+    padding: 10px 0;
+}
+
+.app-left-sidebar.is-mini .sidebar-section-title {
+    text-align: center;
+    font-size: 8px;
+    justify-content: center;
+}
+
+.left-sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--card-border);
+    padding-bottom: 10px;
+}
+
+.left-sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+    font-size: 14.5px;
+    color: var(--accent);
+}
+
+.left-sidebar-toggle-btn {
+    background: var(--btn-secondary-bg);
+    border: 1px solid var(--card-border);
+    color: var(--text-secondary);
+    width: 26px;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s;
+    font-size: 12px;
+}
+
+.left-sidebar-toggle-btn:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+}
+
+.sidebar-section-title {
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.sidebar-nav-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.sidebar-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    background: rgba(0, 0, 0, 0.02);
+    border: 1px solid transparent;
+    border-radius: 6px;
+    color: var(--text-primary);
+    text-decoration: none;
+    font-size: 12.5px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.sidebar-nav-item:hover, .sidebar-nav-item.active {
+    background: var(--input-bg);
+    border-color: var(--card-border);
+    color: var(--accent);
+    transform: translateX(2px);
+}
+
+.sidebar-nav-item .nav-icon {
+    font-size: 15px;
+    min-width: 18px;
+    text-align: center;
+}
+
+.sidebar-tool-box {
+    background: rgba(0, 0, 0, 0.02);
+    border: 1px solid var(--card-border);
+    border-radius: 6px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.saved-profile-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 7px 9px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 6px;
+    font-size: 11.5px;
+    gap: 6px;
+    transition: all 0.2s;
+}
+
+.saved-profile-card:hover {
+    border-color: var(--accent);
+}
+
+.app-main-workspace {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.left-sidebar-backdrop {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 9998;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+@media (max-width: 1120px) {
+    .app-left-sidebar {
+        position: fixed !important;
+        top: 0 !important;
+        left: -100% !important;
+        bottom: 0 !important;
+        width: 290px !important;
+        max-width: 85vw !important;
+        height: 100vh !important;
+        max-height: 100vh !important;
+        z-index: 9999 !important;
+        box-shadow: 10px 0 35px rgba(0, 0, 0, 0.5) !important;
+        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        display: flex !important;
+    }
+
+    .app-left-sidebar.is-open {
+        left: 0 !important;
+    }
+
+    .left-sidebar-backdrop.active {
+        display: block;
+        opacity: 1;
+    }
+}
+

@@ -689,6 +689,195 @@ state.chandrashtamaCalendarMonth = state.chandrashtamaCalendarMonth || (currentS
 state.planetTransitionFilter = state.planetTransitionFilter || 'all';
 state.calendarSidebarOpen = state.calendarSidebarOpen !== undefined ? state.calendarSidebarOpen : true;
 
+// Saved Profiles & Left Sidebar State
+const savedProfilesJson = localStorage.getItem('horoscope_saved_profiles');
+let savedProfiles = [];
+if (savedProfilesJson) {
+    try {
+        const parsed = JSON.parse(savedProfilesJson);
+        if (Array.isArray(parsed)) {
+            savedProfiles = parsed;
+        }
+    } catch (e) {
+        console.error("Failed to parse saved profiles", e);
+    }
+}
+state.savedProfiles = savedProfiles;
+state.leftSidebarOpen = localStorage.getItem('horoscope_left_sidebar_open') === 'true';
+state.leftSidebarMini = localStorage.getItem('horoscope_left_sidebar_mini') === 'true';
+
+// Localized strings for Left Navigation & Tools Sidebar
+const leftSidebarTranslations = {
+    ta: {
+        title: "வேத ஜோதிட வழிகாட்டி",
+        subtitle: "முக்கிய கருவிகள் & அம்சங்கள்",
+        navigation: "பிரிவுகள்",
+        navHoroscope: "ஜாதகம் கணித்தல்",
+        navTransits: "கோச்சார கிரக நிலைகள்",
+        navChandrashtama: "சந்திராஷ்டம விவரங்கள்",
+        navTransitions: "கிரக பெயர்ச்சிகள்",
+        navCalendar: "மாதாந்திர நாட்காட்டி",
+        navMatching: "திருமணப் பொருத்தம்",
+        tools: "கருவிகள் & அமைப்புகள்",
+        chartStyle: "கட்ட முறை",
+        southIndian: "தெற்கு",
+        northIndian: "வடக்கு",
+        theme: "தோற்றம்",
+        dark: "இருண்ட",
+        light: "வெளிச்சம்",
+        colors: "வண்ணத் தீம்",
+        languages: "மொழி",
+        savedProfiles: "சேமிக்கப்பட்ட ஜாதகங்கள்",
+        noProfiles: "சேமிக்கப்பட்ட ஜாதகங்கள் இல்லை",
+        saveCurrent: "+ தற்போதைய விவரங்களை சேமி",
+        enterProfileName: "ஜாதகப் பெயரைக் குறிப்பிடவும்:",
+        profileSaved: "ஜாதகம் வெற்றிகரமாக சேமிக்கப்பட்டது!",
+        profileDeleted: "ஜாதகம் நீக்கப்பட்டது!",
+        loadProfile: "ஏற்று",
+        deleteProfile: "நீக்கு"
+    },
+    en: {
+        title: "Vedic Astro Dashboard",
+        subtitle: "Quick Tools & Navigation",
+        navigation: "Navigation",
+        navHoroscope: "Horoscope Calculator",
+        navTransits: "Planetary Positions",
+        navChandrashtama: "Chandrashtama Details",
+        navTransitions: "Planet Transitions",
+        navCalendar: "Monthly Calendar",
+        navMatching: "Marriage Matchmaking",
+        tools: "Tools & Settings",
+        chartStyle: "Chart Style",
+        southIndian: "South",
+        northIndian: "North",
+        theme: "Theme Mode",
+        dark: "Dark",
+        light: "Light",
+        colors: "Accent Colors",
+        languages: "Language",
+        savedProfiles: "Saved Profiles",
+        noProfiles: "No saved profiles yet",
+        saveCurrent: "+ Save Current Profile",
+        enterProfileName: "Enter a name for this profile:",
+        profileSaved: "Profile saved successfully!",
+        profileDeleted: "Profile deleted!",
+        loadProfile: "Load",
+        deleteProfile: "Delete"
+    },
+    hi: {
+        title: "वैदिक ज्योतिष डैशबोर्ड",
+        subtitle: "त्वरित उपकरण और नेविगेशन",
+        navigation: "नेविगेशन",
+        navHoroscope: "कुंडली जनरेटर",
+        navTransits: "ग्रह स्थिति (गोचर)",
+        navChandrashtama: "चंद्राष्टम विवरण",
+        navTransitions: "ग्रह गोचर/परिवर्तन",
+        navCalendar: "मासिक पंचांग",
+        navMatching: "कुंडली मिलान",
+        tools: "उपकरण और सेटिंग्स",
+        chartStyle: "कुंडली प्रारूप",
+        southIndian: "दक्षिण",
+        northIndian: "उत्तर",
+        theme: "थीम मोड",
+        dark: "डार्क",
+        light: "लाइट",
+        colors: "रंग थीम",
+        languages: "भाषा",
+        savedProfiles: "सहेजे गए प्रोफाइल",
+        noProfiles: "कोई सहेजा हुआ प्रोफाइल नहीं",
+        saveCurrent: "+ वर्तमान प्रोफाइल सहेजें",
+        enterProfileName: "इस प्रोफाइल के लिए एक नाम दर्ज करें:",
+        profileSaved: "प्रोफाइल सफलतापूर्वक सहेजा गया!",
+        profileDeleted: "प्रोफाइल हटाया गया!",
+        loadProfile: "लोड करें",
+        deleteProfile: "हटाएं"
+    },
+    te: {
+        title: "వేద జ్యోతిష్య డాష్‌బోర్డ్",
+        subtitle: "త్వరిత సాధనాలు & నావిగేషన్",
+        navigation: "నావిగేషన్",
+        navHoroscope: "జాతకం కాలిక్యులేటర్",
+        navTransits: "గ్రహ స్థితులు",
+        navChandrashtama: "చంద్రాష్టమ వివరాలు",
+        navTransitions: "గ్రహ సంచారాలు",
+        navCalendar: "నెలవారీ క్యాలెండర్",
+        navMatching: "వివాహ పొంతన",
+        tools: "సాధనాలు & సెట్టింగ్‌లు",
+        chartStyle: "చార్ట్ శైలి",
+        southIndian: "దక్షిణ",
+        northIndian: "ఉత్తర",
+        theme: "థీమ్ మోడ్",
+        dark: "డార్క్",
+        light: "లైట్",
+        colors: "రంగు థీమ్",
+        languages: "భాష",
+        savedProfiles: "సేవ్ చేసిన ప్రొఫైల్స్",
+        noProfiles: "సేవ్ చేసిన ప్రొఫైల్స్ లేవు",
+        saveCurrent: "+ ప్రస్తుత ప్రొఫైల్ సేవ్ చేయండి",
+        enterProfileName: "ప్రొఫైల్ పేరు నమోదు చేయండి:",
+        profileSaved: "ప్రొఫైల్ సేవ్ చేయబడింది!",
+        profileDeleted: "ప్రొఫైల్ తొలగించబడింది!",
+        loadProfile: "లోడ్",
+        deleteProfile: "తొలగించు"
+    },
+    kn: {
+        title: "ವೈದಿಕ ಜ್ಯೋತಿಷ್ಯ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್",
+        subtitle: "ತ್ವರಿತ ಉಪಕರಣಗಳು & ನ್ಯಾವಿಗೇಷನ್",
+        navigation: "ನ್ಯಾವಿಗೇಷನ್",
+        navHoroscope: "ಜಾತಕ ಕ್ಯಾಲ್ಕುಲೇಟರ್",
+        navTransits: "ಗ್ರಹ ಸ್ಥಿತಿಗಳು",
+        navChandrashtama: "ಚಂದ್ರಾಷ್ಟಮ ವಿವರಗಳು",
+        navTransitions: "ಗ್ರಹ ಬದಲಾವಣೆಗಳು",
+        navCalendar: "ಮಾಸಿಕ ಕ್ಯಾಲೆಂಡರ್",
+        navMatching: "ವಿವಾಹ ಹೊಂದಾಣಿಕೆ",
+        tools: "ಉಪಕರಣಗಳು & ಸೆಟ್ಟಿಂಗ್‌ಗಳು",
+        chartStyle: "ಚಾರ್ಟ್ ಶೈಲಿ",
+        southIndian: "ದಕ್ಷಿಣ",
+        northIndian: "ಉತ್ತರ",
+        theme: "ಥೀಮ್ ಮೋಡ್",
+        dark: "ಡಾರ್ಕ್",
+        light: "ಲೈಟ್",
+        colors: "ಬಣ್ಣದ ಥೀಮ್",
+        languages: "ಭಾಷೆ",
+        savedProfiles: "ಉಳಿಸಲಾದ ಪ್ರೊಫೈಲ್‌ಗಳು",
+        noProfiles: "ಯಾವುದೇ ಪ್ರೊಫೈಲ್‌ಗಳಿಲ್ಲ",
+        saveCurrent: "+ ಪ್ರಸ್ತುತ ಪ್ರೊಫೈಲ್ ಉಳಿಸಿ",
+        enterProfileName: "ಪ್ರೊಫೈಲ್ ಹೆಸರು ನಮೂದಿಸಿ:",
+        profileSaved: "ಪ್ರೊಫೈಲ್ ಉಳಿಸಲಾಗಿದೆ!",
+        profileDeleted: "ಪ್ರೊಫೈಲ್ ಅಳಿಸಲಾಗಿದೆ!",
+        loadProfile: "ಲೋಡ್",
+        deleteProfile: "ಅಳಿಸಿ"
+    },
+    ml: {
+        title: "വേദ ജ്യോതിഷ ഡാഷ്‌ബോർഡ്",
+        subtitle: "ഉപകരണങ്ങളും നാവിഗേഷനും",
+        navigation: "നാവിഗേഷൻ",
+        navHoroscope: "ജാതകം കാൽക്കുലേറ്റർ",
+        navTransits: "ഗ്രഹ നിലകൾ",
+        navChandrashtama: "ചന്ദ്രാഷ്ടമം വിവരങ്ങൾ",
+        navTransitions: "ഗ്രഹ മാറ്റങ്ങൾ",
+        navCalendar: "പ്രതിമാസ കലണ്ടർ",
+        navMatching: "വിവാഹ പൊരുത്തം",
+        tools: "ഉപകരണങ്ങളും ക്രമീകരണങ്ങളും",
+        chartStyle: "ചാർട്ട് ശൈലി",
+        southIndian: "തെക്ക്",
+        northIndian: "വടക്ക്",
+        theme: "തീം മോഡ്",
+        dark: "ഡാർക്ക്",
+        light: "ലൈറ്റ്",
+        colors: "വർണ്ണ തീം",
+        languages: "ഭാഷ",
+        savedProfiles: "സംരക്ഷിച്ച പ്രൊഫൈലുകൾ",
+        noProfiles: "പ്രൊഫൈലുകൾ ലഭ്യമല്ല",
+        saveCurrent: "+ നിലവിലെ പ്രൊഫൈൽ സൂക്ഷിക്കുക",
+        enterProfileName: "പ്രൊഫൈൽ പേര് നൽകുക:",
+        profileSaved: "പ്രൊഫൈൽ സംരക്ഷിച്ചു!",
+        profileDeleted: "പ്രൊഫൈൽ നീക്കം ചെയ്തു!",
+        loadProfile: "ലോഡ്",
+        deleteProfile: "ഡിലീറ്റ്"
+    }
+};
+
 // Persist Theme Preference
 const savedTheme = localStorage.getItem('horoscope_app_theme');
 if (savedTheme === 'dark') {
@@ -728,6 +917,177 @@ function init() {
     render();
 }
 
+// Render Left Navigation & Tools Sidebar HTML
+function renderLeftNavSidebarHtml(t, currentAccent, isLight) {
+    const lang = state.lang;
+    const ls = leftSidebarTranslations[lang] || leftSidebarTranslations['en'];
+    
+    const presets = [
+        { name: 'Gold', primary: '#ca8a04', accent: '#ea580c' },
+        { name: 'Green', primary: '#059669', accent: '#0d9488' },
+        { name: 'Blue', primary: '#2563eb', accent: '#0284c7' },
+        { name: 'Red', primary: '#dc2626', accent: '#e11d48' },
+        { name: 'Purple', primary: '#7c3aed', accent: '#c084fc' }
+    ];
+
+    let presetsHtml = '';
+    presets.forEach(p => {
+        const isActive = currentAccent.primary.toLowerCase() === p.primary.toLowerCase();
+        presetsHtml += `
+            <button class="sidebar-accent-dot preset-color-dot${isActive ? ' active' : ''}" 
+                    data-primary="${p.primary}" 
+                    data-accent="${p.accent}" 
+                    style="background: ${p.primary}; width: 22px; height: 22px; border-radius: 50%; border: 2px solid ${isActive ? 'var(--text-primary)' : 'transparent'}; cursor: pointer; transition: transform 0.2s; padding: 0;"
+                    title="${p.name}">
+            </button>
+        `;
+    });
+
+    const isSouth = state.chartStyle !== 'north';
+
+    // Saved Profiles HTML
+    let profilesHtml = '';
+    if (state.savedProfiles && state.savedProfiles.length > 0) {
+        profilesHtml = state.savedProfiles.map((prof, idx) => `
+            <div class="saved-profile-card">
+                <div style="flex: 1; min-width: 0;">
+                    <div style="font-weight: 600; color: var(--accent); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        👤 ${prof.name || 'Unnamed'}
+                    </div>
+                    <div style="font-size: 10px; color: var(--text-secondary); margin-top: 1px;">
+                        📅 ${prof.dateStr || ''} • ${prof.place || ''}
+                    </div>
+                </div>
+                <div style="display: flex; gap: 4px; align-items: center;">
+                    <button type="button" class="load-profile-btn" data-index="${idx}" style="padding: 2px 7px; font-size: 11px; background: var(--btn-primary-bg); color: #fff; border: none; border-radius: 3px; cursor: pointer; font-weight: 600;" title="${ls.loadProfile}">
+                        ${ls.loadProfile}
+                    </button>
+                    <button type="button" class="delete-profile-btn" data-index="${idx}" style="padding: 2px 6px; font-size: 11px; background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 3px; cursor: pointer;" title="${ls.deleteProfile}">
+                        ✕
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    } else {
+        profilesHtml = `
+            <div style="font-size: 11px; color: var(--text-secondary); text-align: center; padding: 6px; font-style: italic;">
+                ${ls.noProfiles}
+            </div>
+        `;
+    }
+
+    return `
+        <!-- Sidebar Header -->
+        <div class="left-sidebar-header">
+            <div class="left-sidebar-brand hide-in-mini">
+                <span style="font-size: 20px;">🪐</span>
+                <div>
+                    <div style="line-height: 1.1; font-size: 13.5px;">${ls.title}</div>
+                    <div style="font-size: 10px; font-weight: normal; color: var(--text-secondary);">${ls.subtitle}</div>
+                </div>
+            </div>
+            <div style="display: flex; gap: 4px; align-items: center;">
+                <button type="button" id="toggle-left-sidebar-mini-btn" class="left-sidebar-toggle-btn" title="${state.leftSidebarMini ? 'Expand Sidebar' : 'Collapse Sidebar'}">
+                    ${state.leftSidebarMini ? '▶' : '◀'}
+                </button>
+                <button type="button" id="close-left-sidebar-btn" class="left-sidebar-toggle-btn hide-in-desktop" style="display: none;" title="Close">
+                    ✕
+                </button>
+            </div>
+        </div>
+
+        <!-- Section 1: Navigation -->
+        <div>
+            <div class="sidebar-section-title">
+                <span>📍 <span class="hide-in-mini">${ls.navigation}</span></span>
+            </div>
+            <div class="sidebar-nav-list">
+                <a class="sidebar-nav-item ${state.view === 'form' ? 'active' : ''}" id="nav-link-horoscope" title="${ls.navHoroscope}">
+                    <span class="nav-icon">📝</span>
+                    <span class="hide-in-mini">${ls.navHoroscope}</span>
+                </a>
+                <a class="sidebar-nav-item" id="nav-link-transits" title="${ls.navTransits}">
+                    <span class="nav-icon">🪐</span>
+                    <span class="hide-in-mini">${ls.navTransits}</span>
+                </a>
+                <a class="sidebar-nav-item" id="nav-link-chandrashtama" title="${ls.navChandrashtama}">
+                    <span class="nav-icon">🌑</span>
+                    <span class="hide-in-mini">${ls.navChandrashtama}</span>
+                </a>
+                <a class="sidebar-nav-item" id="nav-link-transitions" title="${ls.navTransitions}">
+                    <span class="nav-icon">🔄</span>
+                    <span class="hide-in-mini">${ls.navTransitions}</span>
+                </a>
+                <a class="sidebar-nav-item" id="nav-link-calendar" title="${ls.navCalendar}">
+                    <span class="nav-icon">📅</span>
+                    <span class="hide-in-mini">${ls.navCalendar}</span>
+                </a>
+                <a class="sidebar-nav-item" id="nav-link-matching" title="${ls.navMatching}">
+                    <span class="nav-icon">💖</span>
+                    <span class="hide-in-mini">${ls.navMatching}</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Section 2: Astrology Tools & Settings -->
+        <div>
+            <div class="sidebar-section-title">
+                <span>⚙️ <span class="hide-in-mini">${ls.tools}</span></span>
+            </div>
+            <div class="sidebar-tool-box hide-in-mini">
+                <!-- Chart Style Selector -->
+                <div>
+                    <div style="font-size: 11px; font-weight: 600; color: var(--text-secondary); margin-bottom: 5px;">
+                        ☸️ ${ls.chartStyle}
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px;">
+                        <button type="button" class="sidebar-chart-style-btn" data-style="south" style="padding: 5px; font-size: 11.5px; font-weight: 600; border-radius: 4px; cursor: pointer; border: 1px solid var(--card-border); background: ${isSouth ? 'var(--primary)' : 'var(--card-bg)'}; color: ${isSouth ? '#fff' : 'var(--text-primary)'};">
+                            ${ls.southIndian}
+                        </button>
+                        <button type="button" class="sidebar-chart-style-btn" data-style="north" style="padding: 5px; font-size: 11.5px; font-weight: 600; border-radius: 4px; cursor: pointer; border: 1px solid var(--card-border); background: ${!isSouth ? 'var(--primary)' : 'var(--card-bg)'}; color: ${!isSouth ? '#fff' : 'var(--text-primary)'};">
+                            ${ls.northIndian}
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Theme Mode -->
+                <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 4px; border-top: 1px solid var(--card-border);">
+                    <span style="font-size: 11.5px; color: var(--text-secondary); font-weight: 600;">🌓 ${ls.theme}</span>
+                    <button type="button" id="sidebar-theme-toggle-btn" style="padding: 3px 8px; font-size: 11px; font-weight: 600; border-radius: 4px; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--accent); cursor: pointer;">
+                        ${isLight ? `☀️ ${ls.light}` : `🌙 ${ls.dark}`}
+                    </button>
+                </div>
+
+                <!-- Accent Color Dots -->
+                <div style="padding-top: 4px; border-top: 1px solid var(--card-border);">
+                    <div style="font-size: 11px; color: var(--text-secondary); font-weight: 600; margin-bottom: 6px;">
+                        🎨 ${ls.colors}
+                    </div>
+                    <div style="display: flex; gap: 6px; align-items: center;">
+                        ${presetsHtml}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 3: Saved Horoscope Profiles -->
+        <div class="hide-in-mini">
+            <div class="sidebar-section-title">
+                <span>📁 ${ls.savedProfiles}</span>
+                <span style="font-size: 10px; opacity: 0.8;">(${state.savedProfiles ? state.savedProfiles.length : 0})</span>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+                <button type="button" id="save-current-profile-btn" style="width: 100%; padding: 7px 10px; font-size: 11.5px; font-weight: 600; border-radius: 6px; border: 1px dashed var(--accent); background: rgba(202, 138, 4, 0.06); color: var(--accent); cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 5px;">
+                    <span>${ls.saveCurrent}</span>
+                </button>
+                <div class="saved-profiles-list" style="display: flex; flex-direction: column; gap: 5px; max-height: 180px; overflow-y: auto;">
+                    ${profilesHtml}
+                </div>
+            </div>
+        </div>
+    `;
+}
+
 // Render the application based on state
 function render() {
     const t = translations[state.lang];
@@ -762,7 +1122,7 @@ function render() {
     };
     const footerTexts = {
         en: 'Vedic Astrology Calculations. All Rights Reserved.',
-        ta: 'வேದ ஜோதிட கணிப்புகள். அனைத்து உரிమைகளும் பாதுகாக்கப்பட்டவை.',
+        ta: 'வேத ஜோதிட கணிப்புகள். அனைத்து உரிமைகளும் பாதுகாக்கப்பட்டவை.',
         hi: 'वैदिक ज्योतिष गणना। सर्वाधिकार सुरक्षित।',
         te: 'వేద జ్యోతిష్య లెక్కలు. అన్ని హక్కులూ ప్రత్యేకించబడినవి.',
         kn: 'ವೈದಿಕ ಜ್ಯೋತಿಷ್ಯ ಲೆಕ್ಕಾಚಾರಗಳು. ಎಲ್ಲ ಹಕ್ಕುಗಳನ್ನು ಕಾಯ್ದಿರಿಸಲಾಗಿದೆ.',
@@ -790,87 +1150,109 @@ function render() {
         `;
     });
 
+    const leftSidebarHtml = renderLeftNavSidebarHtml(t, currentAccent, isLight);
+
     root.innerHTML = `
-        <header>
-            <div class="logo-container" id="header-logo" style="cursor: pointer; display: flex; align-items: center; gap: 15px;">
-                <img src="./logo.png" alt="Logo" style="height: 48px; width: 48px; border-radius: 50%; border: 1.5px solid var(--accent); object-fit: cover;">
-                <div>
-                    <h1>Horoscope Calculator</h1>
-                    <p>${logoSubtitles[state.lang] || logoSubtitles['en']}</p>
-                </div>
-            </div>
-            <div style="display: flex; gap: 10px; align-items: center;">
-                <!-- Global Page Zoom Widget (Only visible on Results page) -->
-                ${state.view === 'results' ? `
-                <div style="display: inline-flex; align-items: center; gap: 4px; border: 1px solid var(--card-border); padding: 0 4px; background: var(--input-bg); height: 24px; box-sizing: border-box; font-family: inherit;">
-                    <button id="global-zoom-out-btn" style="width: 16px; height: 16px; border-radius: 50%; border: none; background: rgba(0,0,0,0.06); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; color: var(--text-primary); transition: background 0.2s; padding: 0;" title="Zoom Out" ${state.globalZoom <= 70 ? 'disabled style="opacity:0.4; cursor:default;"' : ''}>
-                        &minus;
-                    </button>
-                    <span style="font-size: 11px; font-weight: 600; min-width: 28px; text-align: center; color: var(--text-primary);">${state.globalZoom}%</span>
-                    <button id="global-zoom-in-btn" style="width: 16px; height: 16px; border-radius: 50%; border: none; background: rgba(0,0,0,0.06); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; color: var(--text-primary); transition: background 0.2s; padding: 0;" title="Zoom In" ${state.globalZoom >= 130 ? 'disabled style="opacity:0.4; cursor:default;"' : ''}>
-                        +
-                    </button>
-                </div>
-                ` : ''}
+        <div class="app-dashboard-wrapper">
+            <!-- Left Navigation & Tools Sidebar -->
+            <aside class="app-left-sidebar ${state.leftSidebarOpen ? 'is-open' : ''} ${state.leftSidebarMini ? 'is-mini' : ''}" id="app-left-sidebar">
+                ${leftSidebarHtml}
+            </aside>
 
-                <!-- Calendar Sidebar Header Toggle (Only on Form page) -->
-                ${state.view === 'form' ? `
-                <button class="lang-btn" id="header-toggle-cal-btn" style="height: 24px; padding: 0 8px; font-size: 11px; display: inline-flex; align-items: center; gap: 4px; font-weight: 600; color: ${state.calendarSidebarOpen ? 'var(--accent)' : 'var(--text-primary)'}; border-color: ${state.calendarSidebarOpen ? 'var(--accent)' : 'var(--btn-secondary-border)'};" title="${state.lang === 'ta' ? 'நாட்காட்டி பக்கப்பட்டை' : 'Toggle Calendar Sidebar'}">
-                    <span>📅</span>
-                    <span>${state.lang === 'ta' ? 'நாட்காட்டி' : 'Calendar'}</span>
-                </button>
-                ` : ''}
-
-                <button class="lang-btn" id="toggle-theme-btn" style="width: 24px; height: 24px; border-radius: 0; padding: 0; display: inline-flex; align-items: center; justify-content: center;" title="${isLight ? 'Dark Mode' : 'Light Mode'}">
-                    ${isLight ? 
-                        `<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z" stroke-linecap="round" stroke-linejoin="round"></path></svg>` : 
-                        `<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" stroke-linecap="round" stroke-linejoin="round"></path></svg>`
-                    }
-                </button>
-                
-                <!-- Accent Color Picker -->
-                <div style="position: relative; display: inline-block;">
-                    <button class="lang-btn" id="accent-menu-btn" style="width: 24px; height: 24px; border-radius: 0; padding: 0; display: inline-flex; align-items: center; justify-content: center; color: var(--primary);" title="${(t.accentMenu && t.accentMenu.title) || 'Accent Color'}">
-                        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M12 21a9 9 0 100-18 9 9 0 000 18z" stroke-linecap="round" stroke-linejoin="round"></path>
-                            <path d="M7.5 10.5a1.5 1.5 0 110-3 1.5 1.5 0 010 3zM11.5 7.5a1.5 1.5 0 110-3 1.5 1.5 0 010 3zM16.5 9.5a1.5 1.5 0 110-3 1.5 1.5 0 010 3zM15.5 14.5a1.5 1.5 0 110-3 1.5 1.5 0 010 3z" fill="currentColor"></path>
-                        </svg>
-                    </button>
-                    <div id="accent-dropdown" class="accent-dropdown-menu" style="display: none; position: absolute; top: 30px; right: 0; background: var(--card-bg); border: 1px solid var(--card-border); padding: 12px; width: 220px; box-shadow: var(--shadow); z-index: 1000; flex-direction: column; gap: 10px;">
-                        <div style="font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">${(t.accentMenu && t.accentMenu.presets) || 'Preset Colors'}</div>
-                        <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px;" id="preset-colors-container">
-                            ${presetsHtml}
-                        </div>
-                        <div style="border-top: 1px solid var(--card-border); margin-top: 6px; padding-top: 8px;">
-                            <div style="font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">${(t.accentMenu && t.accentMenu.custom) || 'Custom Color'}</div>
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <input type="color" id="custom-accent-picker" style="border: 1px solid var(--card-border); background: none; width: 34px; height: 34px; padding: 0; cursor: pointer;" value="${currentAccent.primary}">
-                                <span style="font-size: 13px; font-family: monospace; color: var(--text-primary); font-weight: 600;" id="custom-color-value">${currentAccent.primary.toUpperCase()}</span>
+            <!-- Main Workspace -->
+            <div class="app-main-workspace">
+                <header>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <!-- Hamburger / Left Sidebar Toggle Button -->
+                        <button class="lang-btn" id="header-toggle-left-sidebar-btn" style="height: 28px; width: 28px; padding: 0; display: inline-flex; align-items: center; justify-content: center; font-size: 15px; cursor: pointer;" title="${state.lang === 'ta' ? 'பக்கப்பட்டை' : 'Toggle Left Sidebar'}">
+                            ☰
+                        </button>
+                        <div class="logo-container" id="header-logo" style="cursor: pointer; display: flex; align-items: center; gap: 12px;">
+                            <img src="./logo.png" alt="Logo" style="height: 44px; width: 44px; border-radius: 50%; border: 1.5px solid var(--accent); object-fit: cover;">
+                            <div>
+                                <h1>Horoscope Calculator</h1>
+                                <p>${logoSubtitles[state.lang] || logoSubtitles['en']}</p>
                             </div>
                         </div>
                     </div>
-                </div>
+                    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                        <!-- Global Page Zoom Widget (Only visible on Results page) -->
+                        ${state.view === 'results' ? `
+                        <div style="display: inline-flex; align-items: center; gap: 4px; border: 1px solid var(--card-border); padding: 0 4px; background: var(--input-bg); height: 24px; box-sizing: border-box; font-family: inherit;">
+                            <button id="global-zoom-out-btn" style="width: 16px; height: 16px; border-radius: 50%; border: none; background: rgba(0,0,0,0.06); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; color: var(--text-primary); transition: background 0.2s; padding: 0;" title="Zoom Out" ${state.globalZoom <= 70 ? 'disabled style="opacity:0.4; cursor:default;"' : ''}>
+                                &minus;
+                            </button>
+                            <span style="font-size: 11px; font-weight: 600; min-width: 28px; text-align: center; color: var(--text-primary);">${state.globalZoom}%</span>
+                            <button id="global-zoom-in-btn" style="width: 16px; height: 16px; border-radius: 50%; border: none; background: rgba(0,0,0,0.06); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; color: var(--text-primary); transition: background 0.2s; padding: 0;" title="Zoom In" ${state.globalZoom >= 130 ? 'disabled style="opacity:0.4; cursor:default;"' : ''}>
+                                +
+                            </button>
+                        </div>
+                        ` : ''}
 
-                <select class="lang-btn" id="lang-select" style="cursor: pointer; padding: 0 4px; height: 24px; font-size: 11px;">
-                    <option value="en" ${state.lang === 'en' ? 'selected' : ''}>English</option>
-                    <option value="ta" ${state.lang === 'ta' ? 'selected' : ''}>தமிழ்</option>
-                    <option value="hi" ${state.lang === 'hi' ? 'selected' : ''}>हिन्दी</option>
-                    <option value="te" ${state.lang === 'te' ? 'selected' : ''}>తెలుగు</option>
-                    <option value="kn" ${state.lang === 'kn' ? 'selected' : ''}>ಕನ್ನಡ</option>
-                    <option value="ml" ${state.lang === 'ml' ? 'selected' : ''}>മലയാളം</option>
-                </select>
+                        <!-- Calendar Sidebar Header Toggle (Only on Form page) -->
+                        ${state.view === 'form' ? `
+                        <button class="lang-btn" id="header-toggle-cal-btn" style="height: 24px; padding: 0 8px; font-size: 11px; display: inline-flex; align-items: center; gap: 4px; font-weight: 600; color: ${state.calendarSidebarOpen ? 'var(--accent)' : 'var(--text-primary)'}; border-color: ${state.calendarSidebarOpen ? 'var(--accent)' : 'var(--btn-secondary-border)'};" title="${state.lang === 'ta' ? 'நாட்காட்டி பக்கப்பட்டை' : 'Toggle Calendar Sidebar'}">
+                            <span>📅</span>
+                            <span>${state.lang === 'ta' ? 'நாட்காட்டி' : 'Calendar'}</span>
+                        </button>
+                        ` : ''}
+
+                        <button class="lang-btn" id="toggle-theme-btn" style="width: 24px; height: 24px; border-radius: 0; padding: 0; display: inline-flex; align-items: center; justify-content: center;" title="${isLight ? 'Dark Mode' : 'Light Mode'}">
+                            ${isLight ? 
+                                `<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z" stroke-linecap="round" stroke-linejoin="round"></path></svg>` : 
+                                `<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" stroke-linecap="round" stroke-linejoin="round"></path></svg>`
+                            }
+                        </button>
+                        
+                        <!-- Accent Color Picker -->
+                        <div style="position: relative; display: inline-block;">
+                            <button class="lang-btn" id="accent-menu-btn" style="width: 24px; height: 24px; border-radius: 0; padding: 0; display: inline-flex; align-items: center; justify-content: center; color: var(--primary);" title="${(t.accentMenu && t.accentMenu.title) || 'Accent Color'}">
+                                <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 21a9 9 0 100-18 9 9 0 000 18z" stroke-linecap="round" stroke-linejoin="round"></path>
+                                    <path d="M7.5 10.5a1.5 1.5 0 110-3 1.5 1.5 0 010 3zM11.5 7.5a1.5 1.5 0 110-3 1.5 1.5 0 010 3zM16.5 9.5a1.5 1.5 0 110-3 1.5 1.5 0 010 3zM15.5 14.5a1.5 1.5 0 110-3 1.5 1.5 0 010 3z" fill="currentColor"></path>
+                                </svg>
+                            </button>
+                            <div id="accent-dropdown" class="accent-dropdown-menu" style="display: none; position: absolute; top: 30px; right: 0; background: var(--card-bg); border: 1px solid var(--card-border); padding: 12px; width: 220px; box-shadow: var(--shadow); z-index: 1000; flex-direction: column; gap: 10px;">
+                                <div style="font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">${(t.accentMenu && t.accentMenu.presets) || 'Preset Colors'}</div>
+                                <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px;" id="preset-colors-container">
+                                    ${presetsHtml}
+                                </div>
+                                <div style="border-top: 1px solid var(--card-border); margin-top: 6px; padding-top: 8px;">
+                                    <div style="font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">${(t.accentMenu && t.accentMenu.custom) || 'Custom Color'}</div>
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <input type="color" id="custom-accent-picker" style="border: 1px solid var(--card-border); background: none; width: 34px; height: 34px; padding: 0; cursor: pointer;" value="${currentAccent.primary}">
+                                        <span style="font-size: 13px; font-family: monospace; color: var(--text-primary); font-weight: 600;" id="custom-color-value">${currentAccent.primary.toUpperCase()}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <select class="lang-btn" id="lang-select" style="cursor: pointer; padding: 0 4px; height: 24px; font-size: 11px;">
+                            <option value="en" ${state.lang === 'en' ? 'selected' : ''}>English</option>
+                            <option value="ta" ${state.lang === 'ta' ? 'selected' : ''}>தமிழ்</option>
+                            <option value="hi" ${state.lang === 'hi' ? 'selected' : ''}>हिन्दी</option>
+                            <option value="te" ${state.lang === 'te' ? 'selected' : ''}>తెలుగు</option>
+                            <option value="kn" ${state.lang === 'kn' ? 'selected' : ''}>ಕನ್ನಡ</option>
+                            <option value="ml" ${state.lang === 'ml' ? 'selected' : ''}>മലയാളം</option>
+                        </select>
+                    </div>
+                </header>
+                <main>
+                    ${content}
+                </main>
+                <footer>
+                    <p>© ${new Date().getFullYear()} ${footerTexts[state.lang] || footerTexts['en']}</p>
+                </footer>
             </div>
-        </header>
-        <main>
-            ${content}
-        </main>
-        <footer>
-            <p>© ${new Date().getFullYear()} ${footerTexts[state.lang] || footerTexts['en']}</p>
-        </footer>
+        </div>
+
+        <!-- Mobile Drawer Backdrop for Left Sidebar -->
+        <div id="left-sidebar-backdrop" class="left-sidebar-backdrop ${state.leftSidebarOpen ? 'active' : ''}"></div>
     `;
     
     bindEvents();
 }
+
 
 // Render the Input Form
 function renderFormView(t) {
@@ -4122,7 +4504,284 @@ function bindEvents() {
             });
         });
 
-        // Sidebar Toggle Listeners
+        // Left Sidebar Toggle & Mini Listeners
+        const headerToggleLeftSidebarBtn = document.querySelector('#header-toggle-left-sidebar-btn');
+        if (headerToggleLeftSidebarBtn) {
+            headerToggleLeftSidebarBtn.addEventListener('click', () => {
+                state.leftSidebarOpen = !state.leftSidebarOpen;
+                localStorage.setItem('horoscope_left_sidebar_open', state.leftSidebarOpen ? 'true' : 'false');
+                render();
+            });
+        }
+
+        const toggleLeftSidebarMiniBtn = document.querySelector('#toggle-left-sidebar-mini-btn');
+        if (toggleLeftSidebarMiniBtn) {
+            toggleLeftSidebarMiniBtn.addEventListener('click', () => {
+                state.leftSidebarMini = !state.leftSidebarMini;
+                localStorage.setItem('horoscope_left_sidebar_mini', state.leftSidebarMini ? 'true' : 'false');
+                render();
+            });
+        }
+
+        const closeLeftSidebarBtn = document.querySelector('#close-left-sidebar-btn');
+        if (closeLeftSidebarBtn) {
+            closeLeftSidebarBtn.addEventListener('click', () => {
+                state.leftSidebarOpen = false;
+                localStorage.setItem('horoscope_left_sidebar_open', 'false');
+                render();
+            });
+        }
+
+        const leftSidebarBackdrop = document.querySelector('#left-sidebar-backdrop');
+        if (leftSidebarBackdrop) {
+            leftSidebarBackdrop.addEventListener('click', () => {
+                state.leftSidebarOpen = false;
+                localStorage.setItem('horoscope_left_sidebar_open', 'false');
+                render();
+            });
+        }
+
+        // Left Sidebar Navigation Links
+        const scrollToElement = (selector) => {
+            const el = document.querySelector(selector);
+            if (el) {
+                el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        };
+
+        const navHoroscope = document.querySelector('#nav-link-horoscope');
+        if (navHoroscope) {
+            navHoroscope.addEventListener('click', () => {
+                if (state.view !== 'form') {
+                    state.view = 'form';
+                    render();
+                }
+                setTimeout(() => scrollToElement('#form-card'), 50);
+            });
+        }
+
+        const navTransits = document.querySelector('#nav-link-transits');
+        if (navTransits) {
+            navTransits.addEventListener('click', () => {
+                if (state.view !== 'form') {
+                    state.view = 'form';
+                    render();
+                }
+                setTimeout(() => scrollToElement('#planetary-positions-card'), 50);
+            });
+        }
+
+        const navChandrashtama = document.querySelector('#nav-link-chandrashtama');
+        if (navChandrashtama) {
+            navChandrashtama.addEventListener('click', () => {
+                if (state.view !== 'form') {
+                    state.view = 'form';
+                    render();
+                }
+                setTimeout(() => scrollToElement('#chandrashtama-card'), 50);
+            });
+        }
+
+        const navTransitions = document.querySelector('#nav-link-transitions');
+        if (navTransitions) {
+            navTransitions.addEventListener('click', () => {
+                if (state.view !== 'form') {
+                    state.view = 'form';
+                    render();
+                }
+                setTimeout(() => scrollToElement('#planet-transitions-card'), 50);
+            });
+        }
+
+        const navCalendar = document.querySelector('#nav-link-calendar');
+        if (navCalendar) {
+            navCalendar.addEventListener('click', () => {
+                if (state.view !== 'form') {
+                    state.view = 'form';
+                }
+                state.calendarSidebarOpen = true;
+                render();
+                setTimeout(() => scrollToElement('#calendar-sidebar'), 50);
+            });
+        }
+
+        const navMatching = document.querySelector('#nav-link-matching');
+        if (navMatching) {
+            navMatching.addEventListener('click', () => {
+                if (state.view === 'results') {
+                    scrollToElement('#marriage-predictor-card');
+                } else {
+                    const matchMsg = state.lang === 'ta' 
+                        ? 'ஜாதகத்தைக் கணித்தவுடன் திருமணப் பொருத்தம் தானாகவே கணக்கிடப்படும்!' 
+                        : 'Calculate horoscope first to view detailed marriage matching score and analysis!';
+                    alert(matchMsg);
+                    scrollToElement('#form-card');
+                }
+            });
+        }
+
+        // Left Sidebar Chart Style buttons
+        const sidebarChartStyleBtns = document.querySelectorAll('.sidebar-chart-style-btn[data-style]');
+        sidebarChartStyleBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const style = btn.getAttribute('data-style');
+                if (style && style !== state.chartStyle) {
+                    state.chartStyle = style;
+                    render();
+                }
+            });
+        });
+
+        // Left Sidebar Theme Toggle
+        const sidebarThemeToggleBtn = document.querySelector('#sidebar-theme-toggle-btn');
+        if (sidebarThemeToggleBtn) {
+            sidebarThemeToggleBtn.addEventListener('click', () => {
+                const toggleThemeBtn = document.querySelector('#toggle-theme-btn');
+                if (toggleThemeBtn) {
+                    toggleThemeBtn.click();
+                } else {
+                    document.body.classList.toggle('light-mode');
+                    render();
+                }
+            });
+        }
+
+        // Left Sidebar Accent Dots
+        const sidebarAccentDots = document.querySelectorAll('.sidebar-accent-dot');
+        sidebarAccentDots.forEach(dot => {
+            dot.addEventListener('click', () => {
+                const pri = dot.getAttribute('data-primary');
+                const acc = dot.getAttribute('data-accent');
+                if (pri && acc) {
+                    currentAccent = { primary: pri, accent: acc };
+                    localStorage.setItem('horoscope_app_accent', JSON.stringify(currentAccent));
+                    applyAccentColor(pri, acc);
+                    render();
+                }
+            });
+        });
+
+        // Left Sidebar Saved Profiles Management
+        const saveProfileBtn = document.querySelector('#save-current-profile-btn');
+        if (saveProfileBtn) {
+            saveProfileBtn.addEventListener('click', () => {
+                const ls = leftSidebarTranslations[state.lang] || leftSidebarTranslations['en'];
+                let name = '';
+                let gender = 'male';
+                let place = '';
+                let day = '';
+                let month = '';
+                let year = '';
+                let hour = '';
+                let minute = '';
+                let ampm = 'PM';
+                let cityObj = state.selectedCity;
+
+                if (state.view === 'results' && state.horoscope && state.horoscope.birthDetails) {
+                    const bd = state.horoscope.birthDetails;
+                    name = bd.name || '';
+                    gender = bd.gender || 'male';
+                    place = bd.city || '';
+                    const [y, m, d] = (bd.dateStr || '').split('-');
+                    year = y; month = m; day = d;
+                    const [h, min] = (bd.timeStr || '').split(':');
+                    hour = h; minute = min; ampm = bd.ampm || 'PM';
+                } else {
+                    name = document.querySelector('#input-name')?.value || '';
+                    gender = document.querySelector('#input-gender')?.value || 'male';
+                    place = document.querySelector('#input-place')?.value || '';
+                    day = document.querySelector('#select-day')?.value || '';
+                    month = document.querySelector('#select-month')?.value || '';
+                    year = document.querySelector('#select-year')?.value || '';
+                    hour = document.querySelector('#select-hour')?.value || '';
+                    minute = document.querySelector('#select-minute')?.value || '';
+                    ampm = document.querySelector('#select-ampm')?.value || 'PM';
+                }
+
+                if (!name || !day || !month || !year) {
+                    const enterValidMsg = state.lang === 'ta' 
+                        ? 'தயவுசெய்து பெயர் மற்றும் பிறந்த தேதியை உள்ளிடவும்.' 
+                        : 'Please enter at least Name and Birth Date to save profile.';
+                    alert(enterValidMsg);
+                    return;
+                }
+
+                const defaultName = `${name} (${day}-${month}-${year})`;
+                const profileLabel = prompt(ls.enterProfileName, defaultName);
+                if (!profileLabel) return;
+
+                const newProfile = {
+                    id: 'prof_' + Date.now(),
+                    name: profileLabel,
+                    personName: name,
+                    gender,
+                    place,
+                    day,
+                    month,
+                    year,
+                    dateStr: `${year}-${month}-${day}`,
+                    hour,
+                    minute,
+                    ampm,
+                    city: cityObj
+                };
+
+                state.savedProfiles = [newProfile, ...(state.savedProfiles || [])];
+                localStorage.setItem('horoscope_saved_profiles', JSON.stringify(state.savedProfiles));
+                render();
+            });
+        }
+
+        // Load Saved Profile Buttons
+        const loadProfileBtns = document.querySelectorAll('.load-profile-btn');
+        loadProfileBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const idx = parseInt(btn.getAttribute('data-index'), 10);
+                if (!isNaN(idx) && state.savedProfiles && state.savedProfiles[idx]) {
+                    const prof = state.savedProfiles[idx];
+                    if (state.view !== 'form') {
+                        state.view = 'form';
+                    }
+                    if (prof.city) {
+                        state.selectedCity = prof.city;
+                    }
+                    render();
+                    
+                    // Fill form inputs
+                    setTimeout(() => {
+                        if (document.querySelector('#input-name')) document.querySelector('#input-name').value = prof.personName || prof.name;
+                        if (document.querySelector('#input-gender')) document.querySelector('#input-gender').value = prof.gender || 'male';
+                        if (document.querySelector('#input-place')) document.querySelector('#input-place').value = prof.place || '';
+                        if (document.querySelector('#select-day')) document.querySelector('#select-day').value = prof.day || '';
+                        if (document.querySelector('#select-month')) document.querySelector('#select-month').value = prof.month || '';
+                        if (document.querySelector('#select-year')) document.querySelector('#select-year').value = prof.year || '';
+                        if (document.querySelector('#select-hour')) document.querySelector('#select-hour').value = prof.hour || '';
+                        if (document.querySelector('#select-minute')) document.querySelector('#select-minute').value = prof.minute || '';
+                        if (document.querySelector('#select-ampm')) document.querySelector('#select-ampm').value = prof.ampm || 'PM';
+                        scrollToElement('#form-card');
+                    }, 50);
+                }
+            });
+        });
+
+        // Delete Saved Profile Buttons
+        const deleteProfileBtns = document.querySelectorAll('.delete-profile-btn');
+        deleteProfileBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const idx = parseInt(btn.getAttribute('data-index'), 10);
+                const ls = leftSidebarTranslations[state.lang] || leftSidebarTranslations['en'];
+                if (!isNaN(idx) && state.savedProfiles && state.savedProfiles[idx]) {
+                    if (confirm(ls.deleteProfile + '?')) {
+                        state.savedProfiles.splice(idx, 1);
+                        localStorage.setItem('horoscope_saved_profiles', JSON.stringify(state.savedProfiles));
+                        render();
+                    }
+                }
+            });
+        });
+
+        // Calendar Sidebar Toggle Listeners
         const closeSidebarBtn = document.querySelector('#close-calendar-sidebar-btn');
         if (closeSidebarBtn) {
             closeSidebarBtn.addEventListener('click', () => {
